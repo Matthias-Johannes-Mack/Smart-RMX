@@ -17,7 +17,6 @@ public class TestConnection {
 		if (scanRes.contains(" ") && scanRes.length() == 1) {
 			System.out.println("Leertaste!");
 		}
-		System.out.println(scanRes);
 //		System.out.println(SocketConnector.getConStateStr());
 	}
 }
