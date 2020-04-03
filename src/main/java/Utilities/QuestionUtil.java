@@ -2,8 +2,6 @@ package Utilities;
 
 import java.util.Scanner;
 
-import connection.ConnectionConstants;
-import connection.Sender;
 import connection.SocketConnector;
 
 /**

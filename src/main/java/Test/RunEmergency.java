@@ -1,5 +1,6 @@
 package Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -7,18 +8,26 @@ import connection.ConnectionConstants;
 import connection.Sender;
 import connection.SocketConnector;
 
-public class TestConnection {
+public class RunEmergency {
 	static Scanner sc;
 
-	public TestConnection() {
+	public RunEmergency() {
 
 	}
 
-	public static void main(String[] args) {
-		SocketConnector.Connect();
-		System.out.println("Leertaste für Notaus drücken:");
-		emergencyStop();
-//		System.out.println(SocketConnector.getConStateStr());
+	public static void main(String[] args) throws IOException {
+		if (args.length == 0) {
+			// run the cmd for the command line
+			Process p = Runtime.getRuntime().exec("cmd.exe /c start java -jar "
+					+ (new File(RunEmergency.class.getProtectionDomain().getCodeSource().getLocation().getPath()))
+							.getAbsolutePath()
+					+ " cmd");
+		} else {
+			// code to be executed
+			SocketConnector.Connect();
+			System.out.println("Leertaste für Notaus drücken:");
+			emergencyStop();
+		}
 	}
 
 	/**
