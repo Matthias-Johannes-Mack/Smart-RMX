@@ -16,7 +16,9 @@ public class TestConnection {
 		emergencyStop();
 //		System.out.println(SocketConnector.getConStateStr());
 	}
-
+	/**
+	 * Method, that listens to a whitespace and the puts out a emergency stop
+	 */
 	private static void emergencyStop() {
 		sc = new Scanner(System.in);
 		String scanRes = sc.nextLine();
