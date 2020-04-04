@@ -28,5 +28,16 @@ public class ByteUtil {
         return solution;
     }
 
+    /**
+     * checks if bit is set in given message
+     *
+     * @param value    byte value to check
+     * @param bitIndex counting from 0-7
+     * @return true = if set, else false
+     */
+    public static boolean bitIsSet(byte value, int bitIndex) {
+        return (value & (1 << bitIndex)) != 0;
+    }
+
 
 }
