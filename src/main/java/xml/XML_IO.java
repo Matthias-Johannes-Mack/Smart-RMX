@@ -106,7 +106,7 @@ class XML_IO {
 	private static org.w3c.dom.Document returnXML(String filePath) {
 		try {
 			File xmlFile = new File(filePath);
-			File schemaFile = new File("/home/jan/Dokumente/Bachelorarbeit/XML/RuleSet.xsd");
+			File schemaFile = new File("./src/main/resources/RuleSet.xsd");
 
 			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 
@@ -129,7 +129,6 @@ class XML_IO {
 			if(!validationResult) {
 				throw new SAXException("XML Dokument entspricht nicht dem XSD Schema");
 			}
-
 			return document;
 		} catch (Exception e) {
 			e.printStackTrace();
