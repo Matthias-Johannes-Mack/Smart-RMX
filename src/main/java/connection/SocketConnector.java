@@ -91,13 +91,13 @@ public class SocketConnector {
 				// show that server is connected
 				System.out.println("-> Mit Server " + ip + ":" + port + " verbunden!");
 				// checks if the server is alive
-				try {
-					SocketConnector.serverAlive();
-				} catch (InterruptedException | IOException e) {
-					// reload the server
-					setConStateStr(conState.DISCONNECTED);
-					QuestionUtil.retry_reload();
-				}
+//				try {
+//					SocketConnector.serverAlive();
+//				} catch (InterruptedException | IOException e) {
+//					// reload the server
+//					setConStateStr(conState.DISCONNECTED);
+//					QuestionUtil.retry_reload();
+//				}
 			} catch (Exception e) {
 				setConStateStr(conState.DISCONNECTED);
 				System.out.println("-> Server nicht erreichbar & " + getConStateStr());
