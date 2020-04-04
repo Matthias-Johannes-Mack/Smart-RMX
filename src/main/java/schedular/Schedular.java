@@ -1,12 +1,15 @@
 package schedular;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import bus.BusDepot;
+
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Schedular {
 
     // indicates if initialization is done
+    // needs to be thread safe since multiple threads check the constant
     public static AtomicBoolean INIT_SUCESSFULL = new AtomicBoolean();
 
     // Singleton-Pattern START -----------------------------------------
@@ -50,10 +53,13 @@ public class Schedular {
      */
     private BlockingQueue<byte[]> messageQueue;
 
+
+    private ScheduledExecutorService executer;
+
     /**
-     * Provided RuleSet the schedular works with which determines which actions are triggered for the messages
+     * Provided RuleSet (=Tabelle) the schedular works with which determines which actions are triggered for the messages
      */
-    //TODO private RuleSetDummy ruleSet;
+    //TODO private RuleSet ruleSet;
 
     public void startScheduling() {
         // if no thread exists start a new one
@@ -65,7 +71,19 @@ public class Schedular {
             // create Thread
             sThread = new Thread(new SchedularThread());
             sThread.start();
+
+            // create Executor
+            executer = Executors.newSingleThreadScheduledExecutor(); // only one Thread possibly more --> THREADPOOL
+
         }
+    }
+
+    public void cleanup() {
+
+        //TODO thread beenden
+        executer.shutdown();
+        //TODO ggf. Liste leeren
+
     }
 
     /**
@@ -86,14 +104,13 @@ public class Schedular {
         @Override
         public void run() {
 
-            // wait until inititialization is sucessfull
+            // wait until inititialization is sucessfull --> all busses are filled
             while (!INIT_SUCESSFULL.get()){
                 // do nothing
             }
 
-            // init sucessfull
-            //TODO checkAllTrains -> Aufruf auf RuleSet
-
+            // init sucessfull --> firstly check all conditions
+            //TODO checkAllConditions --> nur über lastChanged aller Adressen kann sich so arbeits sparen
 
             // TODO add useful termination condition for thread
             while (true) {
@@ -101,13 +118,44 @@ public class Schedular {
                     // if queue is empty, the thread blocks (!no active waiting) and waits for an message to become available
                     byte[] message = messageQueue.take();
 
-                    //Integer[] trainState = TrainDepot.getTrainDepot().getTrainState(message);
+                    byte changes = BusDepot.getBusDepot().getChanges(message);
+                    // convert to BitSet
+                    BitSet bits = BitSet.valueOf(new byte[] {changes});
 
-                    /*
-                    TODO
-                    1. Zustand an RuleSet / Tabelle senden
-                    2. Falls actions als antwort (null wenn keine?) zum Sender hinzufügen
-                     */
+                    // loop only iterates only set bits
+                    // 0 = bit hasnt changed
+                    // 1 = bit has changed => condition needs to be checked
+                    for (int i = bits.nextSetBit(0); i >= 0; i = bits.nextSetBit(i+1)) {
+                        //TODO check Zustand an Position "Bernd´s Matrix": Bus + Systemadresse*8 + i
+                        // i entspricht gesetzer bit position
+                        // return dann ggf. auzuführende Actions in Form etwa Action1, Wait(zeit), Action2,...
+
+
+                        // EXAMPLE
+                        // Evtl. verbung mit Action und Kinder Message und Wait
+
+                        List<Integer> actions = new ArrayList<>();
+
+                        /*
+                        for all actions
+
+                        if(type == action) {
+                            lege action auf Sender
+                        } else
+                        type == wait
+
+                        neue Timertask mit Time = Waitdauer und übergebe Rest der ActionListe an Timer
+
+                        break; aus loop raus => arbeit wird an timertask übergeben
+                        }
+                         */
+                        SchedularTimerTask task = new SchedularTimerTask(actions);
+                        executer.schedule(task, 5, TimeUnit.SECONDS); // starts task after 5 seconds
+
+
+                    }
+
+                    // does nothing if no bit has changed
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -115,6 +163,34 @@ public class Schedular {
             }
 
         }
+    }
+
+    private class SchedularTimerTask implements Runnable {
+
+        List<Integer> actions = new ArrayList<>();
+
+        public SchedularTimerTask(List<Integer> actions) {
+            this.actions = actions;
+        }
+
+        @Override
+        public void run() {
+
+        /*
+                 for all actions
+
+                if(type == action) {
+                    lege action auf Sender
+                } else
+                    type == wait
+
+                    neue Timertask mit Time = Waitdauer und übergebe Rest der ActionListe an Timer
+                    break; aus loop raus => arbeit wird an timertask übergeben
+                }
+
+                */
+        }
+
     }
 
 

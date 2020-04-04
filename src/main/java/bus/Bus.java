@@ -9,6 +9,8 @@ public class Bus {
     // durchgehen).
     // Wenn sich werte ggü des letzte mal nicht verändert (also nur von 1 auf 0 geändert werden - wir beachten nur änderungen von Bus
     // von 0 auf 1) byte am besten komplett 0, d.h. schedular wird dann auch nicht über Tabelle laufen und was checken.
+    // wichtig: bei initialisierung kann es sein das bits schon gesetzt sind, also müsste am anfang gegen 00000000 verglichen werden oder?
+    // evtl. mit BitSet XOR? aber muss drauf achten das nur änderungen von 0 auf 1 beachtet werden
 
     public Bus (byte RMX) {
 

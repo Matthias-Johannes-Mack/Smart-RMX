@@ -2,6 +2,7 @@ package connection;
 
 
 import Utilities.ByteUtil;
+import bus.BusDepot;
 import schedular.Schedular;
 
 import java.io.IOException;
@@ -247,8 +248,9 @@ class Receiver {
             Schedular.getSchedular().addMessage(message);
 
         } else { // false -- init not successfull
-            // create bus and init with given values
 
+            // updates bus -> creates if not existing
+            BusDepot.getBusDepot().updateBus(message);
         }
 
     }

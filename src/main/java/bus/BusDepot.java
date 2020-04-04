@@ -23,7 +23,7 @@ public class BusDepot {
      *
      * @return BusDepot Singleton instance
      */
-    public static synchronized BusDepot getTrainDepot() {
+    public static synchronized BusDepot getBusDepot() {
         if (instance == null) {
             instance = new BusDepot();
         }
