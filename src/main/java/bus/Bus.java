@@ -1,5 +1,7 @@
 package bus;
 
+import Utilities.ByteUtil;
+
 import java.util.BitSet;
 
 public class Bus {
@@ -65,6 +67,16 @@ public class Bus {
      */
     public byte getChanges(byte adrrmx) {
         return lastChanges[adrrmx];
+    }
+
+    /**
+     * Checks if the bit of the given systemadress is set
+     * @param systemadresse
+     * @param bit
+     * @return true if bit is set, returns false if bit isnt set
+     */
+    public boolean isBitSet(int systemadresse, int bit) {
+        return ByteUtil.bitIsSet(systemadressen[systemadresse], bit);
     }
 
 }

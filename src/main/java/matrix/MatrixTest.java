@@ -9,10 +9,9 @@ public class MatrixTest {
 //		Object[] o = Matrix.getMatrix().matrix;
 //		System.out.println(o[3]);+
 
-		Integer[] conditionOne = new Integer[] {0, 0, 4};
-		Integer[] conditionTwo = new Integer[] {0, 0, 0};
 
-		Matrix.addAction(conditionTwo, conditionOne);
+		System.out.println(Matrix.getSystemadressByBitIndex(1791));
+
 	}
 
 }

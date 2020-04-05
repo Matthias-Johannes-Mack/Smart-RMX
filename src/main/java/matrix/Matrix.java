@@ -1,8 +1,12 @@
 package matrix;
 
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.List;
 
-import action.Actions;
+import action.ActionSequence;
+import bus.Bus;
+import bus.BusDepot;
 
 /**
  * Class for the Matrix
@@ -13,7 +17,13 @@ public class Matrix {
 	// (( n (n + 1)) / 2)
 	// Formel für Dreiecksmatrix = (((112*8 Bit) ((112*8 Bit) + 1 ) ) / 2 )
 	final static int arraySize = (((112 * 8) * ((112 * 8) + 1)) / 2);
-	static public Actions[] matrix;
+	static public ActionSequence[] matrix;
+
+	// 112 Systemdressen mit je 8 Bit
+	final static int NUMBER_BITS_PER_BUS = 896;
+
+	static BusDepot busDepot;
+
 	// Singleton-Pattern START -----------------------------------------
 
 	/**
@@ -37,6 +47,7 @@ public class Matrix {
 		if (instance == null) {
 			instance = new Matrix();
 			instance.createMatrix();
+			instance.busDepot = BusDepot.getBusDepot();
 		}
 		return instance;
 	}
@@ -47,7 +58,7 @@ public class Matrix {
 	 */
 	private void createMatrix() {
 		// create the matrix with fixed arraySize
-		matrix = new Actions[arraySize];
+		matrix = new ActionSequence[arraySize];
 	}
 
 	/**
@@ -60,21 +71,29 @@ public class Matrix {
 	 */
 	private void check(byte rmx, byte adrRMX, byte lastChanged) {
 
-		BitSet valueBitSet = BitSet.valueOf(new byte[] { lastChanged });
-		for (int i = valueBitSet.nextSetBit(0); i >= 0; i = valueBitSet.nextSetBit(i + 1)) {
-			// bit i in value is set
+		// rmx - 1 because rmx sends busRMX1 as 1
+		int bus = rmx - 1;
+		int systemadresse = adrRMX;
 
+		// iterates over set bits of lastChanged
+		BitSet valueBitSet = BitSet.valueOf(new byte[] { lastChanged });
+
+		for (int i = valueBitSet.nextSetBit(0); i >= 0; i = valueBitSet.nextSetBit(i + 1)) {
+			// bit i in value is set => check this bit
+			calcPos(bus, systemadresse, i);
 		}
 	}
 
 	/**
 	 * Method, that calculates the position of a specified element
 	 * 
-	 * @param bus
+	 * @param bus includes bus id of RMX bus -1
 	 * @param systemadresse
 	 * @param bit
 	 */
-	public static void calcPos(int bus, int systemadresse, int bit) {
+	public static List<ActionSequence> calcPos(int bus, int systemadresse, int bit) {
+
+		List<ActionSequence> result = new ArrayList<>();
 
 		// ----------------------------
 		// For the row
@@ -90,13 +109,38 @@ public class Matrix {
 		// Gaussche' Summenformel
 		// index of first field in row
 		int startPoint = calcGauss(bitIndex);
+
+		// current bus bits are checked
+		Bus currentBus = null;
+		//TODO refactor das hier net mit null gemacht wird (wird zwar direkt in if gesprungen, muss aber initialisiert sein)
+
 		// Bernds-Formel to the right
 		// loop through entire row to the right
-		for (int i = 0; i <= bitIndex; i++) {
-			// TODO check all fields of row mit startpoint
-			System.out.println(startPoint);
+		for (int columnIndex = 0; columnIndex <= bitIndex; columnIndex++) {
+
+			if(columnIndex % NUMBER_BITS_PER_BUS == 0) {
+
+				// get current bus => + 1 since RMX starts counting at 1
+				currentBus = busDepot.getBus(((columnIndex / NUMBER_BITS_PER_BUS) + 1));
+			}
+
+			// systemadress of current bitIndex that is being checked
+			int systemadress_checkedBit = getSystemadressByBitIndex(columnIndex);
+
+			if(currentBus.isBitSet(systemadress_checkedBit, bit)) {
+				//both conditions are true => get ActionSequence of point in matrix
+				ActionSequence actionSequence = matrix[startPoint];
+
+				if(actionSequence != null){
+					// ActionSequence for point exists
+					result.add(actionSequence);
+				}
+			}
+
 			startPoint++; // move to the right in the row
 		}
+
+
 		// ----------------------------
 		// For the column
 		// ----------------------------
@@ -104,6 +148,9 @@ public class Matrix {
 		// for-loop bis <= max index
 
 		System.out.println("-------------COLUMN---------------");
+
+		// current bus of rowIndex (initially given bus by method)
+		currentBus = busDepot.getBus(bus);
 
 		int oldBitIndex = bitIndex;
 
@@ -113,11 +160,32 @@ public class Matrix {
 		while (columnPointIndex < arraySize) {
 			System.out.println(columnPointIndex);
 
+			if(bitIndex % NUMBER_BITS_PER_BUS == 0) {
+
+				// get current bus => + 1 since RMX starts counting at 1
+				currentBus = busDepot.getBus(((bitIndex / NUMBER_BITS_PER_BUS) + 1));
+			}
+
+			// check condition
+			// systemadress of current bitIndex that is being checked
+			int systemadress_checkedBit = getSystemadressByBitIndex(bitIndex);
+
+			if(currentBus.isBitSet(systemadress_checkedBit, bit)) {
+				//both conditions are true => get ActionSequence of point in matrix
+				ActionSequence actionSequence = matrix[startPoint];
+
+				if(actionSequence != null){
+					// ActionSequence for point exists
+					result.add(actionSequence);
+				}
+			}
+
 			bitIndex++;
 			columnPointIndex = calcGauss(bitIndex) + oldBitIndex;
-			//TODO check field
 		}
-		
+
+		// return ActionSequences of true conditions
+		return result;
 	}
 
 	/**
@@ -149,9 +217,9 @@ public class Matrix {
 	 * format of condition: [bus][systemadresse][bit]
 	 * @param conditionOne
 	 * @param conditionTwo
-	 * @param actions
+	 * @param actionSequence
 	 */
-	public static void addAction(Integer[] conditionOne, Integer[] conditionTwo, Actions actions) {
+	public static void addAction(Integer[] conditionOne, Integer[] conditionTwo, ActionSequence actionSequence) {
 		//format [bus][systemadresse][bit]
 
 		// rmx - 1 because rmx sends busRMX1 as 1
@@ -175,7 +243,11 @@ public class Matrix {
 		}
 
 		// add actions to calculated index
-		matrix[pointIndex] = actions;
+		matrix[pointIndex] = actionSequence;
 
+	}
+
+	public static int getSystemadressByBitIndex(int bitIndex) {
+		return ((bitIndex % NUMBER_BITS_PER_BUS) / 8); // cuts decimal places
 	}
 }
