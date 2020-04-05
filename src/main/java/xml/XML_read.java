@@ -12,8 +12,6 @@ import java.util.*;
  */
 public class XML_read {
     private org.w3c.dom.Document xmlDoc;
-    //List containing all the rules extracted from the file
-    private ArrayList<Rule> rules;
 
     /**
      * Constructor
@@ -25,8 +23,6 @@ public class XML_read {
             this.xmlDoc = xmlDoc;
         }
 
-        rules = new ArrayList<>();
-
         try {
             readXML();
         } catch (Exception e) {
@@ -35,7 +31,7 @@ public class XML_read {
     }
 
     /**
-     * reads in the rules from the file.
+     * reads in the rules from the file and saves them to the Factory Class.
      * A rule consists of
      * - Integer Array for each of the two Conditions [Bus, SystemAddress, Bit]
      * - List containing Integer Arrays for each Action [Bus, SystemAddress, Bit, Bitvalue] and Arrays for the Wait operation [time in ms]
@@ -123,7 +119,7 @@ public class XML_read {
             /*
               Iterating over one rule block done, add conditions and actions to new rule
              */
-            this.rules.add(new Rule(conditionsOne, conditionsTwo, actions));
+            Factory.addRule(new Rule(conditionsOne, conditionsTwo, actions));
         }
     }
 
@@ -151,8 +147,8 @@ public class XML_read {
     //TODO Delete
     public void test() {
         System.out.println("Test:");
-        System.out.println("Number of Rules " + this.rules.size());
-        for (Rule rule : this.rules) {
+        System.out.println("Number of Rules " + Factory.getRules().size());
+        for (Rule rule : Factory.getRules()) {
             System.out.println("----Rule----");
             System.out.println("Condition1: "+Arrays.toString(rule.getConditionOne()));
             System.out.println("Condition2:"+Arrays.toString(rule.getConditionOne()));
