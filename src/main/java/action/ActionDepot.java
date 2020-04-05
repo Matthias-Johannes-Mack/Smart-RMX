@@ -52,8 +52,8 @@ public class ActionDepot {
      * @param actionID
      * @return
      */
-    private synchronized boolean actionExists(Action action) {
-    	if(actionDepot.contains(action)) {
+    private synchronized boolean actionExists(int[] action) {
+    	if(actionDepot.contains(actionID)) {
     		return true;
     	}
         return false;
