@@ -1,5 +1,8 @@
 package xml;
 
+import action.ActionDepot;
+import action.ActionWait;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -34,6 +37,9 @@ public class Factory {
     protected static void createActionsAndMatrix(){
         createMatrix();
 
+        //action depot
+        ActionDepot actionDepot = ActionDepot.getActionDepot();
+
         for(Rule rule :rules) {
             ArrayList<Integer[]> actions = rule.getActions();
             ArrayList<Integer> actionIDsForRule = new ArrayList<>();
@@ -42,8 +48,23 @@ public class Factory {
                 //wait action
                 if(action.length == 1) {
                     //TODO create wait action and save it to action depot with id
-                    actionIDsForRule.add(actionID);
-                    actionID++;
+                    ActionWait waitAction  = new ActionWait(actionID, action[0]);
+
+                    // if the action depot returns a different id then the id in the action we have given the action
+                    // already exists and the one we gave was not added so we use the returned id instead and dont
+                    //have to increment the actionID
+                    int returnedID = actionDepot.addAction(waitAction);
+                    if(returnedID != actionID) {
+                        actionIDsForRule.add(actionID);
+
+                        // action was added with the given id
+                    } else {
+                        actionIDsForRule.add(actionID);
+                        actionID++;
+                    }
+
+
+
                 } else {
                 //normal action
                     //todo create normal action with id

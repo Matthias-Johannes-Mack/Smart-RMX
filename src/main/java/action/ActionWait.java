@@ -12,8 +12,9 @@ public class ActionWait extends Action {
 	private long waitTime;
 
 	// Get the constructor from the daddy
-	public ActionWait(long waitTime) {
+	public ActionWait(int ID, long waitTime) {
 		this.waitTime = waitTime;
+		this.ID = ID;
 	}
 
 	/**
