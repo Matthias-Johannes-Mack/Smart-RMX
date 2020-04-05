@@ -12,7 +12,7 @@ public class Bus {
      */
     public static final int NUMBER_SYSTEMADRESSEN = 112;
 
-    int busId;
+    public int busId;
 
     public byte[] systemadressen;
 

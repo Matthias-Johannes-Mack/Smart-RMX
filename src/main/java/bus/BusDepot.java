@@ -56,6 +56,9 @@ public class BusDepot {
             Bus newBus = new Bus(rmx);
             newBus.updateBusAdress(adrrmx, value);
             System.out.println("New Bus created: " + rmx + " and updated Systemadresse: " + adrrmx + " Value: " + value);
+
+            int busId = rmx;
+            busDepotMap.put(busId, newBus);
         } else {
             // only need to update
             Bus bus = getBus(rmx); // get Bus by Id

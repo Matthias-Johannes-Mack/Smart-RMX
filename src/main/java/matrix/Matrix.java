@@ -49,8 +49,10 @@ public class Matrix {
 			instance.createMatrix();
 			instance.busDepot = BusDepot.getBusDepot();
 		}
+
 		return instance;
 	}
+
 
 	// Singleton-Pattern END ________________________________________________
 	/**
@@ -64,12 +66,14 @@ public class Matrix {
 	/**
 	 * Method if changes happen, called by the schedular Indexs of rmx, adrRMX and
 	 * lastChanged start at 0!!!
-	 * 
+	 *
 	 * @param rmx
 	 * @param adrRMX
 	 * @param lastChanged
 	 */
-	private void check(byte rmx, byte adrRMX, byte lastChanged) {
+	public List<ActionSequence> check(byte rmx, byte adrRMX, byte lastChanged) {
+
+		List<ActionSequence> result = new ArrayList<>();
 
 		// rmx - 1 because rmx sends busRMX1 as 1
 		int bus = rmx - 1;
@@ -80,8 +84,10 @@ public class Matrix {
 
 		for (int i = valueBitSet.nextSetBit(0); i >= 0; i = valueBitSet.nextSetBit(i + 1)) {
 			// bit i in value is set => check this bit
-			calcPos(bus, systemadresse, i);
+			result.addAll(calcPos(bus, systemadresse, i));
 		}
+
+		return result;
 	}
 
 	/**
@@ -91,10 +97,9 @@ public class Matrix {
 	 * @param systemadresse
 	 * @param bit
 	 */
-	public static List<ActionSequence> calcPos(int bus, int systemadresse, int bit) {
+	public List<ActionSequence> calcPos(int bus, int systemadresse, int bit) {
 
 		List<ActionSequence> result = new ArrayList<>();
-
 		// ----------------------------
 		// For the row
 		// ----------------------------
@@ -119,7 +124,6 @@ public class Matrix {
 		for (int columnIndex = 0; columnIndex <= bitIndex; columnIndex++) {
 
 			if(columnIndex % NUMBER_BITS_PER_BUS == 0) {
-
 				// get current bus => + 1 since RMX starts counting at 1
 				currentBus = busDepot.getBus(((columnIndex / NUMBER_BITS_PER_BUS) + 1));
 			}
@@ -150,7 +154,7 @@ public class Matrix {
 		System.out.println("-------------COLUMN---------------");
 
 		// current bus of rowIndex (initially given bus by method)
-		currentBus = busDepot.getBus(bus);
+		currentBus = busDepot.getBus(bus+1); // +1 da in busdepot nach der Busid (nach RMX) gespeichert sind
 
 		int oldBitIndex = bitIndex;
 
@@ -158,10 +162,9 @@ public class Matrix {
 		int columnPointIndex = calcGauss(bitIndex) + oldBitIndex;
 
 		while (columnPointIndex < arraySize) {
-			System.out.println(columnPointIndex);
 
 			if(bitIndex % NUMBER_BITS_PER_BUS == 0) {
-
+				System.out.println("I BIM DRIN");
 				// get current bus => + 1 since RMX starts counting at 1
 				currentBus = busDepot.getBus(((bitIndex / NUMBER_BITS_PER_BUS) + 1));
 			}
@@ -219,7 +222,7 @@ public class Matrix {
 	 * @param conditionTwo
 	 * @param actionSequence
 	 */
-	public static void addAction(Integer[] conditionOne, Integer[] conditionTwo, ActionSequence actionSequence) {
+	public void addAction(Integer[] conditionOne, Integer[] conditionTwo, ActionSequence actionSequence) {
 		//format [bus][systemadresse][bit]
 
 		// rmx - 1 because rmx sends busRMX1 as 1

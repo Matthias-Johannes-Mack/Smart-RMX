@@ -1,16 +1,54 @@
 package matrix;
 
+
+import action.Action;
+import action.ActionMessage;
+import action.ActionSequence;
+import action.ActionWait;
+import bus.Bus;
+import bus.BusDepot;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class MatrixTest {
 
 	public static void main(String[] args) {
-//		System.out.println(Matrix.getMatrix().matrix.length);
-//		Object[] o = Matrix.getMatrix().matrix;
-//		System.out.println(o[3]);+
+
+		ArrayList<Action> actionList = new ArrayList<>();
+		actionList.add(new ActionWait(1,1000));
+
+		ActionSequence actionSequence = new ActionSequence(actionList);
 
 
-		System.out.println(Matrix.getSystemadressByBitIndex(1791));
+		// format <0x06><RMX><ADRRMX><VALUE>
+		byte[] message = new byte[]{6, 1, 0, 1};
+
+		BusDepot busDepot = BusDepot.getBusDepot();
+		busDepot.updateBus(message); // creates bus 1 and setzt bit 1 von systemadresse 1
+
+		Integer[] conditionOne = new Integer[]{1,0,0};
+		Integer[] conditionTwo = new Integer[]{1,0,0};
+
+		Matrix matrix = Matrix.getMatrix();
+		matrix.addAction(conditionOne, conditionTwo, actionSequence);
+		System.out.println("matrix: " + matrix.matrix[0].getActions());
+
+
+		List<ActionSequence> result = matrix.check((byte)1,(byte)0, (byte)1);
+
+		for (ActionSequence actionSequence1: result) {
+			List<Action> actions = actionSequence.getActions();
+
+			for (Action action: actions) {
+				if(action instanceof ActionWait) {
+					ActionWait waitaction = (ActionWait) action;
+					System.out.println(waitaction.getWait());
+				}
+			}
+		}
+
 
 	}
 
