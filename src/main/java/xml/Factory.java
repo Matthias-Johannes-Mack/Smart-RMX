@@ -6,7 +6,6 @@ import action.ActionMessage;
 import action.ActionWait;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Factory class for creating the actions matrix and filling the matrix
@@ -39,7 +38,6 @@ public class Factory {
 	 * creates Action and saves it to the action depot
 	 */
 	protected static void createActionsAndMatrix() {
-		createMatrix();
 
 		// action depot
 		ActionDepot actionDepot = ActionDepot.getActionDepot();
@@ -83,34 +81,12 @@ public class Factory {
 					}
 				}
 			}
+
 			// TODO add rule to Matrix
-			addRuleToMatrix(actionIDsForRule, rule.getConditionOne(), rule.getConditionTwo());
-		}
-	}
-
-	/**
-	 * creates the Matrix
-	 */
-	private static void createMatrix() {
-		// TODO
-	}
-
-	/**
-	 * Adds action ids of a rule to a field of the matrix
-	 * 
-	 * @param actionIDs    action ids to add
-	 * @param conditionOne first condition of the rule
-	 * @param conditionTwo second condition of the rule
-	 */
-	private static void addRuleToMatrix(ArrayList<Integer> actionIDs, Integer[] conditionOne, Integer[] conditionTwo) {
-		// conditionOne = conditionTwo -> rule is on diagonal
-		if (Arrays.equals(conditionOne, conditionTwo)) {
-			// TODO
-		} else {
-			// TODO
 
 		}
 	}
+
 
 	/**
 	 * method, that convert a IntegerArray in intArray

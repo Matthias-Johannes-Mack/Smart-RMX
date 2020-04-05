@@ -13,7 +13,7 @@ public class Matrix {
 	// (( n (n + 1)) / 2)
 	// Formel für Dreiecksmatrix = (((112*8 Bit) ((112*8 Bit) + 1 ) ) / 2 )
 	final static int arraySize = (((112 * 8) * ((112 * 8) + 1)) / 2);
-	public Actions[] matrix;
+	static public Actions[] matrix;
 	// Singleton-Pattern START -----------------------------------------
 
 	/**
@@ -48,7 +48,6 @@ public class Matrix {
 	private void createMatrix() {
 		// create the matrix with fixed arraySize
 		matrix = new Actions[arraySize];
-
 	}
 
 	/**
@@ -60,10 +59,7 @@ public class Matrix {
 	 * @param lastChanged
 	 */
 	private void check(byte rmx, byte adrRMX, byte lastChanged) {
-		int bus, systemadresse;
-		// rmx - 1 because rmx sends busRMX1 as 1
-		bus = rmx - 1;
-		systemadresse = adrRMX;
+
 		BitSet valueBitSet = BitSet.valueOf(new byte[] { lastChanged });
 		for (int i = valueBitSet.nextSetBit(0); i >= 0; i = valueBitSet.nextSetBit(i + 1)) {
 			// bit i in value is set
@@ -144,5 +140,42 @@ public class Matrix {
 	 */
 	public static int calcGauss(int n) {
 		return (((n * n) + n) / 2);
+	}
+
+	/**
+	 *
+	 * the passed Integer Arrays need to be two DIFFERENT references
+	 *
+	 * format of condition: [bus][systemadresse][bit]
+	 * @param conditionOne
+	 * @param conditionTwo
+	 * @param actions
+	 */
+	public static void addAction(Integer[] conditionOne, Integer[] conditionTwo, Actions actions) {
+		//format [bus][systemadresse][bit]
+
+		// rmx - 1 because rmx sends busRMX1 as 1
+		conditionOne[0] -= conditionOne[0];
+		conditionTwo[0] -= conditionTwo[0];
+
+		// calculate bernd value of both conditions
+		int berndOne = calcBerndFormula(conditionOne[0], conditionOne[1], conditionOne[2]);
+		int berndTwo = calcBerndFormula(conditionTwo[0], conditionTwo[1], conditionTwo[2]);
+
+
+		// calculation of the pointindex = gaussian value of bigger + bernd of smaller
+		int pointIndex;
+
+		if(berndOne >= berndTwo) {
+			pointIndex = calcGauss(berndOne) + berndTwo;
+
+		} else {
+			// berndTwo is bigger
+			pointIndex = calcGauss(berndTwo) + berndOne;
+		}
+
+		// add actions to calculated index
+		matrix[pointIndex] = actions;
+
 	}
 }
