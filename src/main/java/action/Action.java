@@ -5,12 +5,24 @@ package action;
  *
  * @author Matthias Mack 3316380
  */
-public class Action {
-	// Action [Bus, SystemAddress, Bit, Bitvalue]
-	protected int[] action;
+public abstract class Action {
 
-	// Factory sets the
-	public Action(int[] action) {
-		this.action = action;
+	// id of the action
+	protected int ID;
+
+	// get ID
+	public int getID() {
+		return ID;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		// change equals to match ID
+		if (this == obj)
+			return true;
+		if (obj == null || getClass() != obj.getClass())
+			return false;
+		Action action = (Action) obj;
+		return ID == action.ID;
 	}
 }

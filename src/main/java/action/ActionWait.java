@@ -7,9 +7,11 @@ package action;
  * @author Matthias Mack 3316380
  */
 public class ActionWait extends Action {
+	private long waitTime;
+
 	// Get the constructor from the daddy
-	public ActionWait(int[] action) {
-		super(action);
+	public ActionWait(long waitTime) {
+		this.waitTime = waitTime;
 	}
 
 	/**
@@ -17,7 +19,7 @@ public class ActionWait extends Action {
 	 * 
 	 * @return int array
 	 */
-	public int[] getWait() {
-		return action;
+	public long getWait() {
+		return waitTime;
 	}
 }
