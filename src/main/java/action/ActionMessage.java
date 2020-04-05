@@ -1,5 +1,7 @@
 package action;
 
+import java.util.Arrays;
+
 /**
  * Class that extends the Action and is for the Action message
  *
@@ -22,4 +24,19 @@ public class ActionMessage extends Action {
 	public int[] getActionMesssage() {
 		return action;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+
+		ActionMessage that = (ActionMessage) o;
+		return Arrays.equals(action, that.action);
+	}
+
 }

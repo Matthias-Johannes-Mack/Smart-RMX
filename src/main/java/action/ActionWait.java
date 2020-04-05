@@ -1,5 +1,7 @@
 package action;
 
+import java.util.Objects;
+
 /**
  * 
  * Class for the wait Action
@@ -22,4 +24,18 @@ public class ActionWait extends Action {
 	public long getWait() {
 		return waitTime;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()){
+			return false;
+		}
+
+		ActionWait that = (ActionWait) o;
+		return waitTime == that.waitTime;
+	}
+
 }

@@ -47,16 +47,22 @@ public class ActionDepot {
     public synchronized Action getAction(int actionID) {
         return actionDepot.get(actionID);
     }
+
     /**
-     * 
-     * @param actionID
-     * @return
+     * checks if actions exists in the ActionDepot
+     * @param action
+     * @return id of action, -1 if action does not exist
      */
-    private synchronized boolean actionExists(int[] action) {
-    	if(actionDepot.contains(actionID)) {
-    		return true;
-    	}
-        return false;
+    private synchronized int actionExists(Action action) {
+
+        // index of action in actionDepot
+        int index = -1;
+
+        if(actionDepot.contains(action)){
+            index = actionDepot.indexOf(action);
+        }
+
+    	return index;
     }
 
     public synchronized void removeAction(int actionID) {
@@ -65,5 +71,22 @@ public class ActionDepot {
 
     public synchronized void clearTrain() {
         actionDepot.clear();
+    }
+
+    /**
+     * adds an action to the ActionDepot.If the action already exists (specified by Action.equal()) returns id of existing action and
+     * does not add given action again. This ensures every action only exists exactly one time in the ActionDepot.
+     *
+     * @param action a action to add
+     * @return index of the action
+     */
+    public synchronized int addAction(Action action) {
+
+        if(!actionDepot.contains(action)){
+            //action doesnt exist
+            actionDepot.add(action); // add action
+        }
+
+        return actionDepot.indexOf(action);
     }
 }
