@@ -39,5 +39,4 @@ public class ByteUtil {
         return (value & (1 << bitIndex)) != 0;
     }
 
-
 }

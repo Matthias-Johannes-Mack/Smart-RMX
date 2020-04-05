@@ -1,19 +1,25 @@
 package bus;
 
+import java.util.BitSet;
+
 public class Bus {
 
-    //TODO für den Schedular muss ich mir für jede Systemadresse merken was sich zuletzt geänder hat, sodass der schedular nur diese
-    // bits in der Tabelle prüfen muss. Evtl. für zwei Arrays mit je 111 Plätzen, einmal der allgemeine Zustand der 111 Systemadressen
-    // am einfachsten direkt den byte.
-    // -- dann noch für jede Systemadresse im 2. Array die zuletzt geänderten bits als byte (die muss schedular dann quasi nur
-    // durchgehen).
-    // Wenn sich werte ggü des letzte mal nicht verändert (also nur von 1 auf 0 geändert werden - wir beachten nur änderungen von Bus
-    // von 0 auf 1) byte am besten komplett 0, d.h. schedular wird dann auch nicht über Tabelle laufen und was checken.
-    // wichtig: bei initialisierung kann es sein das bits schon gesetzt sind, also müsste am anfang gegen 00000000 verglichen werden oder?
-    // evtl. mit BitSet XOR? aber muss drauf achten das nur änderungen von 0 auf 1 beachtet werden
+    /**
+     * amount of systemadressen in each bus
+     * RMX-PC-Zentrale: 112 adressen (index 0 to 111)
+     */
+    public static final int NUMBER_SYSTEMADRESSEN = 112;
 
-    public Bus (byte RMX) {
+    int busId;
 
+    public byte[] systemadressen;
+
+    public byte[] lastChanges;
+
+    public Bus (byte rmx) {
+        busId = rmx;
+        systemadressen = new byte[NUMBER_SYSTEMADRESSEN]; // initial all values are 0
+        lastChanges = new byte[NUMBER_SYSTEMADRESSEN]; // initial all values are 0
     }
 
     /**
@@ -22,7 +28,33 @@ public class Bus {
      * @param value
      */
     public void updateBusAdress(byte adrrmx, byte value) {
-        //TODO
+
+        BitSet currentBitSet = BitSet.valueOf(new byte[] {systemadressen[adrrmx]});
+        BitSet valueBitSet = BitSet.valueOf(new byte[]{value});
+
+        BitSet changesBitSet = new BitSet(); // => 00000000
+
+        // only iterates over set bits
+        boolean somethingChanged = false;
+        for (int i = valueBitSet.nextSetBit(0); i >= 0; i = valueBitSet.nextSetBit(i+1)) {
+            // bit i in value is set
+            if(currentBitSet.get(i) == false) {
+                // a change has happend
+                changesBitSet.set(i);
+                somethingChanged = true;
+            }
+        }
+
+        // update lastChanges
+        if(somethingChanged){
+            byte[] changes = changesBitSet.toByteArray();
+            lastChanges[adrrmx] = changes[0];
+        } else {
+            lastChanges[adrrmx] = 0; // nothing changed => lastChanges 00000000
+        }
+
+        // update current value
+        systemadressen[adrrmx] = value;
     }
 
     /**
@@ -32,7 +64,7 @@ public class Bus {
      * @return
      */
     public byte getChanges(byte adrrmx) {
-        // TODO
-        return 1;
+        return lastChanges[adrrmx];
     }
+
 }
