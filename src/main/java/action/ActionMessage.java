@@ -10,4 +10,7 @@ public class ActionMessage extends Action{
 		super(action);
 	}
 	
+	public int[] getActionMesssage() {
+		return action;
+	}
 }

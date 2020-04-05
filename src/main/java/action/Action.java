@@ -6,20 +6,11 @@ package action;
  * @author Matthias Mack 3316380
  */
 public class Action {
-	// Array of integers
-	private int[] action;
+	// Action [Bus, SystemAddress, Bit, Bitvalue]
+	protected int[] action;
 
 	// Factory sets the
 	public Action(int[] action) {
 		this.action = action;
-	}
-
-	/**
-	 * returns the action
-	 * 
-	 * @return
-	 */
-	public int[] getAction() {
-		return action;
 	}
 }
