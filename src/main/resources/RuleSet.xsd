@@ -1,0 +1,98 @@
+<?xml version = "1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  elementFormDefault="qualified">
+  <xs:element name="Ruleset">
+    <xs:complexType>
+      <xs:sequence minOccurs="1" maxOccurs="unbounded">
+        <xs:element name="Rule">
+          <xs:complexType>
+            <xs:sequence>
+
+              <xs:element name="Condition" minOccurs="2" maxOccurs="2">
+                <xs:complexType>
+                  <xs:sequence minOccurs="1" maxOccurs="1">
+                    <xs:element name="Bus">
+                      <xs:simpleType>
+                        <xs:restriction base = "xs:integer">
+                          <xs:minInclusive value = "1"/>
+                          <xs:maxInclusive value = "4"/>
+                        </xs:restriction>
+                      </xs:simpleType>
+                    </xs:element>
+                    <xs:element name="SystemAddress">
+                      <xs:simpleType>
+                        <xs:restriction base = "xs:integer">
+                          <xs:minInclusive value = "0"/>
+                          <xs:maxInclusive value = "111"/>
+                        </xs:restriction>
+                      </xs:simpleType>
+                    </xs:element>
+                    <xs:element name="Bit">
+                      <xs:simpleType>
+                        <xs:restriction base = "xs:integer">
+                          <xs:minInclusive value = "0"/>
+                          <xs:maxInclusive value = "7"/>
+                        </xs:restriction>
+                      </xs:simpleType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+
+              <xs:sequence minOccurs="1" maxOccurs="unbounded">
+
+                <xs:element name="Wait" minOccurs="0" maxOccurs="1">
+                  <xs:simpleType>
+                    <xs:restriction base = "xs:integer">
+                      <xs:minInclusive value = "0"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:element>
+
+                <xs:element name="Action" minOccurs="1" maxOccurs="unbounded">
+                  <xs:complexType>
+                    <xs:sequence minOccurs="1" maxOccurs="unbounded">
+                      <xs:element name="Bus">
+                        <xs:simpleType>
+                          <xs:restriction base = "xs:integer">
+                            <xs:minInclusive value = "0"/>
+                            <xs:maxInclusive value = "3"/>
+                          </xs:restriction>
+                        </xs:simpleType>
+                      </xs:element>
+                      <xs:element name="SystemAddress">
+                        <xs:simpleType>
+                          <xs:restriction base = "xs:integer">
+                            <xs:minInclusive value = "0"/>
+                            <xs:maxInclusive value = "111"/>
+                          </xs:restriction>
+                        </xs:simpleType>
+                      </xs:element>
+                      <xs:element name="Bit">
+                        <xs:simpleType>
+                          <xs:restriction base = "xs:integer">
+                            <xs:minInclusive value = "0"/>
+                            <xs:maxInclusive value = "7"/>
+                          </xs:restriction>
+                        </xs:simpleType>
+                      </xs:element>
+                      <xs:element name="BitValue">
+                        <xs:simpleType>
+                          <xs:restriction base = "xs:integer">
+                            <xs:minInclusive value = "0"/>
+                            <xs:maxInclusive value = "1"/>
+                          </xs:restriction>
+                        </xs:simpleType>
+                      </xs:element>
+                    </xs:sequence>
+                  </xs:complexType>
+                </xs:element>
+
+              </xs:sequence>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
