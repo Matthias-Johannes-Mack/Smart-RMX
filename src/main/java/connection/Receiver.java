@@ -2,6 +2,10 @@ package connection;
 
 
 
+import Utilities.ByteUtil;
+import bus.BusDepot;
+import schedular.Schedular;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -71,7 +75,7 @@ class Receiver {
 
     /**
      * Receives Message from server and returns message without the RMXnet Headbyte (HEAD) and Number of Bytes (COUNT)
-     *
+     * <p>
      * RMXnet message format:
      * HEAD-COUNT-OPCODE-DATA
      *
@@ -104,7 +108,7 @@ class Receiver {
     /**
      * Processes message (without HEAD and COUNT) in dependence of the OPCODE. Sets nextRequestAllowed
      * in SocketConnecter to true, if message is an acknoledgement.
-     *
+     * <p>
      * RMXnet OPCODE (receiving):
      * - 0 (0x00) positive acknowledgement
      * - 1 (0x01) negative acknowledgement
@@ -128,7 +132,7 @@ class Receiver {
             // first byte in message is OPCODE
             opcode = message[0];
 
-            switch(opcode) {
+            switch (opcode) {
                 case 0: // 0x00 - positive acknowledgement
 
                     if (message[1] == 0) {
@@ -180,8 +184,7 @@ class Receiver {
 
     /**
      * processsing a negative acknowledgment OPCODE 0x01. Prints error message on console.
-     *
-     * format <0x01><0x0#>
+     * format <0x01><0x0?>
      *
      * @param message a message to process
      */
@@ -210,24 +213,51 @@ class Receiver {
     }
 
     /**
+     * processsing state info OPCODE 0x04
+     * format <0x04><STATUS>
      *
-     * @param message
+     * @param message a message to process
      */
     private static void process0x04(byte[] message) {
-    	// reset server connection
-    	SocketConnector.setLastServerResponse(System.currentTimeMillis());
+        // reset server connection
+        SocketConnector.setLastServerResponse(System.currentTimeMillis());
+
+        if (Schedular.INIT_SUCESSFULL.get() == false) {
+            // check initialization
+            byte status = message[1];
+
+            // checks if bit 5 und 6 is set in Status => initialisation sucessfull
+            if (ByteUtil.bitIsSet(status, 5) && ByteUtil.bitIsSet(status, 6)) {
+                System.out.println("----INIT SUCESFULLL----");
+
+                Schedular.INIT_SUCESSFULL.set(true);
+            }
+        }
     }
 
     /**
+     * processsing rmx-adress value (RMX-1 Bus) OPCODE 0x06. Forwards message to schedular
      *
-     * @param message
+     * Example Value 1 from RMX-1 Adress 98 Value 1
+     * <0x06><0x01><0x62><0x01>
+     *
+     * @param message a message to process
      */
     private static void process0x06(byte[] message) {
 
+        if (Schedular.INIT_SUCESSFULL.get()) { // true -- init successfull
+            // forward message to schedular
+            Schedular.getSchedular().addMessage(message);
+
+        } else { // false -- init not successfull
+
+            // updates bus -> creates if not existing
+            BusDepot.getBusDepot().updateBus(message);
+        }
+
     }
 
     /**
-     *
      * @param message
      */
     private static void process0x08(byte[] message) {
@@ -235,7 +265,6 @@ class Receiver {
     }
 
     /**
-     *
      * @param message
      */
     private static void process0x20(byte[] message) {
@@ -243,7 +272,7 @@ class Receiver {
     }
 
     /**
-     * processsing lok-info speed and direction OPCODE 0x24. Forwards message to schedular
+     * processsing lok-info speed and direction OPCODE 0x24.
      * format <0x24><ADRH><ADRL><SPEED><DIR>
      *
      * @param message a message to process
@@ -253,13 +282,13 @@ class Receiver {
     }
 
     /**
-     * processsing lok-info functions (f0 - f16) OPCODE 0x28. Forwards message to schedular
+     * processsing lok-info functions (f0 - f16) OPCODE 0x28.
      * format <0x28><ADRH><ADRL><F0F7><F8F15><F16F23>
      *
      * @param message a message to process
      */
     private static void process0x28(byte[] message) {
-        
+
     }
 
 
