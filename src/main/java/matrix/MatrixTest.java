@@ -6,9 +6,9 @@ public class MatrixTest {
 
 	public static void main(String[] args) {
 //		System.out.println(Matrix.getMatrix().matrix.length);
-		for(Object o : Matrix.getMatrix().matrix) {
-			
-		}
+//		Object[] o = Matrix.getMatrix().matrix;
+//		System.out.println(o[3]);
+		Matrix.calcPos(0, 0, 4);
 	}
 
 }
