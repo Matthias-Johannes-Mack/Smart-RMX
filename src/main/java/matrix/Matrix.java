@@ -102,9 +102,11 @@ public class Matrix {
 		// Gausche' Summenformel (Startpunkt + 1) + startpunkt; startpunkt++ in einer
 		// for-loop bis <= max index
 		int columnPointIndex;
+		int oldBitIndex = bitIndex;
 		do {
-			startPoint++;
-			columnPointIndex = calcGauss(startPoint) + bitIndex;
+			bitIndex++;
+			columnPointIndex = calcGauss(bitIndex) + oldBitIndex;
+			
 			System.out.println(columnPointIndex);
 		} while (columnPointIndex < arraySize);
 		
