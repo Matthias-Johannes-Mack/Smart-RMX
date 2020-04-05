@@ -83,32 +83,44 @@ public class Matrix {
 		// ----------------------------
 		// For the row
 		// ----------------------------
+		System.out.println("-------------ROW---------------");
+
 
 		// formula of Bernd Schneider
 		// bitIndex = bus + systemadresse * 8 (bit) + gesetzter Bit (i)
 		// bitIndex -> die Zeile
 		int bitIndex = calcBerndFormula(bus, systemadresse, bit);
+
 		// Gaussche' Summenformel
 		// index of first field in row
 		int startPoint = calcGauss(bitIndex);
 		// Bernds-Formel to the right
 		// loop through entire row to the right
-		for (int i = 0; i < bitIndex; i++) {
-			// TODO check all fields of row
+		for (int i = 0; i <= bitIndex; i++) {
+			// TODO check all fields of row mit startpoint
+			System.out.println(startPoint);
+			startPoint++; // move to the right in the row
 		}
 		// ----------------------------
 		// For the column
 		// ----------------------------
 		// Gausche' Summenformel (Startpunkt + 1) + startpunkt; startpunkt++ in einer
 		// for-loop bis <= max index
-		int columnPointIndex;
+
+		System.out.println("-------------COLUMN---------------");
+
 		int oldBitIndex = bitIndex;
-		do {
+
+		bitIndex++;
+		int columnPointIndex = calcGauss(bitIndex) + oldBitIndex;
+
+		while (columnPointIndex < arraySize) {
+			System.out.println(columnPointIndex);
+
 			bitIndex++;
 			columnPointIndex = calcGauss(bitIndex) + oldBitIndex;
-			
-			System.out.println(columnPointIndex);
-		} while (columnPointIndex < arraySize);
+			//TODO check field
+		}
 		
 	}
 
@@ -125,11 +137,9 @@ public class Matrix {
 	}
 
 	/**
-	 * Method, that calculates Bernds Formula
-	 * 
-	 * @param bus
-	 * @param systemadresse
-	 * @param bit
+	 * calculates the gaussian sum forumla
+	 *
+	 * @param n
 	 * @return
 	 */
 	public static int calcGauss(int n) {
