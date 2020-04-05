@@ -8,7 +8,7 @@ import java.util.Arrays;
  * @author Matthias Mack 3316380
  */
 public class ActionMessage extends Action {
-	//
+	// int array with action
 	private int[] action;
 
 	// get the constructor from the daddy

@@ -1,5 +1,7 @@
 package action;
 
+import java.util.Arrays;
+
 public class TestActions {
 
     public static void main(String[] args) {
@@ -11,9 +13,9 @@ public class TestActions {
         ActionMessage action2 = new ActionMessage(2, message2);
         ActionMessage action3 = new ActionMessage(3, message);
 
-        ActionWait actionWait = new ActionWait(100);
-        ActionWait actionWait2 = new ActionWait(200);
-        ActionWait actionWait3 = new ActionWait(100);
+        ActionWait actionWait = new ActionWait(1, 100);
+        ActionWait actionWait2 = new ActionWait(2, 200);
+        ActionWait actionWait3 = new ActionWait(3, 100);
 
         ActionDepot actionDepot = ActionDepot.getActionDepot();
 
@@ -21,6 +23,7 @@ public class TestActions {
         System.out.println(actionDepot.addAction(actionWait));
         System.out.println(actionDepot.addAction(action3));
         System.out.println(actionDepot.addAction(actionWait3));
-
+    	
     }
+    
 }
