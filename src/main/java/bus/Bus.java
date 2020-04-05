@@ -1,6 +1,19 @@
 package bus;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 public class Bus {
+
+    /**
+     * amount of systemadressen in each bus
+     * RMX-PC-Zentrale: 112 adressen (index 0 to 111)
+     */
+    public static final int NUMBER_SYSTEMADRESSEN = 112;
+
+    int busId;
 
     //TODO für den Schedular muss ich mir für jede Systemadresse merken was sich zuletzt geänder hat, sodass der schedular nur diese
     // bits in der Tabelle prüfen muss. Evtl. für zwei Arrays mit je 111 Plätzen, einmal der allgemeine Zustand der 111 Systemadressen
@@ -12,8 +25,14 @@ public class Bus {
     // wichtig: bei initialisierung kann es sein das bits schon gesetzt sind, also müsste am anfang gegen 00000000 verglichen werden oder?
     // evtl. mit BitSet XOR? aber muss drauf achten das nur änderungen von 0 auf 1 beachtet werden
 
-    public Bus (byte RMX) {
+    byte[] systemadressen;
 
+    byte[] lastChanges;
+
+    public Bus (byte rmx) {
+        busId = rmx;
+        systemadressen = new byte[NUMBER_SYSTEMADRESSEN]; // initial all values are 0
+        lastChanges = new byte[NUMBER_SYSTEMADRESSEN]; // initial all values are 0
     }
 
     /**
@@ -22,6 +41,9 @@ public class Bus {
      * @param value
      */
     public void updateBusAdress(byte adrrmx, byte value) {
+
+        byte current = systemadressen[adrrmx];
+
         //TODO
     }
 
@@ -32,7 +54,7 @@ public class Bus {
      * @return
      */
     public byte getChanges(byte adrrmx) {
-        // TODO
-        return 1;
+        return lastChanges[adrrmx];
     }
+
 }
