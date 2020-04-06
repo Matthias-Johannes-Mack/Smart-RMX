@@ -100,7 +100,7 @@ public class BusDepot {
         return busDepotMap.get(busId);
     }
 
-    private synchronized boolean busExists(int busId) {
+    public synchronized boolean busExists(int busId) {
         return busDepotMap.containsKey(busId);
     }
 

@@ -3,6 +3,7 @@ package schedular;
 import bus.BusDepot;
 import connection.ConnectionConstants;
 import connection.Sender;
+import connection.SocketConnector;
 import matrix.Matrix;
 
 import java.util.*;
@@ -40,9 +41,8 @@ public class Schedular {
 	// NOT_BUSY -> Schedular idle
 	// WAIT -> Schedular waits for confirmation
 	// POSITIVE -> Recived positive acknowledgement
-	// NEGATIVE -> Recived negative acknowledgement
 	public enum updateConfirmed {
-		NOT_BUSY, WAIT, POSITIVE, NEGATIVE
+		NOT_BUSY, WAIT, POSITIVE
 	}
 
 	// status variable
@@ -173,27 +173,27 @@ public class Schedular {
 	 */
 	private void scheduleActionSequence(ActionSequence actionSequence) {
 		for (Action a : actionSequence.getActions()) {
+			// TODO add next message if bus is updated by previous message
 			if (a instanceof ActionMessage) {
 				ActionMessage ac = (ActionMessage) a;
-				Sender.addMessageQueue(buildResponse(ac.getActionMesssage()));
-				status = updateConfirmed.WAIT;
-				// while confirmation is not positive / negative loop
-				while (status.equals(updateConfirmed.WAIT)) {
-					// wait
-
-					try {
-						Thread.sleep(5000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+				// actionArr with the action message
+				int[] actionArr = ac.getActionMesssage();
+				// need to check if bus exists otherwise the connection will be killed
+				if (busDepot.busExists(actionArr[0])) {
+					Sender.addMessageQueue(buildResponse(ac.getActionMesssage()));
+					status = updateConfirmed.WAIT;
+					// while confirmation is not positive / negative loop
+					while (status.equals(updateConfirmed.WAIT)) {
 					}
-					System.out.println("Ich warte...");
+					// if status positive
+					if (status.equals(updateConfirmed.POSITIVE)) {
+						// add a fake message
+						addMessage(buildRmx0x06Message(ac.getActionMesssage()));
+					}
+					status = updateConfirmed.NOT_BUSY;
+				} else {
+					System.out.println("-> Adress bus " + actionArr[0] + " from rule does not exist!");
 				}
-				// switch the status
-				if (status.equals(updateConfirmed.POSITIVE)) {
-					// add a fake message
-					addMessage(buildRmx0x06Message(ac.getActionMesssage()));
-				}
-				status = updateConfirmed.NOT_BUSY;
 			} else {
 				// TODO wait Message!
 //				/*
@@ -250,7 +250,7 @@ public class Schedular {
 		// Opcode
 		messageArr[2] = 5;
 		// bus <rmx>
-		messageArr[3] = 5;
+		messageArr[3] = (byte) intArr[0];
 		// <addrRMX>
 		messageArr[4] = (byte) intArr[1];
 		// value
