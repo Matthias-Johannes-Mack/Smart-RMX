@@ -36,7 +36,7 @@ public class Factory {
 	/**
 	 * creates Action and saves it to the action depot
 	 */
-	protected static void createActionsAndMatrix() {
+	public static void createActionsAndMatrix() {
 
 		// action depot
 		ActionDepot actionDepot = ActionDepot.getActionDepot();

@@ -20,7 +20,7 @@ import java.util.Scanner;
  *
  * @author Matthias Mack 3316380
  */
-class XML_IO {
+public class XML_IO {
 
 	// component for the file dialog
 	private static Component aComponent;
