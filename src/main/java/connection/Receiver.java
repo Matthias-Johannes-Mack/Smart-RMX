@@ -251,6 +251,7 @@ class Receiver {
 	private static void process0x06(byte[] message) {
 
 		if (Schedular.INIT_SUCESSFULL.get()) { // true -- init successfull
+			
 			// forward message to schedular
 			Schedular.getSchedular().addMessage(message);
 			System.out.println("Message zu Schedular hinzugefügt!");
