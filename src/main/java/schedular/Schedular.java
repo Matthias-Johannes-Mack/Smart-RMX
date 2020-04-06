@@ -36,6 +36,15 @@ public class Schedular {
 
 	private static BusDepot busDepot;
 
+	// enum that handles the confirmed Update
+	public enum updateConfirmed {
+		WAIT, POSITIVE, NEGATIVE
+	}
+
+	// status variable
+	public volatile updateConfirmed status = updateConfirmed.WAIT;
+
+	// TODO check thread savety!
 	/**
 	 * private constructor to prevent instantiation
 	 */
@@ -147,7 +156,6 @@ public class Schedular {
 						}
 					}
 
-
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -162,7 +170,21 @@ public class Schedular {
 	private void scheduleActionSequence(ActionSequence actionSequence) {
 		for (Action a : actionSequence.getActions()) {
 			if (a instanceof ActionMessage) {
-				Sender.addMessageQueue(buildRmxMessage(((ActionMessage) a).getActionMesssage()));
+				ActionMessage ac = (ActionMessage) a;
+				Sender.addMessageQueue(buildResponse(ac.getActionMesssage()));
+				// while confirmation is not positive / negative loop
+				while (status.equals(updateConfirmed.WAIT)) {
+					// wait
+				}
+				// switch the status
+				switch (status) {
+				case POSITIVE:
+					// add a fake message
+					addMessage(buildRmx0x06Message(ac.getActionMesssage()));
+					break;
+				case NEGATIVE:
+					break;
+				}
 			} else {
 				// TODO wait Message!
 //				/*
@@ -175,7 +197,31 @@ public class Schedular {
 //
 //				// does nothing if no bit has changed
 			}
+
 		}
+	}
+
+	/**
+	 * Method that converts the int Array of the action to a message
+	 * 
+	 * [BUS](1-4) [SystemAddresse](0-111) [Bit](0-7) [BitValue] (0-1) format
+	 * <0x06><RMX><ADRRMX><VALUE>
+	 * 
+	 * @param intArr
+	 * @return
+	 */
+	private byte[] buildRmx0x06Message(int[] intArr) {
+		byte[] messageArr = new byte[4];
+		// Opcode
+		messageArr[0] = 6;
+		// bus <rmx>
+		messageArr[1] = (byte) intArr[0];
+		// <addrRMX>
+		messageArr[2] = (byte) intArr[1];
+		// value
+		Byte currentbyte = busDepot.getBus(intArr[0]).getCurrentByte(intArr[1]);
+		messageArr[3] = (byte) ByteUtil.setBitAtPos(currentbyte, intArr[2], intArr[3]);
+		return messageArr;
 	}
 
 	/**
@@ -186,7 +232,7 @@ public class Schedular {
 	 * @param intArr
 	 * @return
 	 */
-	private byte[] buildRmxMessage(int[] intArr) {
+	private byte[] buildResponse(int[] intArr) {
 		byte[] messageArr = new byte[6];
 		// headbyte
 		messageArr[0] = ConnectionConstants.RMX_HEAD;
