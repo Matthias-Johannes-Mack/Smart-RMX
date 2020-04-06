@@ -5,6 +5,7 @@ package connection;
 import Utilities.ByteUtil;
 import bus.BusDepot;
 import schedular.Schedular;
+import schedular.Schedular.updateConfirmed;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -138,6 +139,11 @@ class Receiver {
                     if (message[1] == 0) {
                         // "final" positive acknowledgement
                         SocketConnector.nextRequestAllowed.set(true);
+                        // if Schedular waits for confirmation
+                        if(Schedular.getSchedular().getStatus().equals(updateConfirmed.WAIT)) {
+                        	// set it to positive
+                        	Schedular.getSchedular().setStatus(updateConfirmed.POSITIVE);
+                        }
                     }
 
                     // else message[1] == 0x01: positive acknowledgment "Bearbeitung lÃ¤uft"
@@ -248,6 +254,7 @@ class Receiver {
         if (Schedular.INIT_SUCESSFULL.get()) { // true -- init successfull
             // forward message to schedular
             Schedular.getSchedular().addMessage(message);
+            System.out.println("Message zu Schedular hinzugefügt!");
 
         } else { // false -- init not successfull
 

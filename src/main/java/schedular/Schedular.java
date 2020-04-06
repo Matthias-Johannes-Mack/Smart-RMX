@@ -37,12 +37,16 @@ public class Schedular {
 	private static BusDepot busDepot;
 
 	// enum that handles the confirmed Update
+	// NOT_BUSY -> Schedular idle
+	// WAIT -> Schedular waits for confirmation
+	// POSITIVE -> Recived positive acknowledgement
+	// NEGATIVE -> Recived negative acknowledgement
 	public enum updateConfirmed {
-		WAIT, POSITIVE, NEGATIVE
+		NOT_BUSY, WAIT, POSITIVE, NEGATIVE
 	}
 
 	// status variable
-	public volatile updateConfirmed status = updateConfirmed.WAIT;
+	private updateConfirmed status = updateConfirmed.NOT_BUSY;
 
 	// TODO check thread savety!
 	/**
@@ -141,7 +145,7 @@ public class Schedular {
 					// if queue is empty, the thread blocks (!no active waiting) and waits for an
 					// message to become available
 					byte[] message = messageQueue.take();
-
+					System.out.println("Hab was rausgenommen!");
 					byte changes = BusDepot.getBusDepot().getChanges(message);
 
 					/**
@@ -172,19 +176,18 @@ public class Schedular {
 			if (a instanceof ActionMessage) {
 				ActionMessage ac = (ActionMessage) a;
 				Sender.addMessageQueue(buildResponse(ac.getActionMesssage()));
+				status = updateConfirmed.WAIT;
 				// while confirmation is not positive / negative loop
 				while (status.equals(updateConfirmed.WAIT)) {
 					// wait
+					System.out.println("Ich warte...");
 				}
 				// switch the status
-				switch (status) {
-				case POSITIVE:
+				if (status.equals(updateConfirmed.POSITIVE)) {
 					// add a fake message
 					addMessage(buildRmx0x06Message(ac.getActionMesssage()));
-					break;
-				case NEGATIVE:
-					break;
 				}
+				status = updateConfirmed.NOT_BUSY;
 			} else {
 				// TODO wait Message!
 //				/*
@@ -241,13 +244,31 @@ public class Schedular {
 		// Opcode
 		messageArr[2] = 5;
 		// bus <rmx>
-		messageArr[3] = (byte) intArr[0];
+		messageArr[3] = 5;
 		// <addrRMX>
 		messageArr[4] = (byte) intArr[1];
 		// value
 		Byte currentbyte = busDepot.getBus(intArr[0]).getCurrentByte(intArr[1]);
 		messageArr[5] = (byte) ByteUtil.setBitAtPos(currentbyte, intArr[2], intArr[3]);
 		return messageArr;
+	}
+
+	/**
+	 * Getter Status
+	 * 
+	 * @return
+	 */
+	public synchronized updateConfirmed getStatus() {
+		return status;
+	}
+
+	/**
+	 * Setter Status
+	 * 
+	 * @param status
+	 */
+	public synchronized void setStatus(updateConfirmed status) {
+		this.status = status;
 	}
 
 	private class SchedularTimerTask implements Runnable {
