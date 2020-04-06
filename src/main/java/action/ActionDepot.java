@@ -51,11 +51,11 @@ public class ActionDepot {
 	 * @param action
 	 * @return Returns the action, -1 if action does not exist
 	 */
-	public synchronized Action actionExists(Action action) {
-		int index;
+	public synchronized Action addAction(Action action) {
+
 		// if action exists return the action
 		if (actionDepot.contains(action)) {
-			index = actionDepot.indexOf(action);
+			int index = actionDepot.indexOf(action);
 			return actionDepot.get(index);
 		}
 		// if not add action to the depot & return action
@@ -77,24 +77,5 @@ public class ActionDepot {
 	 */
 	public synchronized void clearActionDepot() {
 		actionDepot.clear();
-	}
-
-	/**
-	 * adds an action to the ActionDepot.If the action already exists (specified by
-	 * Action.equal()) returns id of existing action and does not add given action
-	 * again. This ensures every action only exists exactly one time in the
-	 * ActionDepot.
-	 *
-	 * @param action a action to add
-	 * @return index of the action
-	 */
-	public synchronized int addAction(Action action) {
-
-		if (!actionDepot.contains(action)) {
-			// action doesnt exist
-			actionDepot.add(action); // add action
-		}
-
-		return actionDepot.indexOf(action);
 	}
 }
