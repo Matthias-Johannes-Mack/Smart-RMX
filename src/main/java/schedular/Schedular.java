@@ -180,6 +180,12 @@ public class Schedular {
 				// while confirmation is not positive / negative loop
 				while (status.equals(updateConfirmed.WAIT)) {
 					// wait
+
+					try {
+						Thread.sleep(5000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 					System.out.println("Ich warte...");
 				}
 				// switch the status
