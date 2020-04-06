@@ -53,7 +53,6 @@ public class Matrix {
 		return instance;
 	}
 
-
 	// Singleton-Pattern END ________________________________________________
 	/**
 	 * Method, that creates the matrix
@@ -62,7 +61,14 @@ public class Matrix {
 		// create the matrix with fixed arraySize
 		matrix = new ActionSequence[arraySize];
 	}
-
+	/**
+	 * Method, that checks all conditions
+	 * @return
+	 */
+	public List<ActionSequence> checkAllConditions() {
+		return null;
+	}
+	
 	/**
 	 * Method if changes happen, called by the schedular Indexs of rmx, adrRMX and
 	 * lastChanged start at 0!!!
@@ -93,7 +99,7 @@ public class Matrix {
 	/**
 	 * Method, that calculates the position of a specified element
 	 * 
-	 * @param bus includes bus id of RMX bus -1
+	 * @param bus           includes bus id of RMX bus -1
 	 * @param systemadresse
 	 * @param bit
 	 */
@@ -104,7 +110,6 @@ public class Matrix {
 		// For the row
 		// ----------------------------
 		System.out.println("-------------ROW---------------");
-
 
 		// formula of Bernd Schneider
 		// bitIndex = bus + systemadresse * 8 (bit) + gesetzter Bit (i)
@@ -117,13 +122,14 @@ public class Matrix {
 
 		// current bus bits are checked
 		Bus currentBus = null;
-		//TODO refactor das hier net mit null gemacht wird (wird zwar direkt in if gesprungen, muss aber initialisiert sein)
+		// TODO refactor das hier net mit null gemacht wird (wird zwar direkt in if
+		// gesprungen, muss aber initialisiert sein)
 
 		// Bernds-Formel to the right
 		// loop through entire row to the right
 		for (int columnIndex = 0; columnIndex <= bitIndex; columnIndex++) {
 
-			if(columnIndex % NUMBER_BITS_PER_BUS == 0) {
+			if (columnIndex % NUMBER_BITS_PER_BUS == 0) {
 				// get current bus => + 1 since RMX starts counting at 1
 				currentBus = busDepot.getBus(((columnIndex / NUMBER_BITS_PER_BUS) + 1));
 			}
@@ -131,11 +137,11 @@ public class Matrix {
 			// systemadress of current bitIndex that is being checked
 			int systemadress_checkedBit = getSystemadressByBitIndex(columnIndex);
 
-			if(currentBus.isBitSet(systemadress_checkedBit, bit)) {
-				//both conditions are true => get ActionSequence of point in matrix
+			if (currentBus.isBitSet(systemadress_checkedBit, bit)) {
+				// both conditions are true => get ActionSequence of point in matrix
 				ActionSequence actionSequence = matrix[startPoint];
 
-				if(actionSequence != null){
+				if (actionSequence != null) {
 					// ActionSequence for point exists
 					result.add(actionSequence);
 				}
@@ -143,7 +149,6 @@ public class Matrix {
 
 			startPoint++; // move to the right in the row
 		}
-
 
 		// ----------------------------
 		// For the column
@@ -154,7 +159,7 @@ public class Matrix {
 		System.out.println("-------------COLUMN---------------");
 
 		// current bus of rowIndex (initially given bus by method)
-		currentBus = busDepot.getBus(bus+1); // +1 da in busdepot nach der Busid (nach RMX) gespeichert sind
+		currentBus = busDepot.getBus(bus + 1); // +1 da in busdepot nach der Busid (nach RMX) gespeichert sind
 
 		int oldBitIndex = bitIndex;
 
@@ -163,7 +168,7 @@ public class Matrix {
 
 		while (columnPointIndex < arraySize) {
 
-			if(bitIndex % NUMBER_BITS_PER_BUS == 0) {
+			if (bitIndex % NUMBER_BITS_PER_BUS == 0) {
 				System.out.println("I BIM DRIN");
 				// get current bus => + 1 since RMX starts counting at 1
 				currentBus = busDepot.getBus(((bitIndex / NUMBER_BITS_PER_BUS) + 1));
@@ -173,11 +178,11 @@ public class Matrix {
 			// systemadress of current bitIndex that is being checked
 			int systemadress_checkedBit = getSystemadressByBitIndex(bitIndex);
 
-			if(currentBus.isBitSet(systemadress_checkedBit, bit)) {
-				//both conditions are true => get ActionSequence of point in matrix
+			if (currentBus.isBitSet(systemadress_checkedBit, bit)) {
+				// both conditions are true => get ActionSequence of point in matrix
 				ActionSequence actionSequence = matrix[startPoint];
 
-				if(actionSequence != null){
+				if (actionSequence != null) {
 					// ActionSequence for point exists
 					result.add(actionSequence);
 				}
@@ -218,12 +223,13 @@ public class Matrix {
 	 * the passed Integer Arrays need to be two DIFFERENT references
 	 *
 	 * format of condition: [bus][systemadresse][bit]
+	 * 
 	 * @param conditionOne
 	 * @param conditionTwo
 	 * @param actionSequence
 	 */
 	public void addAction(Integer[] conditionOne, Integer[] conditionTwo, ActionSequence actionSequence) {
-		//format [bus][systemadresse][bit]
+		// format [bus][systemadresse][bit]
 
 		// rmx - 1 because rmx sends busRMX1 as 1
 		conditionOne[0] -= conditionOne[0];
@@ -233,11 +239,10 @@ public class Matrix {
 		int berndOne = calcBerndFormula(conditionOne[0], conditionOne[1], conditionOne[2]);
 		int berndTwo = calcBerndFormula(conditionTwo[0], conditionTwo[1], conditionTwo[2]);
 
-
 		// calculation of the pointindex = gaussian value of bigger + bernd of smaller
 		int pointIndex;
 
-		if(berndOne >= berndTwo) {
+		if (berndOne >= berndTwo) {
 			pointIndex = calcGauss(berndOne) + berndTwo;
 
 		} else {

@@ -58,6 +58,7 @@ public class BusDepot {
             System.out.println("New Bus created: " + rmx + " and updated Systemadresse: " + adrrmx + " Value: " + value);
 
             int busId = rmx;
+            // add a bus to the depot
             busDepotMap.put(busId, newBus);
         } else {
             // only need to update
