@@ -32,11 +32,6 @@ public class Schedular {
 	 */
 	private static Thread sThread;
 
-	private static Matrix matrix;
-
-	private static BusDepot busDepot;
-
-	// TODO check thread savety!
 	/**
 	 * private constructor to prevent instantiation
 	 */
@@ -68,20 +63,29 @@ public class Schedular {
 	 */
 	private BlockingQueue<byte[]> messageQueue;
 
+	/**
+	 * Queue of fake messages
+	 * this queue has a higher priority than the messageQueue, so fake messages are checks at first
+	 */
+	private ArrayList<byte[]> fakeMessageQueue;
+
 	private ScheduledExecutorService executer;
 
 	/**
 	 * Provided RuleSet (=Tabelle) the schedular works with which determines which
 	 * actions are triggered for the messages
 	 */
-	// TODO private RuleSet ruleSet;
+	private static Matrix matrix;
+
+	private static BusDepot busDepot;
 
 	public void startScheduling() {
 		// if no thread exists start a new one
 		if (sThread == null) {
 
-			// init queue
+			// init queues
 			messageQueue = new LinkedBlockingQueue<>(); // unbounded queue with no capacity restriction
+			fakeMessageQueue = new ArrayList<>();
 
 			// create Thread
 			sThread = new Thread(new SchedularThread());
@@ -111,6 +115,17 @@ public class Schedular {
 		messageQueue.add(message);
 	}
 
+
+	/**
+	 * Adds message to queue of schedular
+	 *
+	 * @param message a message that needs to be processed
+	 */
+	private void addMessageStart(byte[] message) {
+		// TODO possibly only allow when queue not null?
+		messageQueue.add(message);
+	}
+
 	/**
 	 * Schedular Thread.
 	 */
@@ -132,21 +147,22 @@ public class Schedular {
 				try {
 					// if queue is empty, the thread blocks (!no active waiting) and waits for an
 					// message to become available
-					byte[] message = messageQueue.take();
-					System.out.println("ICH HOL WAS RAUS");
 
 					byte changes = 0;
-					// format <0x06 or 0x99><RMX><ADRRMX><VALUE>
-					 switch (message[0]) {
-						 case 6: //0x06 --> actual change message
-							 changes = busDepot.getChangesAndUpdate(message); // also updates Bus!!!
-							 System.out.println("Das ist eine richtige Nachricht");
-							 break;
-						 case (byte)153: //0x99
-							 changes = busDepot.getChanges(message);
-							 System.out.println("Das ist Fake News");
-							 break;
-					 }
+					byte[] message;
+
+					if(!fakeMessageQueue.isEmpty()) {
+						// fake message(s) exist
+						System.out.println("Das ist Fake News");
+						message = fakeMessageQueue.remove(0); // take message at first position
+						changes = busDepot.getChanges(message);
+
+					} else {
+						// no fake messages exist
+						message = messageQueue.take();
+						System.out.println("Das ist eine richtige Nachricht");
+						changes = busDepot.getChangesAndUpdate(message); // also updates Bus!!!
+					}
 
 
 					/**
@@ -188,7 +204,10 @@ public class Schedular {
 
 					// fake message to myself so we can determine if a message is a real (0x06) or fake(0x99) message
 					byte[] fakeMessage = buildRmx0x99Message(ac.getActionMesssage());
+
+					//UPDATE
 					busDepot.updateBus(fakeMessage);
+
 					addMessage(fakeMessage);
 				} else {
 					System.out.println("-> Adress bus " + actionArr[0] + " from rule does not exist!");
