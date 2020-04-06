@@ -1,11 +1,12 @@
 <?xml version = "1.0"?>
 <!--
-Jede Rule bestejanht aus 2 conditions und mindestens einer Action. In jeder Condition
+Jede Rule besteht aus 2 conditions und mindestens einer Action. In jeder Condition
 ist der Bus, die SystemAddresse und das Bit angegeben, um zu defenieren welches bit gesetzt sein muss
 fuer die Bedinngung bzw. welches bit durch die action gesetzt werden soll. Bei der Action
 muss man zusätzlich angeben ob das Bit auf 0 oder 1 gesetzt werden soll.
 Zwischen den Conditions Kknn noch ein Wait befehl mit der zu wartenden Zeit in ms bis zum Ausführen
-der danch kommenden Actions eingefuegt werden
+der danch kommenden Actions eingefuegt werden.
+Erstes bit ist Bit 0.
 -->
 <!--TODO Referenz zum XML Schema -->
 <Ruleset>

@@ -193,7 +193,7 @@ public class Schedular {
 		// Count
 		messageArr[1] = 6;
 		// Opcode
-		messageArr[2] = 6;
+		messageArr[2] = 5;
 		// bus <rmx>
 		messageArr[3] = (byte) intArr[0];
 		// <addrRMX>
