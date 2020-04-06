@@ -148,6 +148,7 @@ public class Schedular {
 					// if queue is empty, the thread blocks (!no active waiting) and waits for an
 					// message to become available
 
+					// changes has only more than one bit set to one if multiple bits are set at the SAME time
 					byte changes = 0;
 					byte[] message;
 
@@ -163,7 +164,6 @@ public class Schedular {
 						System.out.println("Das ist eine richtige Nachricht");
 						changes = busDepot.getChangesAndUpdate(message); // also updates Bus!!!
 					}
-
 
 					/**
 					 * Example Value 1 from RMX-1 Adress 98 Value 1 <0x06><0x01><0x62><0x01>
@@ -205,7 +205,8 @@ public class Schedular {
 					// fake message to myself so we can determine if a message is a real (0x06) or fake(0x99) message
 					byte[] fakeMessage = buildRmx0x99Message(ac.getActionMesssage());
 
-					//UPDATE
+					// UPDATE to ensure if multiple changes happend (changes more than one value set to 1) are
+					// checked as a whole byte (der Erste bit berücksichtigt beim check auch Änderungen der nacholgenden bits)
 					busDepot.updateBus(fakeMessage);
 
 					addMessage(fakeMessage);
