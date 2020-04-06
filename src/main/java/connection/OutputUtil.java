@@ -3,11 +3,11 @@ package connection;
 /**
  * Class containing Utility functions for Connections
  */
-public class ComUtilities {
+public class OutputUtil {
     /**
      * private Constructor to prevent instantiation
      */
-    private ComUtilities(){}
+    private OutputUtil(){}
 
     /**
      * prints a byte array in hex format on the console
@@ -21,4 +21,5 @@ public class ComUtilities {
         }
         System.out.println(sb.toString());
     }
+
 }

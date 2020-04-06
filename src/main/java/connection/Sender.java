@@ -2,7 +2,6 @@ package connection;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -123,8 +122,7 @@ public class Sender {
 						sendMessage(message);
 						// prevent sending of new message until server acknowledges last message
 						SocketConnector.nextRequestAllowed.set(false);
-						System.out.print("Gesendete Nachricht: ");
-						ComUtilities.writeMsgToConsole(message);
+						OutputUtil.writeMsgToConsole(message);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}

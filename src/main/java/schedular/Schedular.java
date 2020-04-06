@@ -133,8 +133,21 @@ public class Schedular {
 					// if queue is empty, the thread blocks (!no active waiting) and waits for an
 					// message to become available
 					byte[] message = messageQueue.take();
-					System.out.println("Hab was rausgenommen!");
-					byte changes = BusDepot.getBusDepot().getChanges(message);
+					System.out.println("ICH HOL WAS RAUS");
+
+					byte changes = 0;
+					// format <0x06 or 0x99><RMX><ADRRMX><VALUE>
+					 switch (message[0]) {
+						 case 6: //0x06 --> actual change message
+							 changes = busDepot.getChangesAndUpdate(message); // also updates Bus!!!
+							 System.out.println("Das ist eine richtige Nachricht");
+							 break;
+						 case (byte)153: //0x99
+							 changes = busDepot.getChanges(message);
+							 System.out.println("Das ist Fake News");
+							 break;
+					 }
+
 
 					/**
 					 * Example Value 1 from RMX-1 Adress 98 Value 1 <0x06><0x01><0x62><0x01>
@@ -168,13 +181,15 @@ public class Schedular {
 				int[] actionArr = ac.getActionMesssage();
 				// need to check if bus exists otherwise the connection will be killed
 				if (busDepot.busExists(actionArr[0])) {
-					try {
-						Thread.sleep(5000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					Sender.addMessageQueue(buildResponse(ac.getActionMesssage()));
+
+					// message for updating the server
+					byte[] message = buildResponse(ac.getActionMesssage());
+					Sender.addMessageQueue(message);
+
+					// fake message to myself so we can determine if a message is a real (0x06) or fake(0x99) message
+					byte[] fakeMessage = buildRmx0x99Message(ac.getActionMesssage());
+					busDepot.updateBus(fakeMessage);
+					addMessage(fakeMessage);
 				} else {
 					System.out.println("-> Adress bus " + actionArr[0] + " from rule does not exist!");
 				}
@@ -196,6 +211,8 @@ public class Schedular {
 
 	/**
 	 * Method that converts the int Array of the action to a message
+	 * builds an artificial change message (OPCODE 0x99)
+	 * Necessary because change needs to be checked, but status has already been updateed
 	 * 
 	 * [BUS](1-4) [SystemAddresse](0-111) [Bit](0-7) [BitValue] (0-1) format
 	 * <0x06><RMX><ADRRMX><VALUE>
@@ -203,18 +220,20 @@ public class Schedular {
 	 * @param intArr
 	 * @return
 	 */
-	private byte[] buildRmx0x06Message(int[] intArr) {
-		byte[] messageArr = new byte[4];
+	private byte[] buildRmx0x99Message(int[] intArr) {
+		byte[] message = new byte[4];
 		// Opcode
-		messageArr[0] = 6;
+		message[0] = (byte)153; //0x99
 		// bus <rmx>
-		messageArr[1] = (byte) intArr[0];
+		message[1] = (byte) intArr[0];
 		// <addrRMX>
-		messageArr[2] = (byte) intArr[1];
+		message[2] = (byte) intArr[1];
 		// value
 		Byte currentbyte = busDepot.getBus(intArr[0]).getCurrentByte(intArr[1]);
-		messageArr[3] = (byte) ByteUtil.setBitAtPos(currentbyte, intArr[2], intArr[3]);
-		return messageArr;
+
+		message[3] = (byte) ByteUtil.setBitAtPos(currentbyte, intArr[2], intArr[3]);
+
+		return message;
 	}
 
 	/**
@@ -226,21 +245,22 @@ public class Schedular {
 	 * @return
 	 */
 	private byte[] buildResponse(int[] intArr) {
-		byte[] messageArr = new byte[6];
+		byte[] message = new byte[6];
 		// headbyte
-		messageArr[0] = ConnectionConstants.RMX_HEAD;
+		message[0] = ConnectionConstants.RMX_HEAD;
 		// Count
-		messageArr[1] = 6;
+		message[1] = 6;
 		// Opcode
-		messageArr[2] = 5;
+		message[2] = 5;
 		// bus <rmx>
-		messageArr[3] = (byte) intArr[0];
+		message[3] = (byte) intArr[0];
 		// <addrRMX>
-		messageArr[4] = (byte) intArr[1];
+		message[4] = (byte) intArr[1];
 		// value
 		Byte currentbyte = busDepot.getBus(intArr[0]).getCurrentByte(intArr[1]);
-		messageArr[5] = (byte) ByteUtil.setBitAtPos(currentbyte, intArr[2], intArr[3]);
-		return messageArr;
+		message[5] = (byte) ByteUtil.setBitAtPos(currentbyte, intArr[2], intArr[3]);
+
+		return message;
 	}
 
 	private class SchedularTimerTask implements Runnable {

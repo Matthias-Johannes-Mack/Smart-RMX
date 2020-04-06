@@ -64,7 +64,7 @@ class Receiver {
 					while (inputStr.available() > 0) {
 						byte[] msg = receive();
 						// write all messages to console
-						ComUtilities.writeMsgToConsole(msg);
+						OutputUtil.writeMsgToConsole(msg);
 						// switch the opt codes
 						processMessage(msg);
 					}
