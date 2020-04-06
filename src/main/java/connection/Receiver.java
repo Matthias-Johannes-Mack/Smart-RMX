@@ -3,7 +3,6 @@ package connection;
 import Utilities.ByteUtil;
 import bus.BusDepot;
 import schedular.Schedular;
-import schedular.Schedular.updateConfirmed;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,6 +53,12 @@ class Receiver {
 		public void run() {
 			// Loop while Connection is established
 			while (SocketConnector.getConStateStr().equals(SocketConnector.conState.RUNNING)) {
+				// wait for next message
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
 				try {
 					// while there is a message loop
 					while (inputStr.available() > 0) {
@@ -134,11 +139,11 @@ class Receiver {
 				if (message[1] == 0) {
 					// "final" positive acknowledgement
 					SocketConnector.nextRequestAllowed.set(true);
-					// if Schedular waits for confirmation
-					if (Schedular.getSchedular().getStatus().equals(updateConfirmed.WAIT)) {
-						// set it to positive
-						Schedular.getSchedular().setStatus(updateConfirmed.POSITIVE);
-					}
+//					// if Schedular waits for confirmation
+//					if (Schedular.getSchedular().getStatus().equals(updateConfirmed.WAIT)) {
+//						// set it to positive
+//						Schedular.getSchedular().setStatus(updateConfirmed.POSITIVE);
+//					}
 				}
 
 				// else message[1] == 0x01: positive acknowledgment "Bearbeitung läuft"

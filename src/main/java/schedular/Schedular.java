@@ -3,7 +3,6 @@ package schedular;
 import bus.BusDepot;
 import connection.ConnectionConstants;
 import connection.Sender;
-import connection.SocketConnector;
 import matrix.Matrix;
 
 import java.util.*;
@@ -37,16 +36,16 @@ public class Schedular {
 
 	private static BusDepot busDepot;
 
-	// enum that handles the confirmed Update
-	// NOT_BUSY -> Schedular idle
-	// WAIT -> Schedular waits for confirmation
-	// POSITIVE -> Recived positive acknowledgement
-	public enum updateConfirmed {
-		NOT_BUSY, WAIT, POSITIVE
-	}
-
-	// status variable
-	private updateConfirmed status = updateConfirmed.NOT_BUSY;
+//	// enum that handles the confirmed Update
+//	// NOT_BUSY -> Schedular idle
+//	// WAIT -> Schedular waits for confirmation
+//	// POSITIVE -> Recived positive acknowledgement
+//	public enum updateConfirmed {
+//		NOT_BUSY, WAIT, POSITIVE
+//	}
+//
+//	// status variable
+//	private updateConfirmed status = updateConfirmed.NOT_BUSY;
 
 	// TODO check thread savety!
 	/**
@@ -180,17 +179,23 @@ public class Schedular {
 				int[] actionArr = ac.getActionMesssage();
 				// need to check if bus exists otherwise the connection will be killed
 				if (busDepot.busExists(actionArr[0])) {
+					try {
+						Thread.sleep(5000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					Sender.addMessageQueue(buildResponse(ac.getActionMesssage()));
-					status = updateConfirmed.WAIT;
-					// while confirmation is not positive / negative loop
-					while (status.equals(updateConfirmed.WAIT)) {
-					}
-					// if status positive
-					if (status.equals(updateConfirmed.POSITIVE)) {
-						// add a fake message
-						addMessage(buildRmx0x06Message(ac.getActionMesssage()));
-					}
-					status = updateConfirmed.NOT_BUSY;
+//					status = updateConfirmed.WAIT;
+//					// while confirmation is not positive / negative loop
+//					while (status.equals(updateConfirmed.WAIT)) {
+//					}
+//					// if status positive
+//					if (status.equals(updateConfirmed.POSITIVE)) {
+//						// add a fake message
+//						addMessage(buildRmx0x06Message(ac.getActionMesssage()));
+//					}
+//					status = updateConfirmed.NOT_BUSY;
 				} else {
 					System.out.println("-> Adress bus " + actionArr[0] + " from rule does not exist!");
 				}
@@ -259,23 +264,23 @@ public class Schedular {
 		return messageArr;
 	}
 
-	/**
-	 * Getter Status
-	 * 
-	 * @return
-	 */
-	public synchronized updateConfirmed getStatus() {
-		return status;
-	}
-
-	/**
-	 * Setter Status
-	 * 
-	 * @param status
-	 */
-	public synchronized void setStatus(updateConfirmed status) {
-		this.status = status;
-	}
+//	/**
+//	 * Getter Status
+//	 * 
+//	 * @return
+//	 */
+//	public synchronized updateConfirmed getStatus() {
+//		return status;
+//	}
+//
+//	/**
+//	 * Setter Status
+//	 * 
+//	 * @param status
+//	 */
+//	public synchronized void setStatus(updateConfirmed status) {
+//		this.status = status;
+//	}
 
 	private class SchedularTimerTask implements Runnable {
 
