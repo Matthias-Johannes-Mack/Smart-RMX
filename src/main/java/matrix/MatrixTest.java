@@ -17,10 +17,10 @@ public class MatrixTest {
 	public static void main(String[] args) {
 
 		ArrayList<Action> actionList = new ArrayList<>();
-		actionList.add(new ActionWait(1,1000));
+		actionList.add(new ActionWait(1000));
 
-		ActionSequence actionSequence = new ActionSequence(actionList);
-
+		ActionSequence actionSequence = new ActionSequence();
+		// TODO add Actions from actionList for each
 
 		// format <0x06><RMX><ADRRMX><VALUE>
 		byte[] message = new byte[]{6, 1, 0, 1};
