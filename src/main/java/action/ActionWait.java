@@ -1,7 +1,5 @@
 package action;
 
-import java.util.Objects;
-
 /**
  * 
  * Class for the wait Action
@@ -12,9 +10,8 @@ public class ActionWait extends Action {
 	private long waitTime;
 
 	// Get the constructor from the daddy
-	public ActionWait(int ID, long waitTime) {
+	public ActionWait(long waitTime) {
 		this.waitTime = waitTime;
-		this.ID = ID;
 	}
 
 	/**
@@ -31,7 +28,7 @@ public class ActionWait extends Action {
 		if (this == o) {
 			return true;
 		}
-		if (o == null || getClass() != o.getClass()){
+		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
 

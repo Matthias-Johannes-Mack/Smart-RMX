@@ -7,48 +7,43 @@ package action;
  */
 public abstract class Action {
 
-    // id of the action
-    protected int ID;
+	/**
+	 * At ActionMessages a message is compared, at ActionWait the wait time is
+	 * compared
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
 
-    // get ID
-    public int getID() {
-        return ID;
-    }
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
 
-    @Override
-    public boolean equals(Object obj) {
-        // change equals to match ID
-        if (this == obj) {
-            return true;
-        }
+		if (obj instanceof ActionMessage) {
+			if (this instanceof ActionMessage) {
+				ActionMessage o = (ActionMessage) this; // this
+				ActionMessage object = (ActionMessage) obj; // obj
 
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-
-        if (obj instanceof ActionMessage) {
-            if (this instanceof ActionMessage) {
-                ActionMessage o = (ActionMessage) this; //this
-                ActionMessage object = (ActionMessage) obj;   // obj
-
-                return object.equals(o);
-            } else {
+				return object.equals(o);
+			} else {
 				// this => ActionWait and obj => ActionMessage
-                return false;
-            }
-        } else {
-            // wait message
-            if (this instanceof ActionWait) {
-            	// both are type of ActionWait
-                ActionWait o = (ActionWait) this; //this
-                ActionWait object = (ActionWait) obj;   // obj
+				return false;
+			}
+		} else {
+			// wait message
+			if (this instanceof ActionWait) {
+				// both are type of ActionWait
+				ActionWait o = (ActionWait) this; // this
+				ActionWait object = (ActionWait) obj; // obj
 
-                return object.equals(o);
-            } else {
-            	// this => ActionMessage and obj => ActionWait
-                return false;
-            }
+				return object.equals(o);
+			} else {
+				// this => ActionMessage and obj => ActionWait
+				return false;
+			}
 
-        }
-    }
+		}
+	}
 }

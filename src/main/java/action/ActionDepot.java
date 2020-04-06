@@ -49,18 +49,18 @@ public class ActionDepot {
 	 * checks if actions exists in the ActionDepot
 	 * 
 	 * @param action
-	 * @return id of action, -1 if action does not exist
+	 * @return Returns the action, -1 if action does not exist
 	 */
-	private synchronized int actionExists(Action action) {
-
-		// index of action in actionDepot
-		int index = -1;
-
+	public synchronized Action actionExists(Action action) {
+		int index;
+		// if action exists return the action
 		if (actionDepot.contains(action)) {
 			index = actionDepot.indexOf(action);
+			return actionDepot.get(index);
 		}
-
-		return index;
+		// if not add action to the depot & return action
+		actionDepot.add(action);
+		return action;
 	}
 
 	/**
