@@ -2,6 +2,11 @@ package bus;
 
 import java.util.HashMap;
 
+/**
+ * All methods need to be synchronized since multiple threads can access the BusDepot at the same time:
+ * Receiver-Thread, Schedular-Thread, ActionWait-Thread(s)
+ *
+ */
 public class BusDepot {
 
     // Singleton-Pattern START -----------------------------------------
@@ -37,7 +42,7 @@ public class BusDepot {
      * Key 1 - RMX-1 (Key ergibt sich aus der übergebenen "RMX" Wert der OPCODE Ox06 Nachricht)
      * ... ggf. wenn wir erweitern müssen weitere
      */
-    private HashMap<Integer, Bus> busDepotMap = new HashMap<>();
+    private volatile HashMap<Integer, Bus> busDepotMap = new HashMap<>();
 
 
     /**
@@ -56,6 +61,10 @@ public class BusDepot {
             Bus newBus = new Bus(rmx);
             newBus.updateBusAdress(adrrmx, value);
             System.out.println("New Bus created: " + rmx + " and updated Systemadresse: " + adrrmx + " Value: " + value);
+
+            int busId = rmx;
+            // add a bus to the depot
+            busDepotMap.put(busId, newBus);
         } else {
             // only need to update
             Bus bus = getBus(rmx); // get Bus by Id
@@ -81,6 +90,17 @@ public class BusDepot {
         byte rmx = message[1]; // busId
         byte adrrmx = message[2]; // Systemadresse
 
+        // get changes of given ADRRMX
+        Bus bus = getBus(rmx);
+        byte changes = bus.getChanges(adrrmx);
+
+        return changes;
+    }
+
+    public synchronized byte getChangesAndUpdate(byte[] message) {
+        byte rmx = message[1]; // busId
+        byte adrrmx = message[2]; // Systemadresse
+
         // update bus
         updateBus(message);
 
@@ -96,7 +116,7 @@ public class BusDepot {
         return busDepotMap.get(busId);
     }
 
-    private synchronized boolean busExists(int busId) {
+    public synchronized boolean busExists(int busId) {
         return busDepotMap.containsKey(busId);
     }
 

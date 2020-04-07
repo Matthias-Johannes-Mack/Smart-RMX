@@ -12,9 +12,8 @@ public class ActionMessage extends Action {
 	private int[] action;
 
 	// get the constructor from the daddy
-	public ActionMessage(int ID, int[] action) {
+	public ActionMessage(int[] action) {
 		this.action = action;
-		this.ID = ID;
 	}
 
 	/**

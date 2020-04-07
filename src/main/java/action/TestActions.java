@@ -1,29 +1,42 @@
 package action;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class TestActions {
 
     public static void main(String[] args) {
 
-        int[] message = new int[] {1,1,1};
+        int[] message1 = new int[] {1,1,1};
         int[] message2 = new int[] {1,1,2};
+        int[] message3 = new int[] {1,1,3};
+        int[] message4 = new int[] {1,1,4};
 
-        ActionMessage action = new ActionMessage(1, message);
-        ActionMessage action2 = new ActionMessage(2, message2);
-        ActionMessage action3 = new ActionMessage(3, message);
+        ActionMessage action1 = new ActionMessage(message1);
+        ActionMessage action2 = new ActionMessage(message2);
+        ActionMessage action3 = new ActionMessage(message3);
+        ActionMessage action4 = new ActionMessage(message4);
 
-        ActionWait actionWait = new ActionWait(1, 100);
-        ActionWait actionWait2 = new ActionWait(2, 200);
-        ActionWait actionWait3 = new ActionWait(3, 100);
+        ActionSequence actionSequence = new ActionSequence();
 
-        ActionDepot actionDepot = ActionDepot.getActionDepot();
+        actionSequence.addAction(action1);
+        actionSequence.addAction(action2);
+        actionSequence.addAction(action3);
+        actionSequence.addAction(action4);
 
-        System.out.println(actionDepot.addAction(action));
-        System.out.println(actionDepot.addAction(actionWait));
-        System.out.println(actionDepot.addAction(action3));
-        System.out.println(actionDepot.addAction(actionWait3));
-    	
+        List<Action> actionList = actionSequence.getActions();
+        System.out.println(actionList);
+
+        for(int i = 0; i < actionSequence.getActionCount(); i++) {
+            ActionMessage ac = (ActionMessage) actionSequence.getAction(i);
+
+            // if wait
+            // neuer thread i
+            // break;
+
+            System.out.println(Arrays.toString(ac.getActionMesssage()));
+        }
+
     }
     
 }

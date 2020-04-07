@@ -2,9 +2,6 @@ package action;
 
 import java.util.ArrayList;
 
-import bus.Bus;
-import bus.BusDepot;
-
 /**
  * Class that contains all Actions in a list
  *
@@ -49,18 +46,18 @@ public class ActionDepot {
 	 * checks if actions exists in the ActionDepot
 	 * 
 	 * @param action
-	 * @return id of action, -1 if action does not exist
+	 * @return Returns the action, -1 if action does not exist
 	 */
-	private synchronized int actionExists(Action action) {
+	public synchronized Action addAction(Action action) {
 
-		// index of action in actionDepot
-		int index = -1;
-
+		// if action exists return the action
 		if (actionDepot.contains(action)) {
-			index = actionDepot.indexOf(action);
+			int index = actionDepot.indexOf(action);
+			return actionDepot.get(index);
 		}
-
-		return index;
+		// if not add action to the depot & return action
+		actionDepot.add(action);
+		return action;
 	}
 
 	/**
@@ -77,24 +74,5 @@ public class ActionDepot {
 	 */
 	public synchronized void clearActionDepot() {
 		actionDepot.clear();
-	}
-
-	/**
-	 * adds an action to the ActionDepot.If the action already exists (specified by
-	 * Action.equal()) returns id of existing action and does not add given action
-	 * again. This ensures every action only exists exactly one time in the
-	 * ActionDepot.
-	 *
-	 * @param action a action to add
-	 * @return index of the action
-	 */
-	public synchronized int addAction(Action action) {
-
-		if (!actionDepot.contains(action)) {
-			// action doesnt exist
-			actionDepot.add(action); // add action
-		}
-
-		return actionDepot.indexOf(action);
 	}
 }
