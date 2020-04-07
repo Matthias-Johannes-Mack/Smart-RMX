@@ -1,5 +1,6 @@
 package connection;
 
+import Utilities.QuestionUtil;
 import connection.SocketConnector.conState;
 
 /**
@@ -26,7 +27,8 @@ public class ServerReload implements Runnable {
 				System.out.println("Server seit " + diff + " ms unerreichbar!");
 				// needed, for restarting server
 				SocketConnector.setConStateStr(conState.RECONNECT);
-				Reload();
+				// call the retry form
+				QuestionUtil.retry_reload();
 			}
 
 		}
