@@ -14,7 +14,7 @@ import Utilities.QuestionUtil;
  */
 public class SocketConnector {
 	// localhost 127.0.0.1
-	private static final String ip = "127.0.0.1";
+	private static final String ip = "192.168.1.52";
 	// standard port for RMX 950
 	private static final int port = 950;
 	// vars for the server response

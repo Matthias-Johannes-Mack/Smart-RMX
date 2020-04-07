@@ -16,11 +16,13 @@ Erstes bit ist Bit 0.
 			<Bus>1</Bus> <!-- theoretisch beliebig aber wir beschränken uns auf maximal 4 also 1-4? -->
 			<SystemAddress>0</SystemAddress> <!-- 0 - 111 -->
 			<Bit>0</Bit> <!-- 0 -7 -->
+			<BitValue>1</BitValue>
 		</Condition>
 		<Condition>
 			<Bus>1</Bus>
 			<SystemAddress>2</SystemAddress>
 			<Bit>3</Bit>
+			<BitValue>1</BitValue>
 		</Condition>
 		<Action>
 			<Bus>1</Bus>
@@ -41,11 +43,13 @@ Erstes bit ist Bit 0.
 			<Bus>1</Bus>
 			<SystemAddress>0</SystemAddress>
 			<Bit>0</Bit>
+			<BitValue>1</BitValue>
 		</Condition>
 		<Condition>
 			<Bus>1</Bus>
 			<SystemAddress>0</SystemAddress>
 			<Bit>0</Bit>
+			<BitValue>1</BitValue>
 		</Condition>
 		<Wait>1</Wait>
 		<Action>
@@ -62,11 +66,13 @@ Erstes bit ist Bit 0.
 			<Bus>1</Bus>
 			<SystemAddress>0</SystemAddress>
 			<Bit>0</Bit>
+			<BitValue>1</BitValue>
 		</Condition>
 		<Condition>
 			<Bus>1</Bus>
 			<SystemAddress>0</SystemAddress>
 			<Bit>0</Bit>
+			<BitValue>1</BitValue>
 		</Condition>
 		<Wait>1</Wait>
 		<Action>

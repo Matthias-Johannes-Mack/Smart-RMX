@@ -115,13 +115,15 @@ public class XML_IO {
 			SchemaFactory schemaFactory = SchemaFactory.newInstance(constant);
 			Schema schema = schemaFactory.newSchema(schemaFile);
 
+			//TODO uncomment and adapt xsd
 			//ignore comments and add xsd schema for validation of the xml document
-			documentBuilderFactory.setIgnoringComments(true);
-			documentBuilderFactory.setSchema(schema);
+			//documentBuilderFactory.setIgnoringComments(true);
+			//documentBuilderFactory.setSchema(schema);
 
 			DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
 			//custom ErrorHandler for setting validationResult to false if xml document not valid regarding the schema
-			documentBuilder.setErrorHandler(new customErrorHandler());
+			//TODO uncomment
+			//documentBuilder.setErrorHandler(new customErrorHandler());
 
 			org.w3c.dom.Document document = documentBuilder.parse(xmlFile);
 

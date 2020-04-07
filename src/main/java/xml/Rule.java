@@ -9,9 +9,9 @@ import java.util.ArrayList;
  *
  */
 public class Rule {
-    //Integer Array for first Conditions [Bus, SystemAddress, Bit]
+    //Integer Array for first Conditions [Bus, SystemAddress, Bit, Bitvalue]
     private Integer[] conditionOne;
-    //Integer Array for second Conditions [Bus, SystemAddress, Bit]
+    //Integer Array for second Conditions [Bus, SystemAddress, Bit, Bitvalue]
     private Integer[] conditionTwo;
     //List containing Integer Arrays for each Action [Bus, SystemAddress, Bit, Bitvalue] and Arrays for the Wait operation [time in ms]
     private ArrayList<Integer[]> actions;

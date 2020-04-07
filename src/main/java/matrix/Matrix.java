@@ -15,7 +15,7 @@ import bus.BusDepot;
  */
 public class Matrix {
     // (( n (n + 1)) / 2)
-    // Formel f�r Dreiecksmatrix = (((112*8 Bit) ((112*8 Bit) + 1 ) ) / 2 )
+    // Formel fuer Dreiecksmatrix = (((112*8 Bit) ((112*8 Bit) + 1 ) ) / 2 )
     final static int arraySize = (((112 * 8) * ((112 * 8) + 1)) / 2);
     static public ActionSequenceWrapper[] matrix;
 
@@ -277,7 +277,7 @@ public class Matrix {
      * Method responsible for adding the action sequence to the matrix
      * uses helper methods
      * the passed Integer Arrays need to be two DIFFERENT references
-     * <p>
+     *
      * format of condition: [bus][systemadresse][bit]  TODO [bitvalue]
      *
      * @param conditionOne
