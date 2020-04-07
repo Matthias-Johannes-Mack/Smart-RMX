@@ -311,47 +311,54 @@ public class Matrix {
 		}
     }
 
-//TODO kommentieren
-
     /**
-     * adds the given to the ActionWrapper in the right point (index) of the matrix
-     * @param conditionBiggerBitIndex
-     * @param conditionSmallerBitIndex
-     * @param actionSequence
-     * @param pointIndex
+     * adds the given action sequence to the ActionWrapper to the right point (index) of the matrix
+     * @param conditionBiggerBitIndex condition with bigger bitindex = row index
+     * @param conditionSmallerBitIndex condition with smaller bitindex = column index
+     * @param actionSequence action seq to add
+     * @param pointIndex field in matrix to add action seq wrapper
      */
     private void addActionSequenceToActionSequenceWrapper(Integer[] conditionBiggerBitIndex, Integer[] conditionSmallerBitIndex, ActionSequence actionSequence, int pointIndex) {
-		// Row Index = me = biggerBernd
-		// Column Index = other = smallerBernd
-		int bitValue_BiggerBitIndex = conditionBiggerBitIndex[3];
+		//bit value of bigger bitindex of the conditions = row index
+        int bitValue_BiggerBitIndex = conditionBiggerBitIndex[3];
+        //bit value  of smaller bitindex of the conditions = column index
 		int bitValue_SmallerBitIndex = conditionSmallerBitIndex[3];
 
+		//check wich bit value combination is represented by the given rule (conditions)
 		if(bitValue_BiggerBitIndex == 0) {
 			if(bitValue_SmallerBitIndex == 0) {
-				// me 0, other 0
+				// bit value row index =  0, bit value column index = 0
 				addActionSequenceWrapperToMatrix(0,0,actionSequence, pointIndex);
 			} else {
-				//me 0 other 1
+				//bit value row index = 0 bit value column index =  1
 				addActionSequenceWrapperToMatrix(0,1,actionSequence, pointIndex);
 			}
 		} else {
 			if(bitValue_SmallerBitIndex == 0) {
-				// me 1, other 0
+				// bit value row index = 1, bit value column index =  0
 				addActionSequenceWrapperToMatrix(1,0,actionSequence, pointIndex);
 			} else {
-				//me 1 other 1
+				//bit value row index = 1 bit value column index =  1
 				addActionSequenceWrapperToMatrix(1,1,actionSequence, pointIndex);
 			}
 		}
 
 	}
 
-	private void addActionSequenceWrapperToMatrix(int me, int other, ActionSequence actionSequence, int pointIndex){
-    	if(matrix[pointIndex] == null) {
+    /**
+     * adds the action sequence to the right action sequence wrapper and adds the action sequence wrapper at right point in matrix
+     * @param bitValue_rowIndex  bit value of bigger bitindex of the conditions = row index
+     * @param bitValue_columnIndex bit value  of smaller bitindex of the conditions = column index
+     * @param actionSequence action seq to add
+     * @param pointIndex field in matrix to add action seq wrapper
+     */
+	private void addActionSequenceWrapperToMatrix(int bitValue_rowIndex, int bitValue_columnIndex, ActionSequence actionSequence, int pointIndex){
+    	// if no action seq wrapper exists at point add new
+	    if(matrix[pointIndex] == null) {
 			matrix[pointIndex] = new ActionSequenceWrapper();
 		}
 
-    	// add actions to calculated index
-		matrix[pointIndex].setActionSequence(me, other, actionSequence);
+    	// set action sequence in the right Action wrapper aat the pointIndex
+		matrix[pointIndex].setActionSequence(bitValue_rowIndex, bitValue_columnIndex, actionSequence);
 	}
 }
