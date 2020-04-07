@@ -151,10 +151,10 @@ public class Matrix {
 
 
                 if (bitvalue == 1) {
-                    // i am 1, the other is 1
-                    actionSequence = matrix[startPoint].gerActionSequence1And1();
+                    // bit value of row index =  1, bit value of column index is 1
+                    actionSequence = matrix[startPoint].getActionSequence1And1();
                 } else {
-                    // i am 0, the other is 1
+                    // bit value of row index = 0, bit value of column index is 1
                     actionSequence = matrix[startPoint].getActionSequence0And1();
                 }
 
@@ -162,10 +162,10 @@ public class Matrix {
             } else {
                 // the other bit is not set
                 if (bitvalue == 1) {
-                    // i am 1, the other is 0
+                    // bit value of row index =  1, bit value of column index is 0
                     actionSequence = matrix[startPoint].getActionSequence1And0();
                 } else {
-                    // i am 0, the other is 0
+                    // bit value of row index =  0, bit value of column index is 0
                     actionSequence = matrix[startPoint].getActionSequence0And0();
                 }
 
@@ -215,23 +215,22 @@ public class Matrix {
 
 
 				if (bitvalue == 1) {
-					// i am 1, the other is 1
-					actionSequence = matrix[columnPointIndex].gerActionSequence1And1();
+                    // bit value of row index =  1, bit value of column index is 1
+                    actionSequence = matrix[columnPointIndex].getActionSequence1And1();
 				} else {
-					// i am 0, the other is 1
-					actionSequence = matrix[columnPointIndex].getActionSequence0And1();
+                    // bit value of row index =  0, bit value of column index is 1
+                    actionSequence = matrix[columnPointIndex].getActionSequence0And1();
 				}
 
 			} else {
 				// the other bit is not set
 				if (bitvalue == 1) {
-					// i am 1, the other is 0
-					actionSequence = matrix[columnPointIndex].getActionSequence1And0();
+                    // bit value of row index =  1, bit value of column index is 0
+                    actionSequence = matrix[columnPointIndex].getActionSequence1And0();
 				} else {
-					// i am 0, the other is 0
-					actionSequence = matrix[columnPointIndex].getActionSequence0And0();
+                    // bit value of row index =  0, bit value of column index is 0
+                    actionSequence = matrix[columnPointIndex].getActionSequence0And0();
 				}
-
 			}
 
 			if (actionSequence != null) {
@@ -275,6 +274,8 @@ public class Matrix {
     }
 
     /**
+     * Method responsible for adding the action sequence to the matrix
+     * uses helper methods
      * the passed Integer Arrays need to be two DIFFERENT references
      * <p>
      * format of condition: [bus][systemadresse][bit]  TODO [bitvalue]
@@ -291,32 +292,42 @@ public class Matrix {
 		conditionTwo[0] -= conditionTwo[0];
 
 		// calculate bernd value of both conditions
-		int berndOne = calcBerndFormula(conditionOne[0], conditionOne[1], conditionOne[2]);
-		int berndTwo = calcBerndFormula(conditionTwo[0], conditionTwo[1], conditionTwo[2]);
+		int bitIndexConditionOne = calcBerndFormula(conditionOne[0], conditionOne[1], conditionOne[2]);
+		int bitIndexConditionTwo = calcBerndFormula(conditionTwo[0], conditionTwo[1], conditionTwo[2]);
 
 		// calculation of the pointindex = gaussian value of bigger + bernd of smaller
 		int pointIndex;
 
-		if (berndOne >= berndTwo) {
-			pointIndex = calcGauss(berndOne) + berndTwo;
+		//check to determine which bit index of the two conditions is bigger
+		if (bitIndexConditionOne >= bitIndexConditionTwo) {
+		    // bit index condition one is bigger
+			pointIndex = calcGauss(bitIndexConditionOne) + bitIndexConditionTwo;
 			addActionSequenceToActionSequenceWrapper(conditionOne, conditionTwo, actionSequence, pointIndex);
 		} else {
-			// berndTwo is bigger
-			pointIndex = calcGauss(berndTwo) + berndOne;
+            // bit index condition one is bigger
+			pointIndex = calcGauss(bitIndexConditionTwo) + bitIndexConditionOne;
 			addActionSequenceToActionSequenceWrapper(conditionTwo, conditionOne, actionSequence, pointIndex);
 
 		}
     }
 
+//TODO kommentieren
 
-    private void addActionSequenceToActionSequenceWrapper(Integer[] conditionBiggerBerndValue, Integer[] conditionSmallerBerndValue, ActionSequence actionSequence, int pointIndex) {
+    /**
+     * adds the given to the ActionWrapper in the right point (index) of the matrix
+     * @param conditionBiggerBitIndex
+     * @param conditionSmallerBitIndex
+     * @param actionSequence
+     * @param pointIndex
+     */
+    private void addActionSequenceToActionSequenceWrapper(Integer[] conditionBiggerBitIndex, Integer[] conditionSmallerBitIndex, ActionSequence actionSequence, int pointIndex) {
 		// Row Index = me = biggerBernd
 		// Column Index = other = smallerBernd
-		int bitValueBiggerBernd = conditionBiggerBerndValue[3];
-		int bitValueSmallerBernd = conditionSmallerBerndValue[3];
+		int bitValue_BiggerBitIndex = conditionBiggerBitIndex[3];
+		int bitValue_SmallerBitIndex = conditionSmallerBitIndex[3];
 
-		if(bitValueBiggerBernd == 0) {
-			if(bitValueSmallerBernd == 0) {
+		if(bitValue_BiggerBitIndex == 0) {
+			if(bitValue_SmallerBitIndex == 0) {
 				// me 0, other 0
 				addActionSequenceWrapperToMatrix(0,0,actionSequence, pointIndex);
 			} else {
@@ -324,7 +335,7 @@ public class Matrix {
 				addActionSequenceWrapperToMatrix(0,1,actionSequence, pointIndex);
 			}
 		} else {
-			if(bitValueSmallerBernd == 0) {
+			if(bitValue_SmallerBitIndex == 0) {
 				// me 1, other 0
 				addActionSequenceWrapperToMatrix(1,0,actionSequence, pointIndex);
 			} else {
