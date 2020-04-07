@@ -30,7 +30,7 @@ public class MatrixTest {
 
 		Matrix matrix = Matrix.getMatrix();
 		matrix.addAction(conditionOne, conditionTwo, actionSequence);
-		System.out.println("matrix: " + matrix.matrix[0].getActions());
+		//System.out.println("matrix: " + matrix.matrix[0].getActions());
 
 
 //		List<ActionSequence> result = matrix.check((byte)1,(byte)0, (byte)1);

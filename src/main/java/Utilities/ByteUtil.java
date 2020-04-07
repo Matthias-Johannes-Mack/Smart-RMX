@@ -39,9 +39,16 @@ public class ByteUtil {
 		return (value & (1 << bitIndex)) != 0;
 	}
 
-	public static int setBitAtPos(int currentbyte, int bitIndex, int value) {
+	/**
+	 * sets bit at the given index with given value
+	 * @param currentByte
+	 * @param bitIndex
+	 * @param value
+	 * @return
+	 */
+	public static int setBitAtPos(int currentByte, int bitIndex, int value) {
 		int mask = 1 << bitIndex;
-		return (currentbyte & ~mask) | ((value << bitIndex) & mask);
+		return (currentByte & ~mask) | ((value << bitIndex) & mask);
 	}
 
 }
