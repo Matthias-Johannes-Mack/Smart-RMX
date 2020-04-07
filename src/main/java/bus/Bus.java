@@ -2,6 +2,7 @@ package bus;
 
 import Utilities.ByteUtil;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 
 public class Bus {
@@ -16,16 +17,30 @@ public class Bus {
 
 	public volatile byte[] systemadressen;
 
-	public volatile byte[] lastChanges;
+	/**
+	 * ArraList contains Integer Arrays of length 8 to represent a byte starting from index 0 - 7
+	 * -1 = no changes at bit, 0 = bit changed to 0, 1 bit changed to 1
+	 */
+	public volatile ArrayList<Integer[]> lastChanges;
 
 	public Bus(byte rmx) {
 		busId = rmx;
 		systemadressen = new byte[NUMBER_SYSTEMADRESSEN]; // initial all values are 0
-		lastChanges = new byte[NUMBER_SYSTEMADRESSEN]; // initial all values are 0
+		lastChanges = new ArrayList<>(NUMBER_SYSTEMADRESSEN);
+		initalizeArrayList();
 	}
 
 	/**
-	 *
+	 * initalizes the lastChanges list
+	 */
+	private void initalizeArrayList() {
+		for(int i=0; i < NUMBER_SYSTEMADRESSEN; i++) {
+			lastChanges.add(new Integer[]{-1, -1, -1, -1, -1, -1, -1, -1});
+		}
+	}
+
+	/**
+	 * updates adress and changes. updates changes to 1 and changes to 0
 	 * @param adrrmx
 	 * @param value
 	 */
@@ -34,26 +49,46 @@ public class Bus {
 		BitSet currentBitSet = BitSet.valueOf(new byte[] { systemadressen[adrrmx] });
 		BitSet valueBitSet = BitSet.valueOf(new byte[] { value });
 
-		BitSet changesBitSet = new BitSet(); // => 00000000
+		Integer[] changes = new Integer[8];
 
-		// only iterates over set bits
-		boolean somethingChanged = false;
-		for (int i = valueBitSet.nextSetBit(0); i >= 0; i = valueBitSet.nextSetBit(i + 1)) {
+
+		System.out.println("new"+value);
+		System.out.println("current"+systemadressen[adrrmx]);
+
+
+		// iterates every every bit
+		for (int i = 0; i < 8; i++) {
+			boolean currentBit = currentBitSet.get(i);
+			boolean valueBit = valueBitSet.get(i);
+
+			System.out.println("currentBit "+ currentBit);
+			System.out.println("valueBit "+ valueBit);
+
 			// bit i in value is set
-			if (currentBitSet.get(i) == false) {
-				// a change has happend
-				changesBitSet.set(i);
-				somethingChanged = true;
+			if (valueBit != currentBit) {
+
+				System.out.println("wir sind verschiedn");
+
+				if(valueBit == true) {
+					changes[i] = 1;
+				} else {
+					changes[i] = 0;
+				}
+
+				System.out.println("nach änderung "+changes[i]);
+
+			} else {
+				//no changes, value stays at -1
+				System.out.println("no changes");
+				changes[i] = -1;
+				System.out.println("nach änderung "+changes[i]);
+
 			}
 		}
 
-		// update lastChanges
-		if (somethingChanged) {
-			byte[] changes = changesBitSet.toByteArray();
-			lastChanges[adrrmx] = changes[0];
-		} else {
-			lastChanges[adrrmx] = 0; // nothing changed => lastChanges 00000000
-		}
+
+
+		lastChanges.set(adrrmx, changes);
 
 		// update current value
 		systemadressen[adrrmx] = value;
@@ -65,8 +100,8 @@ public class Bus {
 	 * @param adrrmx
 	 * @return
 	 */
-	public byte getChanges(byte adrrmx) {
-		return lastChanges[adrrmx];
+	public Integer[] getChanges(byte adrrmx) {
+		return lastChanges.get(adrrmx);
 	}
 
 	/**

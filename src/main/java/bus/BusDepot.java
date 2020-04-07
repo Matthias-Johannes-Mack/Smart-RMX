@@ -86,18 +86,18 @@ public class BusDepot {
      *
      * @param message
      */
-    public synchronized byte getChanges(byte[] message) {
+    public synchronized Integer[] getChanges(byte[] message) {
         byte rmx = message[1]; // busId
         byte adrrmx = message[2]; // Systemadresse
 
         // get changes of given ADRRMX
         Bus bus = getBus(rmx);
-        byte changes = bus.getChanges(adrrmx);
+        Integer[] changes = bus.getChanges(adrrmx);
 
         return changes;
     }
 
-    public synchronized byte getChangesAndUpdate(byte[] message) {
+    public synchronized Integer[] getChangesAndUpdate(byte[] message) {
         byte rmx = message[1]; // busId
         byte adrrmx = message[2]; // Systemadresse
 
@@ -106,7 +106,7 @@ public class BusDepot {
 
         // get changes of given ADRRMX
         Bus bus = getBus(rmx);
-        byte changes = bus.getChanges(adrrmx);
+        Integer[] changes = bus.getChanges(adrrmx);
 
         return changes;
     }

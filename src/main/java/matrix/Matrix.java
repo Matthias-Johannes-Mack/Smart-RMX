@@ -15,7 +15,7 @@ import bus.BusDepot;
  */
 public class Matrix {
 	// (( n (n + 1)) / 2)
-	// Formel für Dreiecksmatrix = (((112*8 Bit) ((112*8 Bit) + 1 ) ) / 2 )
+	// Formel fï¿½r Dreiecksmatrix = (((112*8 Bit) ((112*8 Bit) + 1 ) ) / 2 )
 	final static int arraySize = (((112 * 8) * ((112 * 8) + 1)) / 2);
 	static public ActionSequence[] matrix;
 
@@ -78,7 +78,7 @@ public class Matrix {
 	 * @param lastChanged
 	 *
 	 */
-	public List<ActionSequence> check(byte rmx, byte adrRMX, byte lastChanged) {
+	public List<ActionSequence> check(byte rmx, byte adrRMX, Integer[] lastChanged) {
 
 		List<ActionSequence> result = new ArrayList<>();
 
@@ -86,10 +86,8 @@ public class Matrix {
 		int bus = rmx - 1;
 		int systemadresse = adrRMX;
 
-		// iterates over set bits of lastChanged
-		BitSet valueBitSet = BitSet.valueOf(new byte[] { lastChanged });
-
-		for (int i = valueBitSet.nextSetBit(0); i >= 0; i = valueBitSet.nextSetBit(i + 1)) {
+		// iterates over "bits" of lastChanged
+		for (int i = 0; i < 8; i++) {
 			// bit i in value is set => check this bit
 			result.addAll(calcPos(bus, systemadresse, i));
 		}

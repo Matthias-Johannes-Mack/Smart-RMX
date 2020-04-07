@@ -50,11 +50,11 @@ public class Factory {
 				if (action.length == 1) {
 					// create wait action and save it to action depot with id
 					ActionWait waitAction = new ActionWait(action[0]);
-					// only add action to actionDepot if it doesn´t exists already
+					// only add action to actionDepot if it doesnt exists already
 					actionSeq.addAction(actionDepot.addAction(waitAction));
 				} else {
 					ActionMessage messageAction = new ActionMessage(parseIntegerToIntArr(action));
-					// only add action to actionDepot if it doesn´t exists already
+					// only add action to actionDepot if it doesnt exists already
 					actionSeq.addAction(actionDepot.addAction(messageAction));
 				}
 			}

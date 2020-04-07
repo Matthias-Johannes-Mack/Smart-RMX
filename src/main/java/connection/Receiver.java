@@ -249,7 +249,7 @@ class Receiver {
 			
 			// forward message to schedular
 			Schedular.getSchedular().addMessageToRmxQueue(message);
-			System.out.println("Message zu Schedular hinzugefügt!");
+			System.out.println("Message zu Schedular hinzugefuegt!");
 
 		} else { // false -- init not successfull
 

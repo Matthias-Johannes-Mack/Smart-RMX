@@ -166,7 +166,7 @@ public class Schedular {
             while (true) {
 
                 // changes has only more than one bit set to one if multiple bits are set at the SAME time
-                byte changes = 0;
+                Integer[] changes = new Integer[8];
                 byte[] message;
 
                 // TODO evtl. überlegen mit wait und notify
@@ -186,7 +186,9 @@ public class Schedular {
 
                 // Example Value 1 from RMX-1 Adress 98 Value 1 <0x06><0x01><0x62><0x01>
                 System.out.println("ICH WERDE JETZT PRÜFEN");
-                List<ActionSequence> actionSequenceList = matrix.check(message[1], message[2], changes);
+
+
+               List<ActionSequence> actionSequenceList = matrix.check(message[1], message[2], changes);
 
                 // check if list is not empty
                 if (!actionSequenceList.isEmpty()) {

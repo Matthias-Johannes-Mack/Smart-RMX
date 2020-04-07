@@ -33,18 +33,18 @@ public class MatrixTest {
 		System.out.println("matrix: " + matrix.matrix[0].getActions());
 
 
-		List<ActionSequence> result = matrix.check((byte)1,(byte)0, (byte)1);
-
-		for (ActionSequence actionSequence1: result) {
-			List<Action> actions = actionSequence.getActions();
-
-			for (Action action: actions) {
-				if(action instanceof ActionWait) {
-					ActionWait waitaction = (ActionWait) action;
-					System.out.println(waitaction.getWaitTime());
-				}
-			}
-		}
+//		List<ActionSequence> result = matrix.check((byte)1,(byte)0, (byte)1);
+//
+//		for (ActionSequence actionSequence1: result) {
+//			List<Action> actions = actionSequence.getActions();
+//
+//			for (Action action: actions) {
+//				if(action instanceof ActionWait) {
+//					ActionWait waitaction = (ActionWait) action;
+//					System.out.println(waitaction.getWaitTime());
+//				}
+//			}
+//		}
 
 
 	}
