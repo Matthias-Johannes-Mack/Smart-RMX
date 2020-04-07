@@ -2,14 +2,11 @@ package matrix;
 
 
 import action.Action;
-import action.ActionMessage;
 import action.ActionSequence;
 import action.ActionWait;
-import bus.Bus;
 import bus.BusDepot;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class MatrixTest {
@@ -44,7 +41,7 @@ public class MatrixTest {
 			for (Action action: actions) {
 				if(action instanceof ActionWait) {
 					ActionWait waitaction = (ActionWait) action;
-					System.out.println(waitaction.getWait());
+					System.out.println(waitaction.getWaitTime());
 				}
 			}
 		}

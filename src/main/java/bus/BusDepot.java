@@ -2,6 +2,11 @@ package bus;
 
 import java.util.HashMap;
 
+/**
+ * All methods need to be synchronized since multiple threads can access the BusDepot at the same time:
+ * Receiver-Thread, Schedular-Thread, ActionWait-Thread(s)
+ *
+ */
 public class BusDepot {
 
     // Singleton-Pattern START -----------------------------------------

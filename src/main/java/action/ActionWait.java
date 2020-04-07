@@ -19,7 +19,7 @@ public class ActionWait extends Action {
 	 * 
 	 * @return int array
 	 */
-	public long getWait() {
+	public long getWaitTime() {
 		return waitTime;
 	}
 

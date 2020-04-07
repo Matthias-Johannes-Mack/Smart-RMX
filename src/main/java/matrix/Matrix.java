@@ -76,6 +76,7 @@ public class Matrix {
 	 * @param rmx
 	 * @param adrRMX
 	 * @param lastChanged
+	 *
 	 */
 	public List<ActionSequence> check(byte rmx, byte adrRMX, byte lastChanged) {
 
