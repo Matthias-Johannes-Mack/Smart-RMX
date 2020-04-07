@@ -12,11 +12,11 @@ public class Bus {
 	 */
 	public static final int NUMBER_SYSTEMADRESSEN = 112;
 
-	public int busId;
+	public volatile int busId;
 
-	public byte[] systemadressen;
+	public volatile byte[] systemadressen;
 
-	public byte[] lastChanges;
+	public volatile byte[] lastChanges;
 
 	public Bus(byte rmx) {
 		busId = rmx;

@@ -42,7 +42,7 @@ public class BusDepot {
      * Key 1 - RMX-1 (Key ergibt sich aus der übergebenen "RMX" Wert der OPCODE Ox06 Nachricht)
      * ... ggf. wenn wir erweitern müssen weitere
      */
-    private HashMap<Integer, Bus> busDepotMap = new HashMap<>();
+    private volatile HashMap<Integer, Bus> busDepotMap = new HashMap<>();
 
 
     /**

@@ -28,6 +28,33 @@ public class Schedular {
      */
     public static AtomicBoolean INIT_SUCESSFULL = new AtomicBoolean();
 
+    /**
+     * Queue of fake messages (OPCODE 0x99)
+     * this queue has a higher priority than the messageQueue, so fake messages are checks at first
+     */
+    private BlockingQueue<byte[]> fakeMessageQueue;
+
+    /**
+     * Queue to store incoming received messages by the Receiver that need to be
+     * processed by the schedular. BlockingQueue to ensure thread safety.
+     * <p>
+     * ONLY INCLUDES 0x06 messages
+     */
+    private BlockingQueue<byte[]> rmxMessageQueue;
+
+
+    /**
+     * executer responsible for scheduling actions after a specific delay
+     */
+    private ScheduledExecutorService executer;
+
+    /**
+     * Provided Matrix (=Tabelle) the schedular works with to determine which
+     * action sequence(s) are triggered for the messages
+     */
+    private static Matrix matrix;
+
+    private volatile BusDepot busDepot;
 
     // Singleton-Pattern START -----------------------------------------
 
@@ -57,47 +84,19 @@ public class Schedular {
         if (schedularInstance == null) {
             schedularInstance = new Schedular();
             matrix = Matrix.getMatrix();
-            busDepot = BusDepot.getBusDepot();
         }
         return schedularInstance;
     }
 
     // Singleton-Pattern END ________________________________________________
 
-    /**
-     * Queue to store incoming received messages by the Receiver that need to be
-     * processed by the schedular. BlockingQueue to ensure thread safety.
-     * <p>
-     * ONLY INCLUDES 0x06 messages
-     */
-    private BlockingQueue<byte[]> messageQueue;
-
-    /**
-     * Queue of fake messages (OPCODE 0x99)
-     * this queue has a higher priority than the messageQueue, so fake messages are checks at first
-     */
-    private ArrayList<byte[]> fakeMessageQueue;
-
-    /**
-     * executer responsible for scheduling actions after a specific delay
-     */
-    private ScheduledExecutorService executer;
-
-    /**
-     * Provided Matrix (=Tabelle) the schedular works with to determine which
-     * action sequence(s) are triggered for the messages
-     */
-    private static Matrix matrix;
-
-    private static BusDepot busDepot;
-
     public void startScheduling() {
         // if no thread exists start a new one
         if (sThread == null) {
 
             // init queues
-            messageQueue = new LinkedBlockingQueue<>(); // unbounded queue with no capacity restriction
-            fakeMessageQueue = new ArrayList<>();
+            rmxMessageQueue = new LinkedBlockingQueue<>(); // unbounded queue with no capacity restriction
+            fakeMessageQueue = new LinkedBlockingQueue<>();
 
             // create Thread
             sThread = new Thread(new SchedularThread());
@@ -105,6 +104,9 @@ public class Schedular {
 
             // create Executor
             executer = Executors.newScheduledThreadPool(NUMBER_OF_THREADS);
+
+            // busdepot
+            busDepot = BusDepot.getBusDepot();
         }
     }
 
@@ -122,21 +124,20 @@ public class Schedular {
      *
      * @param message a message that needs to be processed
      */
-    public void addMessage(byte[] message) {
+    public void addMessageToRmxQueue(byte[] message) {
         // TODO possibly only allow when queue not null?
-        messageQueue.add(message);
+        rmxMessageQueue.add(message);
     }
 
-
     /**
-     * Adds message to queue of schedular
+     * Adds message to fake queue of the schedular
      *
      * @param message a message that needs to be processed
      */
-    private void addMessageStart(byte[] message) {
-        // TODO possibly only allow when queue not null?
-        messageQueue.add(message);
+    public void addMessageToFakeQueue(byte[] message) {
+        fakeMessageQueue.add(message);
     }
+
 
     /**
      * Schedular Thread.
@@ -156,43 +157,44 @@ public class Schedular {
 
             // TODO add useful termination condition for thread
             while (true) {
-                try {
-                    // if queue is empty, the thread blocks (!no active waiting) and waits for an
-                    // message to become available
 
-                    // changes has only more than one bit set to one if multiple bits are set at the SAME time
-                    byte changes = 0;
-                    byte[] message;
+                // changes has only more than one bit set to one if multiple bits are set at the SAME time
+                byte changes = 0;
+                byte[] message;
 
-                    if (!fakeMessageQueue.isEmpty()) {
-                        // fake message(s) exist
-                        System.out.println("Das ist Fake News");
-                        message = fakeMessageQueue.remove(0); // take message at first position
-                        changes = busDepot.getChanges(message);
-
-                    } else {
-                        // no fake messages exist
-                        message = messageQueue.take();
-                        System.out.println("Das ist eine richtige Nachricht");
-                        changes = busDepot.getChangesAndUpdate(message); // also updates Bus!!!
-                    }
-
-                    /**
-                     * Example Value 1 from RMX-1 Adress 98 Value 1 <0x06><0x01><0x62><0x01>
-                     **/
-                    List<ActionSequence> actionSequenceList = matrix.check(message[1], message[2], changes);
-
-                    // check if list is not empty
-                    if (!actionSequenceList.isEmpty()) {
-                        for (ActionSequence actionSequence : actionSequenceList) {
-                            // call the method action sequence
-                            scheduleActionSequence(actionSequence, 0);
-                        }
-                    }
-
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                // TODO evtl. überlegen mit wait und notify
+                while (fakeMessageQueue.isEmpty() && rmxMessageQueue.isEmpty()) {
+                    // wait until one queue isnt emtpty
                 }
+
+                if (!fakeMessageQueue.isEmpty()) {
+                    // fake message(s) exist
+                    System.out.println("Das ist Fake News");
+                    message = fakeMessageQueue.poll(); // take message at first position
+                    changes = busDepot.getChanges(message);
+
+                } else {
+                    // no fake messages exist
+                    System.out.println("ICH BIN VOR TAKE");
+                    message = rmxMessageQueue.poll();
+                    System.out.println("Das ist eine richtige Nachricht");
+                    changes = busDepot.getChangesAndUpdate(message); // also updates Bus!!!
+                }
+
+                /**
+                 * Example Value 1 from RMX-1 Adress 98 Value 1 <0x06><0x01><0x62><0x01>
+                 **/
+                System.out.println("ICH WERDE JETZT PRÜFEN");
+                List<ActionSequence> actionSequenceList = matrix.check(message[1], message[2], changes);
+
+                // check if list is not empty
+                if (!actionSequenceList.isEmpty()) {
+                    for (ActionSequence actionSequence : actionSequenceList) {
+                        // call the method action sequence
+                        scheduleActionSequence(actionSequence, 0);
+                    }
+                }
+
             }
 
         }
@@ -216,7 +218,6 @@ public class Schedular {
 
                     // message for updating the server
                     byte[] message = buildResponse(actionMessage.getActionMesssage());
-                    Sender.addMessageQueue(message);
 
                     // fake message to myself so we can determine if a message is a real (0x06) or fake(0x99) message
                     byte[] fakeMessage = buildRmx0x99Message(actionMessage.getActionMesssage());
@@ -225,7 +226,15 @@ public class Schedular {
                     // checked as a whole byte (der Erste bit berücksichtigt beim check auch Änderungen der nacholgenden bits)
                     busDepot.updateBus(fakeMessage);
 
-                    addMessage(fakeMessage);
+                    Sender.addMessageQueue(message);
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    addMessageToFakeQueue(fakeMessage);
+
                 } else {
                     System.out.println("-> Adress bus " + actionArr[0] + " from rule does not exist!");
                 }
@@ -234,15 +243,15 @@ public class Schedular {
                 // if wait action is last action no need to start a new Thread
                 if ((i + 1) < actionSequence.getActionCount()) {
 
-					// message is a ActionWait
-					ActionWait actionWait = (ActionWait) action;
+                    // message is a ActionWait
+                    ActionWait actionWait = (ActionWait) action;
 
-					// get wait time
-					long time = actionWait.getWaitTime();
+                    // get wait time
+                    long time = actionWait.getWaitTime();
 
                     // start new thread that continious to process the next action of the actionsequence after the given delay
                     SchedularWaitRunnable waitRunnable = new SchedularWaitRunnable(actionSequence, i + 1);
-					executer.schedule(waitRunnable, time, TimeUnit.MILLISECONDS);
+                    executer.schedule(waitRunnable, time, TimeUnit.MILLISECONDS);
 
                     break; // know the new thread continious to process the actionSequence
                 }
@@ -318,8 +327,8 @@ public class Schedular {
 
         @Override
         public void run() {
-			System.out.println("EIN THREAD WURDE GESTARTET MIT: " + startIndex);
-        	scheduleActionSequence(actionSequence,startIndex);
+            System.out.println("EIN THREAD WURDE GESTARTET MIT: " + startIndex);
+            scheduleActionSequence(actionSequence, startIndex);
         }
 
     }
