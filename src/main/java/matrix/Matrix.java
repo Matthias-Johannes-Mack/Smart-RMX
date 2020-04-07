@@ -143,37 +143,44 @@ public class Matrix {
             // systemadress of current bitIndex that is being checked
             int systemadress_checkedBit = getSystemadressByBitIndex(columnIndex);
 
-            ActionSequence actionSequence;
 
-            // the other bit is currently set
-            if (currentBus.isBitSet(systemadress_checkedBit, bit)) {
-                // both conditions are true => get ActionSequence of point in matrix
+            System.out.println("ROWPOINT-INDEX " + startPoint);
 
+            if(matrix[startPoint] != null) {
+                ActionSequence actionSequence;
+                // the other bit is currently set
+                if (currentBus.isBitSet(systemadress_checkedBit, columnIndex)) {
+                    // both conditions are true => get ActionSequence of point in matrix
 
-                if (bitvalue == 1) {
-                    // bit value of row index =  1, bit value of column index is 1
-                    actionSequence = matrix[startPoint].getActionSequence1And1();
+                    if (bitvalue == 1) {
+                        // bit value of row index =  1, bit value of column index is 1
+                        System.out.println("ICH BIN HIER DRIN 1");
+                        actionSequence = matrix[startPoint].getActionSequence1And1();
+                    } else {
+                        // bit value of row index = 0, bit value of column index is 1
+                        System.out.println("ICH BIN HIER DRIN 2");
+                        actionSequence = matrix[startPoint].getActionSequence0And1();
+                    }
+
                 } else {
-                    // bit value of row index = 0, bit value of column index is 1
-                    actionSequence = matrix[startPoint].getActionSequence0And1();
+                    // the other bit is not set
+                    if (bitvalue == 1) {
+                        // bit value of row index =  1, bit value of column index is 0
+                        System.out.println("ICH BIN HIER DRIN 3");
+                        actionSequence = matrix[startPoint].getActionSequence1And0();
+                    } else {
+                        // bit value of row index =  0, bit value of column index is 0
+                        System.out.println("ICH BIN HIER DRIN 4");
+                        actionSequence = matrix[startPoint].getActionSequence0And0();
+                    }
+
                 }
 
-
-            } else {
-                // the other bit is not set
-                if (bitvalue == 1) {
-                    // bit value of row index =  1, bit value of column index is 0
-                    actionSequence = matrix[startPoint].getActionSequence1And0();
-                } else {
-                    // bit value of row index =  0, bit value of column index is 0
-                    actionSequence = matrix[startPoint].getActionSequence0And0();
+                if (actionSequence != null) {
+                    // ActionSequence for point exists
+                    result.add(actionSequence);
                 }
 
-            }
-
-            if (actionSequence != null) {
-                // ActionSequence for point exists
-                result.add(actionSequence);
             }
 
             startPoint++; // move to the right in the row
@@ -207,36 +214,40 @@ public class Matrix {
             // systemadress of current bitIndex that is being checked
             int systemadress_checkedBit = getSystemadressByBitIndex(bitIndex);
 
-			ActionSequence actionSequence;
 
-			// the other bit is currently set
-			if (currentBus.isBitSet(systemadress_checkedBit, bit)) {
-				// both conditions are true => get ActionSequence of point in matrix
+            System.out.println("COLUMNPOINT-INDEX " + columnPointIndex);
 
+            if((matrix[columnPointIndex]!= null)) {
 
-				if (bitvalue == 1) {
-                    // bit value of row index =  1, bit value of column index is 1
-                    actionSequence = matrix[columnPointIndex].getActionSequence1And1();
-				} else {
-                    // bit value of row index =  0, bit value of column index is 1
-                    actionSequence = matrix[columnPointIndex].getActionSequence0And1();
-				}
+                ActionSequence actionSequence;
+                // the other bit is currently set
+                if (currentBus.isBitSet(systemadress_checkedBit, bitIndex)) {
+                    // both conditions are true => get ActionSequence of point in matrix
 
-			} else {
-				// the other bit is not set
-				if (bitvalue == 1) {
-                    // bit value of row index =  1, bit value of column index is 0
-                    actionSequence = matrix[columnPointIndex].getActionSequence1And0();
-				} else {
-                    // bit value of row index =  0, bit value of column index is 0
-                    actionSequence = matrix[columnPointIndex].getActionSequence0And0();
-				}
-			}
+                    if (bitvalue == 1) {
+                        // bit value of row index =  1, bit value of column index is 1+
+                        actionSequence = matrix[columnPointIndex].getActionSequence1And1();
+                    } else {
+                        // bit value of row index =  0, bit value of column index is 1
+                        actionSequence = matrix[columnPointIndex].getActionSequence0And1();
+                    }
 
-			if (actionSequence != null) {
-				// ActionSequence for point exists
-				result.add(actionSequence);
-			}
+                } else {
+                    // the other bit is not set
+                    if (bitvalue == 1) {
+                        // bit value of row index =  1, bit value of column index is 0
+                        actionSequence = matrix[columnPointIndex].getActionSequence1And0();
+                    } else {
+                        // bit value of row index =  0, bit value of column index is 0
+                        actionSequence = matrix[columnPointIndex].getActionSequence0And0();
+                    }
+                }
+
+                if (actionSequence != null) {
+                    // ActionSequence for point exists
+                    result.add(actionSequence);
+                }
+            }
 
             bitIndex++;
             columnPointIndex = calcGauss(bitIndex) + oldBitIndex;
@@ -355,6 +366,7 @@ public class Matrix {
 	private void addActionSequenceWrapperToMatrix(int bitValue_rowIndex, int bitValue_columnIndex, ActionSequence actionSequence, int pointIndex){
     	// if no action seq wrapper exists at point add new
 	    if(matrix[pointIndex] == null) {
+            System.out.println("ICH FÜGE EINEN WRAPPER HINZU " + pointIndex);
 			matrix[pointIndex] = new ActionSequenceWrapper();
 		}
 

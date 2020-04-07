@@ -51,38 +51,22 @@ public class Bus {
 
 		Integer[] changes = new Integer[8];
 
-
-		System.out.println("new"+value);
-		System.out.println("current"+systemadressen[adrrmx]);
-
-
 		// iterates every every bit
 		for (int i = 0; i < 8; i++) {
 			boolean currentBit = currentBitSet.get(i);
 			boolean valueBit = valueBitSet.get(i);
 
-			System.out.println("currentBit "+ currentBit);
-			System.out.println("valueBit "+ valueBit);
-
 			// bit i in value is set
 			if (valueBit != currentBit) {
-
-				System.out.println("wir sind verschiedn");
 
 				if(valueBit == true) {
 					changes[i] = 1;
 				} else {
 					changes[i] = 0;
 				}
-
-				System.out.println("nach änderung "+changes[i]);
-
 			} else {
 				//no changes, value stays at -1
-				System.out.println("no changes");
 				changes[i] = -1;
-				System.out.println("nach änderung "+changes[i]);
-
 			}
 		}
 

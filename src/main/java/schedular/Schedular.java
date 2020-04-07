@@ -221,6 +221,7 @@ public class Schedular {
             if (action instanceof ActionMessage) {
                 // the action is a ActionMessage
                 ActionMessage actionMessage = (ActionMessage) action;
+                System.out.println("------ACTION " + Arrays.toString(actionMessage.getActionMesssage()));
 
                 // actionArr with the action message
                 int[] actionArr = actionMessage.getActionMesssage();
