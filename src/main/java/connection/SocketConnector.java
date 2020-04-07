@@ -17,8 +17,6 @@ public class SocketConnector {
 	private static final String ip = "127.0.0.1";
 	// standard port for RMX 950
 	private static final int port = 950;
-	// vars for the server response
-	private static long lastServerResponse;
 	private static InetSocketAddress inet;
 
 	// enum for connection states
@@ -66,7 +64,7 @@ public class SocketConnector {
 	 * 
 	 * @param conStateStr Connection state
 	 */
-	private static void setConStateStr(conState conStateStr) {
+	static void setConStateStr(conState conStateStr) {
 		SocketConnector.conStateStr = conStateStr;
 	}
 
@@ -90,14 +88,10 @@ public class SocketConnector {
 				Sender.initializeConnection();
 				// show that server is connected
 				System.out.println("-> Mit Server " + ip + ":" + port + " verbunden!");
-				// checks if the server is alive
-//				try {
-//					SocketConnector.serverAlive();
-//				} catch (InterruptedException | IOException e) {
-//					// reload the server
-//					setConStateStr(conState.DISCONNECTED);
-//					QuestionUtil.retry_reload();
-//				}
+				// start the server reload
+				ServerReload.setLastServerResponse(System.currentTimeMillis());
+				ServerReload serverReload = new ServerReload();
+				serverReload.run();
 			} catch (Exception e) {
 				setConStateStr(conState.DISCONNECTED);
 				System.out.println("-> Server nicht erreichbar & " + getConStateStr());
@@ -107,41 +101,6 @@ public class SocketConnector {
 		}
 	}
 
-	/**
-	 * Method, that reloads the Thread
-	 */
-	public static void Reload() {
-		// kill the threads
-		Sender.setNull();
-		Receiver.setNull();
-		// reconnect
-		Connect();
-	}
-
-	/**
-	 * Method, that checks if the server has a timeout and then retries the
-	 * connection
-	 * 
-	 * @throws IOException
-	 * 
-	 */
-	public static void serverAlive() throws InterruptedException, IOException {
-		// loop until connection lost
-		while (!getConStateStr().equals(conState.RECONNECT)) {
-			try {
-				Thread.sleep(5000);
-			} catch (Exception e) {
-			}
-			Long now = System.currentTimeMillis();
-			Long diff = now - getLastServerResponse();
-			// if timeout retry connection > 10 seconds
-			if (diff > 10000) {
-				System.out.println("Server seit " + diff + " ms unerreichbar!");
-				setConStateStr(conState.RECONNECT);
-				throw new InterruptedException();
-			}
-		}
-	}
 
 	/**
 	 * Closes the connection
@@ -161,22 +120,5 @@ public class SocketConnector {
 		}
 	}
 
-	/**
-	 * Getter for the server response
-	 * 
-	 * @return
-	 */
-	public static long getLastServerResponse() {
-		return lastServerResponse;
-	}
-
-	/**
-	 * Setter for the server response
-	 * 
-	 * @param lastServerResponse
-	 */
-	public static void setLastServerResponse(long lastServerResponse) {
-		SocketConnector.lastServerResponse = lastServerResponse;
-	}
 
 }

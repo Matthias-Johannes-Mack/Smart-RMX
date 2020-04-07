@@ -2,6 +2,7 @@ package Utilities;
 
 import java.util.Scanner;
 
+import connection.ServerReload;
 import connection.SocketConnector;
 
 /**
@@ -19,7 +20,7 @@ public class QuestionUtil {
 		Scanner in = new Scanner(System.in);
 		String retryStr = in.nextLine().toLowerCase();
 		// reset the idle time
-		SocketConnector.setLastServerResponse(System.currentTimeMillis());
+		ServerReload.setLastServerResponse(System.currentTimeMillis());
 		if (retryStr != null) {
 			switch (retryStr) {
 			case "y":
