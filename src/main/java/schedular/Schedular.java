@@ -160,7 +160,7 @@ public class Schedular {
             }
 
             // init sucessfull --> firstly check all conditions
-            matrix.checkAllConditions(); // TODO
+            checkAllConditions(); // TODO
 
             // TODO add useful termination condition for thread
             while (true) {
@@ -268,6 +268,20 @@ public class Schedular {
             }
 
         }
+    }
+
+    public void checkAllConditions() {
+
+        List<ActionSequence> actionSequenceList = matrix.checkAllConditions();
+
+        // check if list is not empty
+        if (!actionSequenceList.isEmpty()) {
+            for (ActionSequence actionSequence : actionSequenceList) {
+                // start processing the actionsequencee at the given startIndex
+                scheduleActionSequence(actionSequence, 0);
+            }
+        }
+
     }
 
     /**
