@@ -1,8 +1,9 @@
 package connection;
 
+import Utilities.Constants;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,9 +33,9 @@ public class Sender {
 	 */
 	protected static void initializeConnection() {
 		if (senderThread == null) {
-			addMessageAtIndex(0, ConnectionConstants.POSITIVE_HANDSHAKE);
-			addMessageAtIndex(1, ConnectionConstants.LOKDATENBANK_MESSAGE);
-			addMessageAtIndex(2, ConnectionConstants.INITALIZATION_MESSAGE);
+			addMessageAtIndex(0, Constants.POSITIVE_HANDSHAKE);
+			addMessageAtIndex(1, Constants.LOKDATENBANK_MESSAGE);
+			addMessageAtIndex(2, Constants.INITALIZATION_MESSAGE);
 			senderThread = new SenderThread();
 			senderThread.start();
 		}
@@ -42,7 +43,7 @@ public class Sender {
 
 	/**
 	 * Addes a Message to messageQueue at a specific Index
-	 * 
+	 *
 	 * @param index   index to insert message
 	 * @param message message to insert
 	 */
@@ -52,7 +53,7 @@ public class Sender {
 
 	/**
 	 * appends a message at the end messageQueue
-	 * 
+	 *
 	 * @param message message to add
 	 */
 	public synchronized static void addMessageQueue(byte[] message) {
@@ -61,7 +62,7 @@ public class Sender {
 
 	/**
 	 * Sends a message to the RMX Server
-	 * 
+	 *
 	 * @param bytes message to be send
 	 * @throws IOException if error within DataOutputStream
 	 */
@@ -73,7 +74,7 @@ public class Sender {
 
 	/**
 	 * checks if messageQueue is empty
-	 * 
+	 *
 	 * @return boolen if message queue is empty
 	 */
 	private synchronized static boolean isMessageQueueEmpty() {
@@ -82,7 +83,7 @@ public class Sender {
 
 	/**
 	 * gets the first message in messagQueue
-	 * 
+	 *
 	 * @return first message in Message queue
 	 * @throws ArrayIndexOutOfBoundsException if messageQueue is empty
 	 */
@@ -123,8 +124,7 @@ public class Sender {
 						sendMessage(message);
 						// prevent sending of new message until server acknowledges last message
 						SocketConnector.nextRequestAllowed.set(false);
-						System.out.print("Gesendete Nachricht: ");
-						ComUtilities.writeMsgToConsole(message);
+						OutputUtil.writeMsgToConsole(message);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}

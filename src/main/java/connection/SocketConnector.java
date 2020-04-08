@@ -5,30 +5,40 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import Utilities.QuestionUtil;
-
 /**
- * Class that connects with a tcp socket
+ * Class that connects with a tcp socket and creates the connection to the RMX
+ * PC-Zentrale
  *
  * @author Matthias Mack 3316380
  */
 public class SocketConnector {
-	// localhost 127.0.0.1
+	/**
+	 * string for the ip. Here: localhost 127.0.0.1
+	 */
 	private static final String ip = "127.0.0.1";
-	// standard port for RMX 950
+	/**
+	 * standard port for RMX: 950
+	 */
 	private static final int port = 950;
-	// vars for the server response
-	private static long lastServerResponse;
+	/**
+	 * create new InetSocketAddress to put ip and port together
+	 */
 	private static InetSocketAddress inet;
 
-	// enum for connection states
+	/**
+	 * enum for connection states
+	 */
 	protected enum conState {
 		CONNECTING, RUNNING, DISCONNECTED, RECONNECT
 	}
 
-	// connection status
+	/**
+	 *  connection status variable
+	 */
 	private static conState conStateStr = conState.DISCONNECTED;
-	// socket
+	/**
+	 *  create the socket
+	 */
 	private static Socket socket;
 
 	/*
@@ -54,129 +64,72 @@ public class SocketConnector {
 
 	/**
 	 * Getter connection state
-	 * 
+	 *
 	 * @return conStateStr
 	 */
-	public static conState getConStateStr() {
+	protected static conState getConStateStr() {
 		return conStateStr;
 	}
 
 	/**
 	 * Setter connection state
-	 * 
+	 *
 	 * @param conStateStr Connection state
 	 */
-	private static void setConStateStr(conState conStateStr) {
+	protected static void setConStateStr(conState conStateStr) {
 		SocketConnector.conStateStr = conStateStr;
 	}
 
 	/**
-	 * Method, that connects the Thread
+	 * Method, that connects to the RMX PC-Zentrale
 	 */
 	public static void Connect() {
 		if (getConStateStr() == conState.DISCONNECTED || getConStateStr() == conState.RECONNECT) {
-			setConStateStr(conState.CONNECTING);
-			System.out.println("Verbinde zu Server " + ip + ":" + port);
 			// establish the connection
 			try {
+				setConStateStr(conState.CONNECTING);
+				System.out.println("Verbinde zu Server " + ip + ":" + port);
 				// checks if the server is alive
 				socket = new Socket();
+				// put the IP and port together
 				inet = new InetSocketAddress(ip, port);
 				socket.connect(inet);
 				// set the connection state to running
 				setConStateStr(conState.RUNNING);
+				// starts the receiver
 				Receiver.startReceiver();
-				// initialize
+				// initialize the sender
 				Sender.initializeConnection();
 				// show that server is connected
 				System.out.println("-> Mit Server " + ip + ":" + port + " verbunden!");
-				// checks if the server is alive
-//				try {
-//					SocketConnector.serverAlive();
-//				} catch (InterruptedException | IOException e) {
-//					// reload the server
-//					setConStateStr(conState.DISCONNECTED);
-//					QuestionUtil.retry_reload();
-//				}
+				// start the server reload
+				ServerReload.setLastServerResponse(System.currentTimeMillis());
+				// Create a new ServerReload thread
+				ServerReload serverReload = new ServerReload();
+				serverReload.run();
 			} catch (Exception e) {
+				// set the status to disconnected
 				setConStateStr(conState.DISCONNECTED);
 				System.out.println("-> Server nicht erreichbar & " + getConStateStr());
 				// retry the connection
-				QuestionUtil.retry();
-			}
-		}
-	}
-
-	/**
-	 * Method, that reloads the Thread
-	 */
-	public static void Reload() {
-		// kill the threads
-		Sender.setNull();
-		Receiver.setNull();
-		// reconnect
-		Connect();
-	}
-
-	/**
-	 * Method, that checks if the server has a timeout and then retries the
-	 * connection
-	 * 
-	 * @throws IOException
-	 * 
-	 */
-	public static void serverAlive() throws InterruptedException, IOException {
-		// loop until connection lost
-		while (!getConStateStr().equals(conState.RECONNECT)) {
-			try {
-				Thread.sleep(5000);
-			} catch (Exception e) {
-			}
-			Long now = System.currentTimeMillis();
-			Long diff = now - getLastServerResponse();
-			// if timeout retry connection > 10 seconds
-			if (diff > 10000) {
-				System.out.println("Server seit " + diff + " ms unerreichbar!");
-				setConStateStr(conState.RECONNECT);
-				throw new InterruptedException();
+				QuestionUtil.retry("Connect");
 			}
 		}
 	}
 
 	/**
 	 * Closes the connection
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	public static void closeConnection() throws IOException {
-		System.out.println("Attempt disconnect!");
 		// when the connection is established kill it
 		if (getConStateStr() == conState.RUNNING) {
 			// set the connection string and put it out
-			// Threads got killed instantly
 			setConStateStr(conState.DISCONNECTED);
 			socket.close();
 			// put out the status
 			System.out.println(getConStateStr());
 		}
 	}
-
-	/**
-	 * Getter for the server response
-	 * 
-	 * @return
-	 */
-	public static long getLastServerResponse() {
-		return lastServerResponse;
-	}
-
-	/**
-	 * Setter for the server response
-	 * 
-	 * @param lastServerResponse
-	 */
-	public static void setLastServerResponse(long lastServerResponse) {
-		SocketConnector.lastServerResponse = lastServerResponse;
-	}
-
 }

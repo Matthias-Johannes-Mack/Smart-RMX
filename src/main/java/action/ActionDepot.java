@@ -2,19 +2,21 @@ package action;
 
 import java.util.ArrayList;
 
-import bus.Bus;
-import bus.BusDepot;
-
 /**
  * Class that contains all Actions in a list
+ * guarantees that no duplicates exist:
+ *
+ * - ActionsMessages are equal if their message is equal
+ * - ActionWaits are equal if their waitTime is equal
  *
  * @author Matthias Mack 3316380
  */
 public class ActionDepot {
+
 	// Singleton-Pattern START -----------------------------------------
 
 	/**
-	 * Singleton instance of BusDepot
+	 * Singleton instance of ActionDepot
 	 */
 	private static ActionDepot instance = null;
 
@@ -26,9 +28,9 @@ public class ActionDepot {
 	}
 
 	/**
-	 * Returns singleton BusDepot instance
+	 * Returns singleton ActionDepot instance
 	 *
-	 * @return BusDepot Singleton instance
+	 * @return ActionDepot Singleton instance
 	 */
 	public static synchronized ActionDepot getActionDepot() {
 		if (instance == null) {
@@ -39,62 +41,34 @@ public class ActionDepot {
 
 	// Singleton-Pattern END ________________________________________________
 
-	private ArrayList<Action> actionDepot = new ArrayList<>();
-
-	public synchronized Action getAction(int actionID) {
-		return actionDepot.get(actionID);
-	}
-
 	/**
-	 * checks if actions exists in the ActionDepot
-	 * 
-	 * @param action
-	 * @return id of action, -1 if action does not exist
+	 * list that contains all Actions
 	 */
-	private synchronized int actionExists(Action action) {
-
-		// index of action in actionDepot
-		int index = -1;
-
-		if (actionDepot.contains(action)) {
-			index = actionDepot.indexOf(action);
-		}
-
-		return index;
-	}
+	private ArrayList<Action> actionDepotList = new ArrayList<>();
 
 	/**
-	 * removes a action
-	 * 
-	 * @param actionID
-	 */
-	public synchronized void removeAction(int actionID) {
-		actionDepot.remove(actionID);
-	}
-
-	/**
-	 * clears the Depot
-	 */
-	public synchronized void clearActionDepot() {
-		actionDepot.clear();
-	}
-
-	/**
-	 * adds an action to the ActionDepot.If the action already exists (specified by
-	 * Action.equal()) returns id of existing action and does not add given action
-	 * again. This ensures every action only exists exactly one time in the
-	 * ActionDepot.
+	 * adds an action to the ActionDepot
 	 *
+	 * checks if the action already exits in the ActionDepot, if so the existing Action is returned, else the Action
+	 * is added to the ActionDepot an then is returned.
+	 *
+	 * - ActionsMessages are equal if their message is equal
+	 * - ActionWaits are equal if their waitTime is equal
+	 * 
 	 * @param action a action to add
-	 * @return index of the action
+	 * @return action - the given Action if it does not already exist. If the action alreaady exists the corresponding
+	 * 					action from the ActionDepot
 	 */
-	public synchronized int addAction(Action action) {
+	public synchronized Action addAction(Action action) {
 
-		if (!actionDepot.contains(action)) {
-			// action doesnt exist
-			actionDepot.add(action); // add action
+		if (actionDepotList.contains(action)) {
+			// if the given Action already exists return the corresponding Action in the ActionDepot
+			int index = actionDepotList.indexOf(action);
+			return actionDepotList.get(index);
 		}
-
-		return actionDepot.indexOf(action);
+		// if the Action doesnt already exist in the ActionDepot: add it and return the action
+		actionDepotList.add(action);
+		return action;
 	}
+
 }

@@ -2,6 +2,13 @@ package bus;
 
 import java.util.HashMap;
 
+/**
+ * Class that contains all saved Buses
+ *
+ * All methods need to be synchronized since multiple threads can access the BusDepot at the same time:
+ * Receiver-Thread, Schedular-Thread, ActionWait-Thread(s)
+ *
+ */
 public class BusDepot {
 
     // Singleton-Pattern START -----------------------------------------
@@ -34,77 +41,103 @@ public class BusDepot {
 
     /**
      * Map including all Buses
-     * Key 1 - RMX-1 (Key ergibt sich aus der übergebenen "RMX" Wert der OPCODE Ox06 Nachricht)
-     * ... ggf. wenn wir erweitern müssen weitere
+     * Key is given by the send <RMX> Value of an RMXmessage:
+     *
+     * RMX-1 = Key: 1
      */
-    private HashMap<Integer, Bus> busDepotMap = new HashMap<>();
+    private volatile HashMap<Integer, Bus> busDepotMap = new HashMap<>();
 
 
     /**
-     * updates Bus - if the bus isnt saved yet, the method saves the bus and then updates the given adress
-     * format <0x06><RMX><ADRRMX><VALUE>
+     * updates given systemadress with the given byteValue of the bus specified by the given busId.
+     * If the bus specified by the given busId doesnt exist, the bus is created and then updated.
      *
-     * @param message
+     * Message: format <0x06><RMX><ADRRMX><VALUE>
+     *
+     * @param busId
+     * @param systemadress
+     * @param byteValue
      */
-    public synchronized void updateBus(byte[] message) {
-        byte rmx = message[1]; // busId
-        byte adrrmx = message[2]; // Systemadresse
-        byte value = message[3]; // gesetzte Bits
+    public synchronized void updateBus(byte busId, byte systemadress, byte byteValue) {
 
-        if(!busExists(rmx)){
-            // doesnt exist --> create Bus with given values
-            Bus newBus = new Bus(rmx);
-            newBus.updateBusAdress(adrrmx, value);
-            System.out.println("New Bus created: " + rmx + " and updated Systemadresse: " + adrrmx + " Value: " + value);
+        if(!busExists(busId)){
+            // the bus doesnt exist => create Bus with given busid
+            Bus newBus = new Bus(busId);
+
+            // update bus with given message
+            newBus.updateBusAdress(systemadress, byteValue);
+            System.out.println("New Bus created: " + busId + " and updated Systemadresse: " + systemadress + " ByteValue: " + byteValue);
+
+            // add the bus to the depot
+            busDepotMap.put((int)busId, newBus);
         } else {
-            // only need to update
-            Bus bus = getBus(rmx); // get Bus by Id
-            bus.updateBusAdress(adrrmx, value);
 
-            System.out.println("Updated Bus: " + rmx + " Systemadresse: " + adrrmx + " Value: " + value);
+            // bus already exists => only need to update
+            Bus bus = getBus(busId); // get Bus by Id
+            bus.updateBusAdress(systemadress, byteValue);
+
+            System.out.println("Updated Bus: " + busId + " Systemadresse: " + systemadress + " ByteValue: " + byteValue);
         }
     }
 
     /**
-     * updates ADRRMX of Bus RMX with VALUE then returns only the changes as a byte.
+     * Returns the changes of the given systemadress of the given bus specified by the busId
+     * The Integer Array (length 8) represent a byte with bits starting from index 0 - 7.
+     * The value of each bit can be: -1 = no changes at bit, 0 = bit changed to 0, 1 bit changed to 1
      *
-     * example:
-     * - current: 10000000
-     * - message: 10000001
-     * - return:  00000001
-     *
-     * format <0x06><RMX><ADRRMX><VALUE>
-     *
-     * @param message
+     * @param busId
+     * @param systemadress
+     * @return Integer[] size 8 that represents the last Changes of the given systemadress
      */
-    public synchronized byte getChanges(byte[] message) {
-        byte rmx = message[1]; // busId
-        byte adrrmx = message[2]; // Systemadresse
+    public synchronized Integer[] getChanges(byte busId, byte systemadress) {
+
+        // get changes of given systemadress
+        Bus bus = getBus(busId);
+        Integer[] changes = bus.getChanges(systemadress);
+
+        return changes;
+    }
+
+    /**
+     * Returns the changes of the given systemadress of the given bus specified by the busId and updates
+     * the given systemadress with the given byteValue of the bus specified by the given busId.
+     * The Integer Array (length 8) represent a byte with bits starting from index 0 - 7.
+     * The value of each bit can be: -1 = no changes at bit, 0 = bit changed to 0, 1 bit changed to 1
+     *
+     * @param busId
+     * @param systemadress
+     * @param byteValue
+     * @return Integer[] size 8 that represents the last Changes of the given systemadress
+     */
+    public synchronized Integer[] getChangesAndUpdate(byte busId, byte systemadress, byte byteValue) {
 
         // update bus
-        updateBus(message);
+        updateBus(busId, systemadress, byteValue);
 
-        // get changes of given ADRRMX
-        Bus bus = getBus(rmx);
-        byte changes = bus.getChanges(adrrmx);
+        // get changes of given systemadress
+        Bus bus = getBus(busId);
+        Integer[] changes = bus.getChanges(systemadress);
 
         return changes;
     }
 
 
+    /**
+     * Returns the bus specified by the given busId
+     * @param busId
+     * @return the bus specified by the given busId, null if no bus with the given busId exists
+     */
     public synchronized Bus getBus(int busId) {
         return busDepotMap.get(busId);
     }
 
-    private synchronized boolean busExists(int busId) {
+    /**
+     * Checks if the bus specified by the given busId exists in the BusDepot
+     * @param busId
+     * @return true if the bus specified by the given busId exits, false otherwise
+     */
+    public synchronized boolean busExists(int busId) {
         return busDepotMap.containsKey(busId);
     }
 
-    public synchronized void removeBus(int busId) {
-        busDepotMap.remove(busId);
-    }
-
-    public synchronized void clearTrain() {
-        busDepotMap.clear();
-    }
 }
