@@ -46,7 +46,7 @@ public class TestBusDepot {
 		byte[] message2 = new byte[] { 0x06, 0x00, 0x00, 0x00 };
 		// test getChanges and Update
 		// [0, -1, -1, -1, -1, -1, -1, -1]
-		assertArrayEquals(new Integer[] { 1, -1, -1, -1, -1, -1, -1, -1 }, busDepot.getChangesAndUpdate(message2));
+		assertArrayEquals(new Integer[] { 0, -1, -1, -1, -1, -1, -1, -1 }, busDepot.getChangesAndUpdate(message2));
 	}
 
 }
