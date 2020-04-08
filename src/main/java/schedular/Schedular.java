@@ -199,11 +199,13 @@ public class Schedular {
                 if (!fakeMessageQueue.isEmpty()) {
                     // fake message(s) exist
                     message = fakeMessageQueue.poll(); // take message at first position
-                    changes = busDepot.getChanges(message); // bus has already been updated
+                    // format <0x99><RMX><ADRRMX><VALUE>
+                    changes = busDepot.getChanges(message[1], message[2]); // bus has already been updated
                 } else {
                     // no fake messages exist
                     message = rmxMessageQueue.poll();
-                    changes = busDepot.getChangesAndUpdate(message); // also updates Bus
+                    // format <0x06><RMX><ADRRMX><VALUE>
+                    changes = busDepot.getChangesAndUpdate(message[1], message[2], message[3]); // also updates Bus
                 }
 
 
@@ -282,7 +284,8 @@ public class Schedular {
                     byte[] fakeMessage = buildFakeMessage(actionMessage.getActionMesssage());
 
                     // update bus
-                    busDepot.updateBus(fakeMessage);
+                    // format <0x99><RMX><ADRRMX><VALUE>
+                    busDepot.updateBus(message[1], message[2],message[3]);
 
                     // add (real) message to the sender for sending to the RMX-PC-Zentrale
                     Sender.addMessageQueue(message);
