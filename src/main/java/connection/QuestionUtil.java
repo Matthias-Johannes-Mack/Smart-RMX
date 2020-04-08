@@ -26,7 +26,7 @@ public class QuestionUtil {
 			case "y":
 				// if it is a connection recall then connect else reconnect
 				if (questionType.equals("Connect")) {
-					SocketConnector.Connect();
+					SocketConnector.getSocketConnector().Connect();
 				} else {
 					ServerReload.Reload();
 				}
@@ -40,7 +40,7 @@ public class QuestionUtil {
 				System.out.println("Falschen Wert eingegeben!");
 				// if it is a connection recall then connect else reconnect
 				if (questionType.equals("Connect")) {
-					SocketConnector.Connect();
+					SocketConnector.getSocketConnector().Connect();
 				} else {
 					ServerReload.Reload();
 				}
