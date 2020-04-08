@@ -7,7 +7,7 @@ import java.util.ArrayList;
  * guarantees that no duplicates exist:
  *
  * - ActionsMessages are equal if their message is equal
- * - ActionWait are equal if their waitTime is equal
+ * - ActionWaits are equal if their waitTime is equal
  *
  * @author Matthias Mack 3316380
  */

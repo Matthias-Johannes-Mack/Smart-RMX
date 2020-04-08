@@ -3,9 +3,14 @@ package action;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class that represents a ActionSequence
+ */
 public class ActionSequence {
 
-	// linked for the actions
+	/**
+	 * list that contains all Actions
+	 */
 	private ArrayList<Action> actions;
 
 	/**
@@ -21,9 +26,9 @@ public class ActionSequence {
 	}
 
 	/**
-	 * Getter for the actionlist
+	 * Getter for the actions
 	 * 
-	 * @return
+	 * @return a List of all Actions in the ActionSequence
 	 */
 	public List<Action> getActions() {
 		return actions;
@@ -32,10 +37,12 @@ public class ActionSequence {
 	/**
 	 * Method that adds an action to the ActionSequence at the end (FIFO)
 	 * 
-	 * @param action
+	 * @param action a action to add
 	 */
 	public void addAction(Action action) {
 		actions.add(action);
+
+		// increment actionCount
 		actionCount++;
 	}
 
@@ -48,6 +55,9 @@ public class ActionSequence {
 		return actions.get(index);
 	}
 
+	/**
+	 * @return actionCount - indicates how many actions this ActionsSequence includes
+	 */
 	public int getActionCount() {
 		return actionCount;
 	}
