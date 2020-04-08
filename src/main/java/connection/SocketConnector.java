@@ -73,10 +73,10 @@ public class SocketConnector {
 	 */
 	public static void Connect() {
 		if (getConStateStr() == conState.DISCONNECTED || getConStateStr() == conState.RECONNECT) {
-			setConStateStr(conState.CONNECTING);
-			System.out.println("Verbinde zu Server " + ip + ":" + port);
 			// establish the connection
 			try {
+				setConStateStr(conState.CONNECTING);
+				System.out.println("Verbinde zu Server " + ip + ":" + port);
 				// checks if the server is alive
 				socket = new Socket();
 				// put the IP and port together
@@ -100,7 +100,7 @@ public class SocketConnector {
 				setConStateStr(conState.DISCONNECTED);
 				System.out.println("-> Server nicht erreichbar & " + getConStateStr());
 				// retry the connection
-				QuestionUtil.retry();
+				QuestionUtil.retry("Connect");
 			}
 		}
 	}
@@ -111,7 +111,6 @@ public class SocketConnector {
 	 * @throws IOException
 	 */
 	public static void closeConnection() throws IOException {
-		System.out.println("Attempt disconnect!");
 		// when the connection is established kill it
 		if (getConStateStr() == conState.RUNNING) {
 			// set the connection string and put it out

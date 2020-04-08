@@ -2,21 +2,21 @@ package connection;
 
 import java.util.Scanner;
 
-import connection.ServerReload;
-import connection.SocketConnector;
-
 /**
- * Libary with functions for all sorts of usages
+ * Question dialog for the SocketConnector and the ServerReload
  *
  * @author Matthias Mack 3316380
  */
 public class QuestionUtil {
 	/**
 	 * Method that retries the connection
+	 * 
+	 * @param questionType - String with the type of question inside
 	 */
-	public static void retry() {
+	public static void retry(String questionType) {
 		// retry the connection, if possible
 		System.out.println("Erneut verbinden y/n?");
+		// create scanner
 		Scanner in = new Scanner(System.in);
 		String retryStr = in.nextLine().toLowerCase();
 		// reset the idle time
@@ -24,44 +24,29 @@ public class QuestionUtil {
 		if (retryStr != null) {
 			switch (retryStr) {
 			case "y":
-				SocketConnector.Connect();
+				// if it is a connection recall then connect else reconnect
+				if (questionType.equals("Connect")) {
+					SocketConnector.Connect();
+				} else {
+					ServerReload.Reload();
+				}
 				break;
+			// exit the programm
 			case "n":
 				System.exit(0);
 				break;
 			// if the string is false retry
 			default:
 				System.out.println("Falschen Wert eingegeben!");
-				SocketConnector.Connect();
+				// if it is a connection recall then connect else reconnect
+				if (questionType.equals("Connect")) {
+					SocketConnector.Connect();
+				} else {
+					ServerReload.Reload();
+				}
 				break;
 			}
 		}
-	}
 
-	/**
-	 * Method that retries the connection after a reload
-	 */
-	public static void retry_reload() {
-		// retry the connection, if possible
-		System.out.println("Erneut verbinden y/n?");
-		Scanner in = new Scanner(System.in);
-		String retryStr = in.nextLine().toLowerCase();
-		// reset the idle time
-		ServerReload.setLastServerResponse(System.currentTimeMillis());
-		if (retryStr != null) {
-			switch (retryStr) {
-			case "y":
-				ServerReload.Reload();
-				break;
-			case "n":
-				System.exit(0);
-				break;
-			// if the string is false retry
-			default:
-				System.out.println("Falschen Wert eingegeben!");
-				ServerReload.Reload();
-				break;
-			}
-		}
 	}
 }

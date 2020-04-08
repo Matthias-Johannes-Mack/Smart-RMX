@@ -34,7 +34,7 @@ public class ServerReload implements Runnable {
 				// needed, for restarting server
 				SocketConnector.setConStateStr(conState.RECONNECT);
 				// call the retry form
-				QuestionUtil.retry_reload();
+				QuestionUtil.retry("Reload");
 			}
 		}
 	}
