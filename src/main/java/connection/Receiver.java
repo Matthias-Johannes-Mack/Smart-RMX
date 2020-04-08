@@ -10,59 +10,28 @@ import java.io.InputStream;
 
 /**
  * Class responsible for receiving messages from the server
- * 
+ *
  * @author Jan Dammrath
- * 
+ *
  */
 class Receiver {
-
-	// Singleton-Pattern START -----------------------------------------
-
-	/**
-	 * Singleton instance of Receiver
-	 */
-	private static Receiver receiverInstance;
+	private static InputStream inputStr;
+	private static ReceiverThread receiverThread;
 
 	/**
-	 * private constructor to prevent instantiation
+	 * private Constructor to prevent instantiation
 	 */
 	private Receiver() {
-
 	}
 
 	/**
-	 * Returns singleton Receiver instance
-	 *
-	 * @return Receiver Singleton instance
+	 * Starts the receiver Thread and ets uop the inputstream
 	 */
-	public static synchronized Receiver getReceiver() {
-		if (receiverInstance == null) {
-			receiverInstance = new Receiver();
-
-		}
-		return receiverInstance;
-	}
-
-	// Singleton-Pattern END ________________________________________________
-
-	/**
-	 * Thread for sending the messages
-	 */
-	private ReceiverThread receiverThread;
-
-	/**
-	 * InputStream for the messages to the RMX-PC-Zentrale
-	 */
-	private InputStream inputStr;
-
-	/**
-	 * Starts the receiver Thread and sets up the InputStream to the RMX-PC-Zentrale
-	 */
-	public void startReceiver() {
+	protected static void startReceiver() {
 		// if the socketConnector is requesting a new thread, do it
 		if (receiverThread == null) {
 			try {
-				inputStr = SocketConnector.getSocketConnector().getSocket().getInputStream();
+				inputStr = SocketConnector.getSocket().getInputStream();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -72,14 +41,53 @@ class Receiver {
 	}
 
 	/**
-	 * Receives Message from server and returns thee message without the RMXnet Headbyte
+	 * Method that sets the thread to null
+	 */
+	public synchronized static void setNull() {
+		receiverThread = null;
+	}
+
+	/**
+	 * private Thread responsible for receiving messages from the Server
+	 */
+	private static class ReceiverThread extends Thread {
+		public void run() {
+			// Loop while Connection is established
+			while (SocketConnector.getConStateStr().equals(SocketConnector.conState.RUNNING)) {
+				// wait for next message
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+				try {
+					// while there is a message loop
+					while (inputStr.available() > 0) {
+						byte[] msg = receive();
+						// write all messages to console
+						OutputUtil.writeMsgToConsole(msg);
+						// switch the opt codes
+						processMessage(msg);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	// ======================================================================
+	// --------------- Implementierung mit Nachrichtenerkennung -------------
+
+	/**
+	 * Receives Message from server and returns message without the RMXnet Headbyte
 	 * (HEAD) and Number of Bytes (COUNT)
-	 *
-	 * RMXnet message format: <HEAD><COUNT><OPCODE><DATA>
+	 * <p>
+	 * RMXnet message format: HEAD-COUNT-OPCODE-DATA
 	 *
 	 * @return byte[] - message
 	 */
-	private byte[] receive() throws IOException {
+	private static byte[] receive() throws IOException {
 
 		int msgLength;
 
@@ -103,23 +111,11 @@ class Receiver {
 		return message;
 	}
 
-
-	/**
-	 * Method that sets the thread to null
-	 */
-	public synchronized void setNull() {
-		receiverThread = null;
-	}
-
-	/*-----------------------------------------------------------------------------------------------
-	  MESSAGE OPCODE RECOGNITION
-     ----------------------------------------------------------------------------------------------*/
-
 	/**
 	 * Processes message (without HEAD and COUNT) in dependence of the OPCODE. Sets
 	 * nextRequestAllowed in SocketConnecter to true, if message is an
 	 * acknoledgement.
-	 *
+	 * <p>
 	 * RMXnet OPCODE (receiving): - 0 (0x00) positive acknowledgement - 1 (0x01)
 	 * negative acknowledgement - 3 (0x03) initialisation response - 4 (0x04) state
 	 * info - 6 (0x06) rmx-adress value (RMX-1 Bus) - 8 (0x08) lok-info (adress,
@@ -129,7 +125,7 @@ class Receiver {
 	 *
 	 * @param message a message to process without HEAD and COUNT
 	 */
-	public void processMessage(byte[] message) {
+	public static void processMessage(byte[] message) {
 
 		int opcode = -1;
 
@@ -139,53 +135,53 @@ class Receiver {
 			opcode = message[0];
 
 			switch (opcode) {
-			case 0: // 0x00 - positive acknowledgement
+				case 0: // 0x00 - positive acknowledgement
 
-				if (message[1] == 0) {
-					// "final" positive acknowledgement
-					SocketConnector.getSocketConnector().nextRequestAllowed.set(true);
-				}
+					if (message[1] == 0) {
+						// "final" positive acknowledgement
+						SocketConnector.nextRequestAllowed.set(true);
+					}
 
-				// else message[1] == 0x01: positive acknowledgment "Bearbeitung läuft"
+					// else message[1] == 0x01: positive acknowledgment "Bearbeitung läuft"
 
-				break;
-			case 1: // 0x01 - negative acknowledgement
-				process0x01(message);
-				SocketConnector.getSocketConnector().nextRequestAllowed.set(true);
-				break;
-			case 3: // 0x03 - initialisation response
-				// TODO Wenn nicht gleiche RMX Version terminieren
+					break;
+				case 1: // 0x01 - negative acknowledgement
+					process0x01(message);
+					SocketConnector.nextRequestAllowed.set(true);
+					break;
+				case 3: // 0x03 - initialisation response
+					// TODO Wenn nicht gleiche RMX Version terminieren
 
-				SocketConnector.getSocketConnector().nextRequestAllowed.set(true);
-				break;
-			case 4: // 0x04 - state info
-				process0x04(message);
-				SocketConnector.getSocketConnector().nextRequestAllowed.set(true);
-				// put in the current system time
-				ServerReload.setLastServerResponse(System.currentTimeMillis());
-				break;
-			case 6: // 0x06 - rmx-adress value (RMX-1 Bus)
-				process0x06(message);
-				break;
-			case 8: // 0x06 - lok-info (adress, type, name)
-				process0x08(message);
-				break;
-			case 32: // 0x20 - rmx-channel info (RMX-0 Bus)
-				process0x20(message);
-				break;
-			case 36: // 0x24 - lok-info speed and direction
-				process0x24(message);
-				SocketConnector.getSocketConnector().nextRequestAllowed.set(true);
-				break;
-			case 40: // 0x28 - lok-info functions (f0 - f16)
-				process0x28(message);
-				SocketConnector.getSocketConnector().nextRequestAllowed.set(true);
-				break;
-			case 192: // 0x0c0 read lok-decoder
-				break;
-			default:
-				System.out.println("Message received with unknown OPCODE");
-				break;
+					SocketConnector.nextRequestAllowed.set(true);
+					break;
+				case 4: // 0x04 - state info
+					process0x04(message);
+					SocketConnector.nextRequestAllowed.set(true);
+					// put in the current system time
+					ServerReload.setLastServerResponse(System.currentTimeMillis());
+					break;
+				case 6: // 0x06 - rmx-adress value (RMX-1 Bus)
+					process0x06(message);
+					break;
+				case 8: // 0x06 - lok-info (adress, type, name)
+					process0x08(message);
+					break;
+				case 32: // 0x20 - rmx-channel info (RMX-0 Bus)
+					process0x20(message);
+					break;
+				case 36: // 0x24 - lok-info speed and direction
+					process0x24(message);
+					SocketConnector.nextRequestAllowed.set(true);
+					break;
+				case 40: // 0x28 - lok-info functions (f0 - f16)
+					process0x28(message);
+					SocketConnector.nextRequestAllowed.set(true);
+					break;
+				case 192: // 0x0c0 read lok-decoder
+					break;
+				default:
+					System.out.println("Message received with unknown OPCODE");
+					break;
 			}
 		}
 	}
@@ -196,27 +192,27 @@ class Receiver {
 	 *
 	 * @param message a message to process
 	 */
-	private void process0x01(byte[] message) {
+	private static void process0x01(byte[] message) {
 
 		switch (message[1]) {
-		case 1: // 0x01 - unknown OPCODE
-			System.err.println("negative acknowledgment: unknown OPCODE");
-			break;
-		case 3: // 0x03 - lok not in database
-			System.err.println("negative acknowledgment: lok not in database");
-			break;
-		case 4: // 0x04 - input error
-			System.err.println("negative acknowledgment: input error");
-			break;
-		case 5: // 0x05 mode unequal to 0x01
-			System.err.println("negative acknowledgment: mode unequal to 0x01");
-			break;
-		case 7: // 0x07 - lok database full
-			System.err.println("negative acknowledgment: lok database full");
-			break;
-		case 8: // 0x08 - control channels occupied (RMX-0 Bus)
-			System.err.println("negative acknowledgment: control channels occupied");
-			break;
+			case 1: // 0x01 - unknown OPCODE
+				System.err.println("negative acknowledgment: unknown OPCODE");
+				break;
+			case 3: // 0x03 - lok not in database
+				System.err.println("negative acknowledgment: lok not in database");
+				break;
+			case 4: // 0x04 - input error
+				System.err.println("negative acknowledgment: input error");
+				break;
+			case 5: // 0x05 mode unequal to 0x01
+				System.err.println("negative acknowledgment: mode unequal to 0x01");
+				break;
+			case 7: // 0x07 - lok database full
+				System.err.println("negative acknowledgment: lok database full");
+				break;
+			case 8: // 0x08 - control channels occupied (RMX-0 Bus)
+				System.err.println("negative acknowledgment: control channels occupied");
+				break;
 		}
 	}
 
@@ -225,7 +221,7 @@ class Receiver {
 	 *
 	 * @param message a message to process
 	 */
-	private void process0x04(byte[] message) {
+	private static void process0x04(byte[] message) {
 
 		if (Schedular.INIT_SUCESSFULL.get() == false) {
 			// check initialization
@@ -248,7 +244,7 @@ class Receiver {
 	 *
 	 * @param message a message to process
 	 */
-	private void process0x06(byte[] message) {
+	private static void process0x06(byte[] message) {
 
 		if (Schedular.INIT_SUCESSFULL.get()) { // true -- init successfull
 
@@ -259,58 +255,43 @@ class Receiver {
 		} else { // false -- init not successfull
 
 			// updates bus -> creates if not existing
-			BusDepot.getBusDepot().updateBus(message[1], message[2],message[3]);
+			BusDepot.getBusDepot().updateBus(message[1], message[2], message[3]);
 		}
 
 	}
-
-	/*
-		unused for know
-	 */
-
-	private void process0x08(byte[] message) {
-
-	}
-
-	private void process0x20(byte[] message) {
-
-	}
-
-	private void process0x24(byte[] message) {
-
-	}
-
-	private void process0x28(byte[] message) {
-
-	}
-
-	/*-----------------------------------------------------------------------------------------------
-	  RECEIVER-THREAD
-     ----------------------------------------------------------------------------------------------*/
 
 	/**
-	 * Thread for receiving messages from the RMX-PC-Zentrale
+	 * @param message
 	 */
-	private class ReceiverThread extends Thread {
-		public void run() {
-			// Loop while Connection is established
-			while (SocketConnector.getSocketConnector().getConStateStr().equals(SocketConnector.conState.RUNNING)) {
-				// wait for next message
+	private static void process0x08(byte[] message) {
 
-				try {
-					// while there is a message loop
-					while (inputStr.available() > 0) {
-						byte[] msg = receive();
-						// write all messages to console
-						OutputUtil.writeMsgToConsole(msg);
-						// switch the opt codes
-						processMessage(msg);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
+	}
+
+	/**
+	 * @param message
+	 */
+	private static void process0x20(byte[] message) {
+
+	}
+
+	/**
+	 * processsing lok-info speed and direction OPCODE 0x24. format
+	 * <0x24><ADRH><ADRL><SPEED><DIR>
+	 *
+	 * @param message a message to process
+	 */
+	private static void process0x24(byte[] message) {
+
+	}
+
+	/**
+	 * processsing lok-info functions (f0 - f16) OPCODE 0x28. format
+	 * <0x28><ADRH><ADRL><F0F7><F8F15><F16F23>
+	 *
+	 * @param message a message to process
+	 */
+	private static void process0x28(byte[] message) {
+
 	}
 
 }

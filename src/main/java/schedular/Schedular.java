@@ -290,7 +290,7 @@ public class Schedular {
                     busDepot.updateBus(message[1], message[2],message[3]);
 
                     // add (real) message to the sender for sending to the RMX-PC-Zentrale
-                    Sender.getSender().addMessageQueue(message);
+                    Sender.addMessageQueue(message);
 
                     // add fake message to the fakeMessageQueue so the changes are checked
                     addMessageToFakeQueue(fakeMessage);

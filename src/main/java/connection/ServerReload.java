@@ -19,7 +19,7 @@ public class ServerReload implements Runnable {
 	@Override
 	public void run() {
 		// loop until Reconnect flag is set
-		while (SocketConnector.getSocketConnector().getConStateStr().equals(conState.RUNNING)) {
+		while (SocketConnector.getConStateStr().equals(conState.RUNNING)) {
 			// sleep 5 seconds to create a delay
 			try {
 				Thread.sleep(5000);
@@ -34,7 +34,7 @@ public class ServerReload implements Runnable {
 				// put out warning
 				System.out.println("Server seit " + diff + " ms unerreichbar!");
 				// needed, for restarting server
-				SocketConnector.getSocketConnector().setConStateStr(conState.RECONNECT);
+				SocketConnector.setConStateStr(conState.RECONNECT);
 				// call the retry form
 				QuestionUtil.retry("Reload");
 			}
@@ -46,15 +46,15 @@ public class ServerReload implements Runnable {
 	 */
 	protected static void Reload() {
 		// kill the threads
-		Sender.getSender().setNull();
-		Receiver.getReceiver().setNull();
+		Sender.setNull();
+		Receiver.setNull();
 		// reconnect
-		SocketConnector.getSocketConnector().Connect();
+		SocketConnector.Connect();
 	}
 
 	/**
 	 * Getter for the server response
-	 * 
+	 *
 	 * @return long - the timestamp in millis
 	 */
 	protected static long getLastServerResponse() {
@@ -63,7 +63,7 @@ public class ServerReload implements Runnable {
 
 	/**
 	 * Setter for the server response
-	 * 
+	 *
 	 * @param lastServerResponse - sets the stimestamp in millis
 	 */
 	protected static void setLastServerResponse(long lastServerResponse) {
