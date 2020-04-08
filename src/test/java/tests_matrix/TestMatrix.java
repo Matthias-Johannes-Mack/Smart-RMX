@@ -1,5 +1,5 @@
 
-package tests;
+package tests_matrix;
 
 import static org.junit.Assert.*;
 
