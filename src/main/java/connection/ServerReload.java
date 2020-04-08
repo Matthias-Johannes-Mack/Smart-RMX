@@ -46,8 +46,8 @@ public class ServerReload implements Runnable {
 	 */
 	protected static void Reload() {
 		// kill the threads
-		Sender.setNull();
-		Receiver.setNull();
+		Sender.getSender().setNull();
+		Receiver.getReceiver().setNull();
 		// reconnect
 		SocketConnector.getSocketConnector().Connect();
 	}

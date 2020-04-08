@@ -111,7 +111,7 @@ public class Sender {
 	 * @throws IOException if error within DataOutputStream
 	 */
 	private void sendMessage(byte[] bytes) throws IOException {
-		outStream = new DataOutputStream(SocketConnector.getSocket().getOutputStream());
+		outStream = new DataOutputStream(SocketConnector.getSocketConnector().getSocket().getOutputStream());
 		// write the message to the RMX-PC-Zentrale
 		outStream.write(bytes);
 	}
@@ -157,17 +157,17 @@ public class Sender {
 	private class SenderThread extends Thread {
 		public void run() {
 			// loop until Connection is closed
-			while (SocketConnector.getConStateStr().equals(SocketConnector.conState.RUNNING)) {
+			while (SocketConnector.getSocketConnector().getConStateStr().equals(SocketConnector.conState.RUNNING)) {
 				/*
 				 * only send message if the last command to the server is acknowledged by the
 				 * Server
 				 */
-				if (!isMessageQueueEmpty() && SocketConnector.nextRequestAllowed.get()) {
+				if (!isMessageQueueEmpty() && SocketConnector.getSocketConnector().nextRequestAllowed.get()) {
 					try {
 						byte[] message = getFirstMessage();
 						sendMessage(message);
 						// prevent sending of new message until server acknowledges last message
-						SocketConnector.nextRequestAllowed.set(false);
+						SocketConnector.getSocketConnector().nextRequestAllowed.set(false);
 						OutputUtil.writeMsgToConsole(message);
 					} catch (Exception e) {
 						e.printStackTrace();
