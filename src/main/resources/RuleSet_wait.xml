@@ -24,13 +24,40 @@ Erstes bit ist Bit 0.
 			<Bit>0</Bit>
 			<BitValue>1</BitValue>
 		</Condition>
+
 		<Actions>
+			<Wait>10000</Wait>
 			<Action>
 				<Bus>1</Bus>
 				<SystemAddress>2</SystemAddress>
 				<Bit>0</Bit>
 				<BitValue>1</BitValue>
 			</Action>
+			<Action>
+				<Bus>1</Bus>
+				<SystemAddress>2</SystemAddress>
+				<Bit>1</Bit>
+				<BitValue>1</BitValue>
+			</Action>
+			<Action>
+				<Bus>1</Bus>
+				<SystemAddress>2</SystemAddress>
+				<Bit>2</Bit>
+				<BitValue>1</BitValue>
+			</Action>
+			<Action>
+				<Bus>1</Bus>
+				<SystemAddress>2</SystemAddress>
+				<Bit>3</Bit>
+				<BitValue>1</BitValue>
+			</Action>
+			<Action>
+				<Bus>1</Bus>
+				<SystemAddress>2</SystemAddress>
+				<Bit>4</Bit>
+				<BitValue>1</BitValue>
+			</Action>
 		</Actions>
+
 	</Rule>
 </Ruleset>

@@ -44,7 +44,7 @@ public class ServerReload implements Runnable {
 	/**
 	 * Method, that reloads the Thread
 	 */
-	public static void Reload() {
+	protected static void Reload() {
 		// kill the threads
 		Sender.setNull();
 		Receiver.setNull();
@@ -57,7 +57,7 @@ public class ServerReload implements Runnable {
 	 * 
 	 * @return long - the timestamp in millis
 	 */
-	public static long getLastServerResponse() {
+	protected static long getLastServerResponse() {
 		return lastServerResponse;
 	}
 
@@ -66,7 +66,7 @@ public class ServerReload implements Runnable {
 	 * 
 	 * @param lastServerResponse - sets the stimestamp in millis
 	 */
-	public static void setLastServerResponse(long lastServerResponse) {
+	protected static void setLastServerResponse(long lastServerResponse) {
 		ServerReload.lastServerResponse = lastServerResponse;
 	}
 }

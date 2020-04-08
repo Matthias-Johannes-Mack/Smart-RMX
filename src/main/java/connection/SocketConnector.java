@@ -67,7 +67,7 @@ public class SocketConnector {
 	 * 
 	 * @return conStateStr
 	 */
-	public static conState getConStateStr() {
+	protected static conState getConStateStr() {
 		return conStateStr;
 	}
 
@@ -76,7 +76,7 @@ public class SocketConnector {
 	 * 
 	 * @param conStateStr Connection state
 	 */
-	static void setConStateStr(conState conStateStr) {
+	protected static void setConStateStr(conState conStateStr) {
 		SocketConnector.conStateStr = conStateStr;
 	}
 

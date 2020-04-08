@@ -13,7 +13,7 @@ public class QuestionUtil {
 	 * 
 	 * @param questionType - String with the type of question inside
 	 */
-	public static void retry(String questionType) {
+	protected static void retry(String questionType) {
 		// retry the connection, if possible
 		System.out.println("Erneut verbinden y/n?");
 		// create scanner
