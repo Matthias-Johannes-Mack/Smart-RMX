@@ -1,37 +1,51 @@
 package bus;
 
 import Utilities.ByteUtil;
-
 import java.util.ArrayList;
 import java.util.BitSet;
 
+/**
+ * Class that represents a Bus of the RMX-PC-Zentrale
+ *
+ */
 public class Bus {
 
 	/**
-	 * amount of systemadressen in each bus RMX-PC-Zentrale: 112 adressen (index 0
+	 * amount of systemadresses in each bus RMX-PC-Zentrale: 112 adressen (index 0
 	 * to 111)
 	 */
 	public static final int NUMBER_SYSTEMADRESSEN = 112;
 
-	public volatile int busId;
-
-	public volatile byte[] systemadressen;
+	/**
+	 * id of the bus
+	 */
+	private volatile int busId;
 
 	/**
-	 * ArraList contains Integer Arrays of length 8 to represent a byte starting from index 0 - 7
-	 * -1 = no changes at bit, 0 = bit changed to 0, 1 bit changed to 1
+	 * array that contains the byte value of each systemadress
 	 */
-	public volatile ArrayList<Integer[]> lastChanges;
+	private volatile byte[] systemadressen;
 
+	/**
+	 * ArrayList that contains the last Changes of each systemadresse (byte) in comparison to the last state
+	 * - the containing integer Arrays (length 8) represent a byte with bits starting from index 0 - 7
+	 * - the value of each bit can be: -1 = no changes at bit, 0 = bit changed to 0, 1 bit changed to 1
+	 */
+	private volatile ArrayList<Integer[]> lastChanges;
+
+	/**
+	 * Constructor for a Bus
+	 * @param rmx busid of the Bus to create
+	 */
 	public Bus(byte rmx) {
 		busId = rmx;
 		systemadressen = new byte[NUMBER_SYSTEMADRESSEN]; // initial all values are 0
 		lastChanges = new ArrayList<>(NUMBER_SYSTEMADRESSEN);
-		initalizeArrayList();
+		initalizeArrayList(); // sets all values of lastChanges initaial at -1 (no changes)
 	}
 
 	/**
-	 * initalizes the lastChanges list
+	 * initalizes the all containing Integer Arrays in lastChanged to -1 (no changes)
 	 */
 	private void initalizeArrayList() {
 		for(int i=0; i < NUMBER_SYSTEMADRESSEN; i++) {
@@ -40,9 +54,12 @@ public class Bus {
 	}
 
 	/**
-	 * updates adress and changes. updates changes to 1 and changes to 0
-	 * @param adrrmx
-	 * @param value
+	 * updates the given systemadresss with the given value.
+	 * updates lastChanges of the given systemadress by comparing the current and given value
+	 *
+	 * @param adrrmx systemadress to update
+	 * @param value to update the systemadress to
+	 *
 	 */
 	public void updateBusAdress(byte adrrmx, byte value) {
 
@@ -70,43 +87,48 @@ public class Bus {
 			}
 		}
 
-
-
+		// set lastChanges
 		lastChanges.set(adrrmx, changes);
 
-		// update current value
+		// update the currently safed value
 		systemadressen[adrrmx] = value;
 	}
 
 	/**
-	 * Gibt die letzten Änderungen der übergebenen Systemadresse zurück
+	 * Returns the last changes of the given systemadressse
 	 *
-	 * @param adrrmx
-	 * @return
+	 * @param adrrmx systemadress to get the changes for
+	 * @return Integer[] size 8 that represents the last Changes of the given systemadress
 	 */
 	public Integer[] getChanges(byte adrrmx) {
 		return lastChanges.get(adrrmx);
 	}
 
 	/**
-	 * Checks if the bit of the given systemadress is set
+	 * Checks if a bit of the given systemadress is set to 1
 	 * 
-	 * @param systemadresse
-	 * @param bit
-	 * @return true if bit is set, returns false if bit isnt set
+	 * @param systemadresse the systemadress to check
+	 * @param bitIndex index of the bit to check (from 0 to 7)
+	 * @return true if the bit specified by the bitindex is set, false otherwise
 	 */
-	public boolean isBitSet(int systemadresse, int bit) {
-		return ByteUtil.bitIsSet(systemadressen[systemadresse], bit);
+	public boolean isBitSet(int systemadresse, int bitIndex) {
+		return ByteUtil.bitIsSet(systemadressen[systemadresse], bitIndex);
 	}
 
 	/**
-	 * Method that returns the current Byte
+	 * returns the current byte value of the given systemadress
 	 * 
-	 * @param systemAdresse
-	 * @return
+	 * @param systemAdresse the systemadress to get current value for
+	 * @return byte value of the given systemadress
 	 */
 	public byte getCurrentByte(int systemAdresse) {
 		return systemadressen[systemAdresse];
 	}
 
+	/**
+	 * @return the id of the bus
+	 */
+	public int getBusId() {
+		return busId;
+	}
 }

@@ -3,6 +3,8 @@ package bus;
 import java.util.HashMap;
 
 /**
+ * Class that contains all saved Buses
+ *
  * All methods need to be synchronized since multiple threads can access the BusDepot at the same time:
  * Receiver-Thread, Schedular-Thread, ActionWait-Thread(s)
  *
@@ -49,6 +51,15 @@ public class BusDepot {
      * updates Bus - if the bus isnt saved yet, the method saves the bus and then updates the given adress
      * format <0x06><RMX><ADRRMX><VALUE>
      *
+     *  updates ADRRMX of Bus RMX with VALUE then returns only the changes as a byte.
+     *      *
+     *      * example:
+     *      * - current: 10000000
+     *      * - message: 10000001
+     *      * - return:  00000001
+     *      *
+     *      * format <0x06><RMX><ADRRMX><VALUE>
+     *
      * @param message
      */
     public synchronized void updateBus(byte[] message) {
@@ -75,14 +86,7 @@ public class BusDepot {
     }
 
     /**
-     * updates ADRRMX of Bus RMX with VALUE then returns only the changes as a byte.
-     *
-     * example:
-     * - current: 10000000
-     * - message: 10000001
-     * - return:  00000001
-     *
-     * format <0x06><RMX><ADRRMX><VALUE>
+     * returns the changes of the bus specified by the given adress
      *
      * @param message
      */
@@ -120,11 +124,4 @@ public class BusDepot {
         return busDepotMap.containsKey(busId);
     }
 
-    public synchronized void removeBus(int busId) {
-        busDepotMap.remove(busId);
-    }
-
-    public synchronized void clearTrain() {
-        busDepotMap.clear();
-    }
 }

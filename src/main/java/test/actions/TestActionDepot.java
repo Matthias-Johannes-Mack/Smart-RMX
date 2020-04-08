@@ -26,7 +26,6 @@ public class TestActionDepot {
         System.out.println(actionWait1 == actionDepot.addAction(actionWait1)); // true
 
         System.out.println(actionWait2 == actionDepot.addAction(actionWait2)); // false
-
     }
 
 }
