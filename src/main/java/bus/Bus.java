@@ -1,6 +1,8 @@
 package bus;
 
 import Utilities.ByteUtil;
+import Utilities.Constants;
+
 import java.util.ArrayList;
 import java.util.BitSet;
 
@@ -9,12 +11,6 @@ import java.util.BitSet;
  *
  */
 public class Bus {
-
-	/**
-	 * amount of systemadresses in each bus RMX-PC-Zentrale: 112 adressen (index 0
-	 * to 111)
-	 */
-	public static final int NUMBER_SYSTEMADRESSEN = 112;
 
 	/**
 	 * id of the bus
@@ -35,12 +31,12 @@ public class Bus {
 
 	/**
 	 * Constructor for a Bus
-	 * @param rmx busid of the Bus to create
+	 * @param busId busid of the Bus to create
 	 */
-	public Bus(byte rmx) {
-		busId = rmx;
-		systemadressen = new byte[NUMBER_SYSTEMADRESSEN]; // initial all values are 0
-		lastChanges = new ArrayList<>(NUMBER_SYSTEMADRESSEN);
+	public Bus(byte busId) {
+		this.busId = busId;
+		systemadressen = new byte[Constants.NUMBER_SYSTEMADRESSES_PER_BUS]; // initial all values are 0
+		lastChanges = new ArrayList<>(Constants.NUMBER_SYSTEMADRESSES_PER_BUS);
 		initalizeArrayList(); // sets all values of lastChanges initaial at -1 (no changes)
 	}
 
@@ -48,7 +44,7 @@ public class Bus {
 	 * initalizes the all containing Integer Arrays in lastChanged to -1 (no changes)
 	 */
 	private void initalizeArrayList() {
-		for(int i=0; i < NUMBER_SYSTEMADRESSEN; i++) {
+		for(int i = 0; i < Constants.NUMBER_SYSTEMADRESSES_PER_BUS; i++) {
 			lastChanges.add(new Integer[]{-1, -1, -1, -1, -1, -1, -1, -1});
 		}
 	}
@@ -57,14 +53,14 @@ public class Bus {
 	 * updates the given systemadresss with the given value.
 	 * updates lastChanges of the given systemadress by comparing the current and given value
 	 *
-	 * @param adrrmx systemadress to update
-	 * @param value to update the systemadress to
+	 * @param systemadress systemadress to update
+	 * @param byteValue to update the systemadress to
 	 *
 	 */
-	public void updateBusAdress(byte adrrmx, byte value) {
+	public void updateBusAdress(byte systemadress, byte byteValue) {
 
-		BitSet currentBitSet = BitSet.valueOf(new byte[] { systemadressen[adrrmx] });
-		BitSet valueBitSet = BitSet.valueOf(new byte[] { value });
+		BitSet currentBitSet = BitSet.valueOf(new byte[] { systemadressen[systemadress] });
+		BitSet valueBitSet = BitSet.valueOf(new byte[] { byteValue });
 
 		Integer[] changes = new Integer[8];
 
@@ -88,20 +84,20 @@ public class Bus {
 		}
 
 		// set lastChanges
-		lastChanges.set(adrrmx, changes);
+		lastChanges.set(systemadress, changes);
 
 		// update the currently safed value
-		systemadressen[adrrmx] = value;
+		systemadressen[systemadress] = byteValue;
 	}
 
 	/**
 	 * Returns the last changes of the given systemadressse
 	 *
-	 * @param adrrmx systemadress to get the changes for
+	 * @param systemadress systemadress to get the changes for
 	 * @return Integer[] size 8 that represents the last Changes of the given systemadress
 	 */
-	public Integer[] getChanges(byte adrrmx) {
-		return lastChanges.get(adrrmx);
+	public Integer[] getChanges(byte systemadress) {
+		return lastChanges.get(systemadress);
 	}
 
 	/**
@@ -118,11 +114,11 @@ public class Bus {
 	/**
 	 * returns the current byte value of the given systemadress
 	 * 
-	 * @param systemAdresse the systemadress to get current value for
+	 * @param systemadresse the systemadress to get current value for
 	 * @return byte value of the given systemadress
 	 */
-	public byte getCurrentByte(int systemAdresse) {
-		return systemadressen[systemAdresse];
+	public byte getCurrentByte(int systemadresse) {
+		return systemadressen[systemadresse];
 	}
 
 	/**

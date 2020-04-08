@@ -6,13 +6,6 @@ import org.xml.sax.SAXParseException;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import java.awt.*;
-import java.io.File;
 import java.util.Scanner;
 
 /**
@@ -21,151 +14,175 @@ import java.util.Scanner;
  * @author Matthias Mack 3316380
  */
 public class XML_IO {
+    /**
+     * xml_parser instrance
+     */
+    private XML_Parser xml_parser;
 
-	// component for the file dialog
-	private static Component aComponent;
-	// xml File
-	private static org.w3c.dom.Document xmlDoc;
-	//validity of the xml document regarding the xsd schema
-	private static boolean validationResult = true;
+    // Singleton-Pattern START -----------------------------------------
 
-	/**
-	 * Constructor
-	 */
-	public XML_IO() {
-		// set the filepath
-		// filepath from the XML-File
-		String filePath = openFileFromDialog();
-		// if the file is chosen proceed
-		if (filePath != null) {
-			xmlDoc = returnXML(filePath);
-			// if everything is fine, return message
-			System.out.println("XML erfolgreich geladen!");
-		} else {
-			System.out.println("XML laden fehlgeschlagen! Erneut versuchen y/n?");
-			// set the scanner
-			// Scanner for the input
-			Scanner in = new Scanner(System.in);
-			// read the line
-			// string for the value
-			String retryStr = in.nextLine().toLowerCase();
-			// check the decision
-			switch (retryStr) {
-			// restart the whole thing
-			case "y":
-				XML_IO obj = new XML_IO();
-				break;
-			case "n":
-				System.exit(0);
-			default:
-				System.exit(0);
-			}
-		}
-	}
+    /**
+     * Singleton instance of XML_IO
+     */
+    private static XML_IO instance = null;
 
-	/**
-	 * setter for validationResult
-	 * @param value new value
-	 */
-	protected static void setValidationResult(boolean value) {
-		validationResult = value;
-	}
+    /**
+     * private constructor to prevent instantiation
+     */
+    private XML_IO() {
 
-	/**
-	 * Method which opens the file and returns the filename
-	 */
-	private static String openFileFromDialog() {
-		try {
-			// Create a filechooser
-			final JFileChooser fc = new JFileChooser();
-			// sets the name of the file dialog
-			fc.setDialogTitle("Bitte XML-Datei wählen");
-			// set the filter
-			fc.setAcceptAllFileFilterUsed(false);
-			// set the thing to xml
-			FileNameExtensionFilter filter = new FileNameExtensionFilter(".xml", "xml");
-			fc.addChoosableFileFilter(filter);
-			// if the file is choosed, return the name
-			int returnVal = fc.showOpenDialog(aComponent);
-			// get the path
-			if (returnVal == 0) {
-				return fc.getSelectedFile().getAbsolutePath();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+    }
 
-	/**
-	 * Method that reads the XML file and checks it against the xsd schema for validation
-	 * @param filePath path of the xml file
-	 * @return 	null if there was an parsing error or xml document is not valid regarding the xsd schema,
-	 * 			else the document as org.w3c.dom.Document
-	 */
-	private static org.w3c.dom.Document returnXML(String filePath) {
-		try {
-			File xmlFile = new File(filePath);
-			File schemaFile = new File("./src/main/resources/RuleSet.xsd");
+    /**
+     * Returns singleton XML_IO instance
+     *
+     * @return XML_IO Singleton instance
+     */
+    public static synchronized XML_IO getXML_IO() {
+        if (instance == null) {
+            instance = new XML_IO();
+            instance.xml_parser = XML_Parser.getXML_Parser();
+        }
 
-			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        return instance;
+    }
 
-			//create the schema to check the xml document
-			String constant = XMLConstants.W3C_XML_SCHEMA_NS_URI;
-			SchemaFactory schemaFactory = SchemaFactory.newInstance(constant);
-			Schema schema = schemaFactory.newSchema(schemaFile);
+    // Singleton-Pattern END ________________________________________________
 
-			//TODO uncomment and adapt xsd
-			//ignore comments and add xsd schema for validation of the xml document
-			//documentBuilderFactory.setIgnoringComments(true);
-			//documentBuilderFactory.setSchema(schema);
+     /**
+     * xml File
+     */
+    private org.w3c.dom.Document xmlDoc;
+    /**
+     * validity of the xml document regarding the xsd schema
+     */
+    protected boolean validationResult;
+    /**
+     * filepath of the xml file the user wants to read in
+     */
+    private String filePath = null;
+    /**
+     * indicates whether the xml document was parsed successfully without schema or file exceptions
+     */
+    private boolean xmlDocumentSuccessfullyParsed = false;
 
-			DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-			//custom ErrorHandler for setting validationResult to false if xml document not valid regarding the schema
-			//TODO uncomment
-			//documentBuilder.setErrorHandler(new customErrorHandler());
 
-			org.w3c.dom.Document document = documentBuilder.parse(xmlFile);
+    /**
+     * getter for validation result
+     * @return value of validationResult
+     */
+    public boolean getValidationResult() {
+        return validationResult;
+    }
 
-			//throw exception if xml document is not valid regarding the xsd schema
-			if(!validationResult) {
-				throw new SAXException("XML Dokument entspricht nicht dem XSD Schema");
-			}
-			return document;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+    /**
+     * setter for validationResult
+     * @param validationResult new value of validationResult
+     */
+    public void setValidationResult(boolean validationResult) {
+        this.validationResult = validationResult;
+    }
 
-	/**
-	 * Get the XML file
-	 */
-	public static org.w3c.dom.Document getXML() {
-		return xmlDoc;
-	}
+    /**
+     * Get the XML file
+     */
+    public org.w3c.dom.Document getXML() {
+        return xmlDoc;
+    }
+
+    /**
+     * method to start the process of reading in the xml file for the user
+     */
+    public void startXmlReadInForUser() {
+        // set the filepath from the XML-File
+        while (filePath == null) {
+            readInFilePathXML();
+        }
+
+        //parses the xml file
+        while (!xmlDocumentSuccessfullyParsed) {
+            readInXmlFile(filePath);
+        }
+        System.out.println("XML erfolgreich geladen!");
+    }
+
+
+    /**
+     * opens file dialog via openFileDialog() and checks if filepath was read in successfully,
+     * if not opens error handling in console
+     */
+    private void readInFilePathXML() {
+        filePath = openFileDialog();
+
+        if (filePath == null) {
+            System.out.println("XML laden fehlgeschlagen! Erneut versuchen y/n?");
+            errorHandlerConsole();
+        }
+    }
+
+    /**
+     * reads in and parses the xml file via parseXMLDocument() and saves it to xmlDoc
+     * If parseXMLDocument() throws an exception the method will open opens error handling in console via errorHandlerConsole()
+     *
+     * @param filePath file path of the xml document to be read in and parsed
+     */
+    private void readInXmlFile(String filePath) {
+        try {
+            xmlDoc = xml_parser.parseXMLDocument(filePath);
+            xmlDocumentSuccessfullyParsed = true;
+        } catch (SAXException e) {
+            System.out.println("XML laden fehlgeschlagen! Die Datei entspricht nicht dem Smart RMX Datei Schema!");
+            errorHandlerConsole();
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            System.out.println("XML laden fehlgeschlagen!");
+            errorHandlerConsole();
+        }
+    }
+
+    /**
+     * outputs the option for the user to either retry reading in a file or exit the program in the console via errorHandlerConsole()
+     */
+    private void errorHandlerConsole() {
+        System.out.println("Erneut versuchen y/n?");
+        Scanner in = new Scanner(System.in);
+        String retryStr = in.nextLine().toLowerCase();
+
+        if ("y".equals(retryStr)) {
+            // restart at read in file
+            readInFilePathXML();
+        } else {
+            System.exit(0);
+        }
+    }
+
+    /**
+     * opens file dialog for the user to select the filepath of the file to be read
+     *
+     * @return filepath
+     */
+    private String openFileDialog() {
+        try {
+            // Create a filechooser
+            final JFileChooser fc = new JFileChooser();
+            // sets the name of the file dialog
+            fc.setDialogTitle("Bitte XML-Datei wählen");
+            // set the filter
+            fc.setAcceptAllFileFilterUsed(false);
+            // set the thing to xml
+            FileNameExtensionFilter filter = new FileNameExtensionFilter(".xml", "xml");
+            fc.addChoosableFileFilter(filter);
+            // if the file is choosed, return the name
+            int returnVal = fc.showOpenDialog(null);
+            // get the path
+            if (returnVal == 0) {
+                return fc.getSelectedFile().getAbsolutePath();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }
 
-/**
- * custom ErrorHandler for checking validating the xml document against the xsd schema
- * If the xml document is not valid regarding to the schema the ErrorHandler will set validationResult to false
- * and prevent the method to return the invalid xml document.
- */
-class customErrorHandler implements ErrorHandler {
-	@Override
-	public void warning(SAXParseException exception) throws SAXException {
-		System.err.println("Line " + exception.getLineNumber() + ": " + exception.getMessage());
-		XML_IO.setValidationResult(false);
-	}
-	@Override
-	public void error(SAXParseException exception) throws SAXException {
-		System.err.println("Line " + exception.getLineNumber() + ": " + exception.getMessage());
-		XML_IO.setValidationResult(false);
-
-	}
-	@Override
-	public void fatalError(SAXParseException exception) throws SAXException {
-		System.err.println("Line " + exception.getLineNumber() + ": " + exception.getMessage());
-		XML_IO.setValidationResult(false);
-	}
-}

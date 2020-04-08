@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version = "1.0"?>
 <!--
 Jede Rule besteht aus 2 conditions und mindestens einer Action. In jeder Condition
@@ -20,74 +21,87 @@ Erstes bit ist Bit 0.
 		</Condition>
 		<Condition>
 			<Bus>1</Bus>
-			<SystemAddress>2</SystemAddress>
-			<Bit>3</Bit>
+			<SystemAddress>0</SystemAddress>
+			<Bit>0</Bit>
 			<BitValue>1</BitValue>
 		</Condition>
-		<Action>
-			<Bus>1</Bus>
-			<SystemAddress>2</SystemAddress>
-			<Bit>3</Bit>
-			<BitValue>1</BitValue>
-		</Action>
-		<Action>
-			<Bus>2</Bus>
-			<SystemAddress>6</SystemAddress>
-			<Bit>4</Bit>
-			<BitValue>0</BitValue>
-		</Action>
+		<Actions>
+			<Action>
+				<Bus>1</Bus>
+				<SystemAddress>2</SystemAddress>
+				<Bit>0</Bit>
+				<BitValue>1</BitValue>
+			</Action>
+		</Actions>
 	</Rule>
+</Ruleset>
+=======
+<?xml version = "1.0"?>
+<!--
+Jede Rule besteht aus 2 conditions und mindestens einer Action. In jeder Condition und Action
+ist der Bus, die SystemAddresse, das Bit und das Bit Value angegeben, um zu defenieren welches Bit wie gesetzt sein muss
+fuer die Bedinngung bzw. welches bit durch die action wie gesetzt werden soll. Die Actions muessen im Action Block,
+der nach den Conditons beginnt platziert sein.
+Zwischen den Actions kann noch ein Wait befehl mit der zu wartenden Zeit in ms bis zum Ausführen
+der danch kommenden Actions eingefuegt werden.
+Erstes bit ist Bit 0.
+-->
+<!--TODO Referenz zum XML Schema -->
+<Ruleset>
 
-	<Rule>
-		<Condition>
-			<Bus>1</Bus>
-			<SystemAddress>0</SystemAddress>
-			<Bit>0</Bit>
-			<BitValue>1</BitValue>
-		</Condition>
-		<Condition>
-			<Bus>1</Bus>
-			<SystemAddress>0</SystemAddress>
-			<Bit>0</Bit>
-			<BitValue>1</BitValue>
-		</Condition>
-		<Wait>1</Wait>
-		<Action>
-			<Bus>1</Bus>
-			<SystemAddress>0</SystemAddress>
-			<Bit>3</Bit>
-			<BitValue>1</BitValue>
-		</Action>
-	</Rule>
+    <Rule>
+        <Condition>
+            <Bus>1</Bus> <!-- derzeit nur ein Bus moeglich -->
+            <SystemAddress>0</SystemAddress> <!-- 0 - 111 -->
+            <Bit>0</Bit> <!-- 0 -7 -->
+            <BitValue>1</BitValue>
+        </Condition>
+        <Condition>
+            <Bus>1</Bus>
+            <SystemAddress>2</SystemAddress>
+            <Bit>3</Bit>
+            <BitValue>1</BitValue>
+        </Condition>
+        <Actions>
+            <Action>
+                <Bus>1</Bus>
+                <SystemAddress>2</SystemAddress>
+                <Bit>3</Bit>
+                <BitValue>1</BitValue>
+            </Action>
+            <Action>
+                <Bus>2</Bus>
+                <SystemAddress>6</SystemAddress>
+                <Bit>4</Bit>
+                <BitValue>0</BitValue>
+            </Action>
+        </Actions>
+    </Rule>
 
+    <Rule>
+        <Condition>
+            <Bus>1</Bus>
+            <SystemAddress>0</SystemAddress>
+            <Bit>0</Bit>
+            <BitValue>1</BitValue>
+        </Condition>
+        <Condition>
+            <Bus>1</Bus>
+            <SystemAddress>0</SystemAddress>
+            <Bit>0</Bit>
+            <BitValue>1</BitValue>
+        </Condition>
+        <Actions>
+            <Wait>1</Wait>
+            <Action>
+                <Bus>1</Bus>
+                <SystemAddress>0</SystemAddress>
+                <Bit>3</Bit>
+                <BitValue>1</BitValue>
+            </Action>
+        </Actions>
+    </Rule>
 
-	<Rule>
-		<Condition>
-			<Bus>1</Bus>
-			<SystemAddress>0</SystemAddress>
-			<Bit>0</Bit>
-			<BitValue>1</BitValue>
-		</Condition>
-		<Condition>
-			<Bus>1</Bus>
-			<SystemAddress>0</SystemAddress>
-			<Bit>0</Bit>
-			<BitValue>1</BitValue>
-		</Condition>
-		<Wait>1</Wait>
-		<Action>
-			<Bus>1</Bus>
-			<SystemAddress>0</SystemAddress>
-			<Bit>3</Bit>
-			<BitValue>1</BitValue>
-		</Action>
-		<Wait>1</Wait>
-		<Action>
-			<Bus>1</Bus>
-			<SystemAddress>0</SystemAddress>
-			<Bit>3</Bit>
-			<BitValue>1</BitValue>
-		</Action>
-	</Rule>
 
 </Ruleset>
+>>>>>>> refactoring_xml
