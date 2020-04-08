@@ -171,7 +171,6 @@ public class Matrix {
 
         Bus currentBusColumn = null;
 
-        // Bernds-Formel to the right
         // loop through entire row to the right
         for (int bitIndexColumn = 0; bitIndexColumn <= bitIndexChangedBit; bitIndexColumn++) {
 
@@ -183,10 +182,10 @@ public class Matrix {
             boolean bitValueRow = bitValue;
             boolean bitValueColumn = currentBusColumn.isBitSet(systemadress_bitIndexColumn, (bitIndexColumn%8));
 
-
             System.out.println("ROWPOINT-INDEX " + field);
 
             if (matrix[field] != null) {
+                // an ActionSequenceWrapper is in the field
 
                 ActionSequence actionSequence = getActionSequenceByState(systemadress_bitIndexRow, bitValueRow, systemadress_bitIndexColumn, bitValueColumn, field);
 
@@ -211,22 +210,24 @@ public class Matrix {
         // current bus of rowIndex (initially given bus by method)
         currentBusColumn = busDepot.getBus(busId + 1); // +1 da in busdepot nach der Busid (nach RMX) gespeichert sind
 
-        int oldBitIndex = bitIndexChangedBit;
+
+        int bitIndexRow = bitIndexChangedBit;
 
         bitIndexChangedBit++;
-        int columnPointIndex = MatrixUtil.calcGauss(bitIndexChangedBit) + oldBitIndex;
+
+        int columnPointIndex = MatrixUtil.calcGauss(bitIndexRow) + bitIndexChangedBit;
 
         while (columnPointIndex < arraySize) {
 
-            if (bitIndexChangedBit % Constants.NUMBER_BITS_PER_BUS == 0) {
+            if (bitIndexRow % Constants.NUMBER_BITS_PER_BUS == 0) {
                 System.out.println("I BIM DRIN");
                 // get current bus => + 1 since RMX starts counting at 1
-                currentBusColumn = busDepot.getBus(((bitIndexChangedBit / Constants.NUMBER_BITS_PER_BUS) + 1));
+                currentBusColumn = busDepot.getBus(((bitIndexRow / Constants.NUMBER_BITS_PER_BUS) + 1));
             }
 
             // check condition
             // systemadress of current bitIndex that is being checked
-            int systemadress_checkedBit = getSystemadressByBitIndex(bitIndexChangedBit);
+            int systemadress_checkedBit = getSystemadressByBitIndex(bitIndexRow);
 
 
             System.out.println("COLUMNPOINT-INDEX " + columnPointIndex);
@@ -235,7 +236,7 @@ public class Matrix {
 
                 ActionSequence actionSequence;
                 // the other bit is currently set
-                if (currentBusColumn.isBitSet(systemadress_checkedBit, (bitIndexChangedBit%8))) {
+                if (currentBusColumn.isBitSet(systemadress_checkedBit, (bitIndexRow%8))) {
                     // both conditions are true => get ActionSequence of point in matrix
 
                     if (bitValue) {
@@ -263,8 +264,8 @@ public class Matrix {
                 }
             }
 
-            bitIndexChangedBit++;
-            columnPointIndex = MatrixUtil.calcGauss(bitIndexChangedBit) + oldBitIndex;
+            bitIndexRow++;
+            columnPointIndex = MatrixUtil.calcGauss(bitIndexRow) + bitIndexChangedBit;
         }
 
         // return ActionSequences of true conditions
