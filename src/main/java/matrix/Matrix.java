@@ -59,7 +59,7 @@ public class Matrix {
     private ActionSequenceWrapper[] matrix;
 
     /**
-     * busDepot handling the acess to the different busses
+     * busDepot handling the access to the different busses
      */
     private BusDepot busDepot;
 

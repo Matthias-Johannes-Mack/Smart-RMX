@@ -6,7 +6,8 @@ import Utilities.Constants;
 import connection.Sender;
 import matrix.Matrix;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -16,45 +17,6 @@ import action.ActionMessage;
 import action.ActionSequence;
 
 public class Schedular {
-
-    /**
-     * number of threads in the thread pool that are responsible for processing ActionWaits
-     */
-    public static int NUMBER_OF_THREADS = 5;
-
-    /**
-     * indicates if initialization is done
-     * needs to be thread safe since multiple threads check the constant
-     */
-    public static AtomicBoolean INIT_SUCESSFULL = new AtomicBoolean();
-
-    /**
-     * Queue of fake messages (OPCODE 0x99)
-     * this queue has a higher priority than the messageQueue, so fake messages are checks at first
-     */
-    private BlockingQueue<byte[]> fakeMessageQueue;
-
-    /**
-     * Queue to store incoming received messages by the Receiver that need to be
-     * processed by the schedular. BlockingQueue to ensure thread safety.
-     * <p>
-     * ONLY INCLUDES 0x06 messages
-     */
-    private BlockingQueue<byte[]> rmxMessageQueue;
-
-
-    /**
-     * executer responsible for scheduling actions after a specific delay
-     */
-    private ScheduledExecutorService executer;
-
-    /**
-     * Provided Matrix (=Tabelle) the schedular works with to determine which
-     * action sequence(s) are triggered for the messages
-     */
-    private volatile Matrix matrix;
-
-    private volatile BusDepot busDepot;
 
     // Singleton-Pattern START -----------------------------------------
 
@@ -67,6 +29,8 @@ public class Schedular {
      * object for schedular thread. Used for handling all schedular tasks
      */
     private static Thread sThread;
+
+    private boolean WORK = true;
 
     /**
      * private constructor to prevent instantiation
@@ -89,11 +53,64 @@ public class Schedular {
 
     // Singleton-Pattern END ________________________________________________
 
+
+    /**
+     * number of threads in the thread pool that are responsible for processing ActionWaits
+     */
+    public static int NUMBER_OF_THREADS = 5;
+
+    /**
+     * indicates if initialization by the RMX-PC-Zetrale is completed
+     * needs to be thread safe since multiple threads (Schedular and Receiver) check the constant
+     */
+    public static AtomicBoolean INIT_SUCESSFULL = new AtomicBoolean();
+
+    /**
+     * Queue of fake messages (OPCODE 0x99)
+     * this queue has a higher priority than the RMXMessageQueue, so fake messages are checked at first
+     * BlockingQueue to ensure thread safety.
+     */
+    private BlockingQueue<byte[]> fakeMessageQueue;
+
+    /**
+     * Queue of fake messages (OPCODE 0x06)
+     * this queue stores incoming messages by the Receiver that need to be processed by the schedular.
+     * BlockingQueue to ensure thread safety.
+     */
+    private BlockingQueue<byte[]> rmxMessageQueue;
+
+
+    /**
+     * executer responsible for scheduling ActionWait(s) after the specified waitTime
+     */
+    private ScheduledExecutorService executer;
+
+    /**
+     * Provided Matrix (=Tabelle) the schedular works with to determine which
+     * ActionSequence(s) are triggered for the changes of the messages
+     */
+    private volatile Matrix matrix;
+
+    /**
+     * busDepot handling the access to the different busses
+     */
+    private volatile BusDepot busDepot;
+
+
+    /*-----------------------------------------------------------------------------------------------
+      METHODS FOR SCHEDULING
+      - startScheduling
+      - addMessageToFakeQueue
+      - addMessageToRMXQueue
+      - cleanup
+     ----------------------------------------------------------------------------------------------*/
+
     /**
      * initializes all variables for the schedular
      */
     public void startScheduling() {
         // if no thread exists start a new one
+
         if (sThread == null) {
 
             // init queues
@@ -115,36 +132,42 @@ public class Schedular {
         }
     }
 
-    public void cleanup() {
-
-        // TODO thread beenden
-        executer.shutdown(); // cleanly shutsdown all threads of the threadpool (wenns nicht gemacht wird laufen die
-        // threads aus dem Pool einfach unendlich lange weiter und Programm beendet nie
-        // TODO ggf. Liste leeren
-
-    }
-
     /**
-     * Addsa  message to the RMX Queue of schedular
-     * this queue only includes messages send by the RMX-PC-Zentrale
+     * Adds a message to the FakeMessageQueue of the Schedular
+     * this queue only includes fake messages send by the Schedular itself or a SchedularWait-Thread
      *
-     * @param message a message that needs to be added
-     */
-    public void addMessageToRmxQueue(byte[] message) {
-        // TODO possibly only allow when queue not null?
-        rmxMessageQueue.add(message);
-    }
-
-    /**
-     * Adds a message to the Fake Queue of the schedular
-     * this queue only includes fake messages send by the schedular or a SchedularWait-Thread
-     *
-     * @param message a message that needs to be added
+     * @param message a message to add
      */
     public void addMessageToFakeQueue(byte[] message) {
         fakeMessageQueue.add(message);
     }
 
+    /**
+     * Adds message to the RMXMessageQueue of Schedular
+     * this queue only includes messages send by the RMX-PC-Zentrale
+     *
+     * @param message a message to add
+     */
+    public void addMessageToRmxQueue(byte[] message) {
+        rmxMessageQueue.add(message);
+    }
+
+    /**
+     * method to initialiaze the cleanup of the schedular
+     */
+    public void cleanup() {
+
+        // stop the thread
+        WORK = false;
+        // cleanly shutsdown all threads of the threadpool
+        executer.shutdown();
+        // TODO ggf. Liste leeren
+
+    }
+
+    /*-----------------------------------------------------------------------------------------------
+      SCHEDULAR-THREAD
+     ----------------------------------------------------------------------------------------------*/
 
     /**
      * Schedular Thread.
@@ -154,26 +177,25 @@ public class Schedular {
         @Override
         public void run() {
 
-            // wait until inititialization is successfull --> all busses are filled
+            // wait until inititialization is successfull => all busses are filled
             while (!INIT_SUCESSFULL.get()) {
                 // do nothing
             }
 
-            // init sucessfull --> firstly check all conditions
-            checkAllConditions(); // TODO
+            // init sucessfull => first check all conditions
+            checkAllConditions();
 
-            // TODO add useful termination condition for thread
-            while (true) {
+            // do until someone indicates I have to stop
+            while (WORK) {
 
-                // changes has only more than one bit set to one if multiple bits are set at the SAME time
                 Integer[] changes = new Integer[8];
                 byte[] message;
 
-                // TODO evtl. überlegen mit wait und notify
                 while (fakeMessageQueue.isEmpty() && rmxMessageQueue.isEmpty()) {
                     // wait until one queue isnt emtpty
                 }
 
+                // fakeMessage queue has a higher priority for checking
                 if (!fakeMessageQueue.isEmpty()) {
                     // fake message(s) exist
                     message = fakeMessageQueue.poll(); // take message at first position
@@ -184,18 +206,14 @@ public class Schedular {
                     changes = busDepot.getChangesAndUpdate(message); // also updates Bus
                 }
 
-                // Example Value 1 from RMX-1 Adress 98 Value 1 <0x06><0x01><0x62><0x01>
-                System.out.println("ICH WERDE JETZT PRÜFEN");
 
-
-                System.out.println("LAST CHANGES: " + Arrays.toString(changes));
-
+                // check fields of the matrix that included indicated changes and get triggered ActionSequences
                List<ActionSequence> actionSequenceList = matrix.check(message[1], message[2], changes);
 
-                // check if list is not empty
+                // check if ActionSequence(s) have been triggerd
                 if (!actionSequenceList.isEmpty()) {
                     for (ActionSequence actionSequence : actionSequenceList) {
-                        // start processing the actionsequenc at the given startIndex
+                        // start processing the actionsequencee at the startIndex 0
                         scheduleActionSequence(actionSequence, 0);
                     }
                 }
@@ -203,6 +221,32 @@ public class Schedular {
             }
 
         }
+    }
+
+    /*-----------------------------------------------------------------------------------------------
+      HELPER METHODS FOR SCHEDULING
+      - checkAllConditions
+      - scheduleActionSequence
+      - buildFakeMessage
+      - buildRMXMessage
+     ----------------------------------------------------------------------------------------------*/
+
+    /**
+     * checks all conditions by traversing the entire matrix
+     */
+    public void checkAllConditions() {
+
+        // check all fields of the matrix and get triggered ActionSequences
+        List<ActionSequence> actionSequenceList = matrix.checkAllFields();
+
+        // check if ActionSequence(s) have been triggerd
+        if (!actionSequenceList.isEmpty()) {
+            for (ActionSequence actionSequence : actionSequenceList) {
+                // start processing the actionsequencee at the startIndex 0
+                scheduleActionSequence(actionSequence, 0);
+            }
+        }
+
     }
 
     /**
@@ -237,73 +281,60 @@ public class Schedular {
                     // fake message so the changed bits by the action are getting checked in the matrix
                     byte[] fakeMessage = buildFakeMessage(actionMessage.getActionMesssage());
 
-                    // Update bus
+                    // update bus
                     busDepot.updateBus(fakeMessage);
 
-                    // add (real) message to the sender
+                    // add (real) message to the sender for sending to the RMX-PC-Zentrale
                     Sender.addMessageQueue(message);
 
-                    // add fake message to the fakeMessageQueue
+                    // add fake message to the fakeMessageQueue so the changes are checked
                     addMessageToFakeQueue(fakeMessage);
 
                 } else {
-                    // bus isnt initialized
+                    // the has not been initialized
                     System.out.println("-> Adress bus " + actionArr[0] + " from rule does not exist!");
                 }
             } else {
                 // the Action is a ActionWait
 
-                // if the ActionWait is last action in the ActionSequence no need to start a new Thread
+                // if the ActionWait is last action in the ActionSequence no need to start a new Thread, just skip it
                 if ((i + 1) < actionSequence.getActionCount()) {
+                    // the ActiionWait isnt the last action
 
                     ActionWait actionWait = (ActionWait) action;
 
                     // get the wait time
                     long time = actionWait.getWaitTime();
 
-                    // start new thread that continious to process the next action of the actionsequence after the given delay
+                    // start new thread that continious to process the next action of the ActionSequence after the given waitTime
                     SchedularWaitRunnable waitRunnable = new SchedularWaitRunnable(actionSequence, i + 1);
                     executer.schedule(waitRunnable, time, TimeUnit.MILLISECONDS);
 
-                    break; // know the new thread continious to process the actionSequence starting from the startIndex
+                    break; // know the new thread continious to process the actionSequence starting from the startIndex, i can go on to the next ActionSequence
                 }
             }
 
         }
     }
 
-    public void checkAllConditions() {
-
-        List<ActionSequence> actionSequenceList = matrix.checkAllFields();
-
-        // check if list is not empty
-        if (!actionSequenceList.isEmpty()) {
-            for (ActionSequence actionSequence : actionSequenceList) {
-                // start processing the actionsequencee at the given startIndex
-                scheduleActionSequence(actionSequence, 0);
-            }
-        }
-
-    }
-
     /**
-     * Method that converts the int Array of the action to a message
-     * builds an Fake Message (OPCODE 0x99)
+     * Method that converts the int Array of an ActionMessage to a FakeMessage (OPCODE 0x99)
      * Necessary because change needs to be checked, but status has already been updateed
-     * <p>
-     * [BUS](1-4) [SystemAddresse](0-111) [Bit](0-7) [BitValue] (0-1) format
-     * <0x99><RMX><ADRRMX><VALUE>
      *
-     * @param intArr array containing the Bus, Systemadresse, Bit, Bitvalue of the given Action
+     * Format:
+     *  OPCODE [busId](1-4) [systemAdress](0-111) [bitIndex](0-7) [bitValue] (0-1) format
+     * <0x99>  <RMX><ADRRMX><VALUE>
+     *
+     * @param intArr array containing the busId, systemadress, bitIndex, bitvalue of the given Action
      * @return a fake Message in RMXnet Syntax
      */
     private byte[] buildFakeMessage(int[] intArr) {
         byte[] message = new byte[4];
-        // Opcode
+        // OPCODE
         message[0] = (byte) 153; //0x99
         // bus <rmx>
         message[1] = (byte) intArr[0];
-        // systemadresse <addrRMX>
+        // systemadress <addrRMX>
         message[2] = (byte) intArr[1];
         // value
         Byte currentbyte = busDepot.getBus(intArr[0]).getCurrentByte(intArr[1]);
@@ -313,25 +344,25 @@ public class Schedular {
     }
 
     /**
-     * Method that converts the int Array of the action to a RMX Message
+     * Method that converts the int Array of the ActionMessage to a RMXnet Message
      *
-     * [BUS](1-4) [SystemAddresse](0-111) [Bit](0-7) [BitValue] (0-1) format
-     * <0x06><RMX><ADRRMX><VALUE>
+     * OPCODE [busId](1-4) [systemAdress](0-111) [bitIndex](0-7) [bitValue] (0-1) format
+     * <0x06>  <RMX><ADRRMX><VALUE>
      *
-     * @param intArr array containing the Bus, Systemadresse, Bit, Bitvalue of the given Action
+     * @param intArr array containing the busId, systemadress, bitIndex, bitValue of the given Action
      * @return a Message in RMXnet Syntax
      */
     private byte[] buildRmxMessage(int[] intArr) {
         byte[] message = new byte[6];
-        // headbyte
+        // RMX-Headbyte
         message[0] = Constants.RMX_HEAD;
-        // Count
+        // COUNT
         message[1] = 6;
-        // Opcode
+        // OPCODE
         message[2] = 5;
         // bus <rmx>
         message[3] = (byte) intArr[0];
-        // <addrRMX>
+        // systemadress <addrRMX>
         message[4] = (byte) intArr[1];
         // value
         Byte currentbyte = busDepot.getBus(intArr[0]).getCurrentByte(intArr[1]);
@@ -339,6 +370,10 @@ public class Schedular {
 
         return message;
     }
+
+     /*-----------------------------------------------------------------------------------------------
+      HELPER CLASS FOR PROCESSING ACTIONWAIT
+     ----------------------------------------------------------------------------------------------*/
 
     /**
      * Class that handles the processing of an ActionWait
@@ -357,6 +392,9 @@ public class Schedular {
         }
 
         @Override
+        /**
+         * after the given delay at initialization of the Runnable the run method will be executed
+         */
         public void run() {
             scheduleActionSequence(actionSequence, startIndex);
         }
