@@ -26,4 +26,8 @@ public class MatrixUtil {
     public static int calcGauss(int n) {
         return (((n * n) + n) / 2);
     }
+
+    public static int getSystemadressByBitIndex(int bitIndex) {
+        return ((bitIndex % Constants.NUMBER_BITS_PER_BUS) / 8); // cuts decimal places
+    }
 }
