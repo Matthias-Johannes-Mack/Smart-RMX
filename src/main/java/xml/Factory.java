@@ -5,14 +5,15 @@ import action.ActionMessage;
 import action.ActionSequence;
 import action.ActionWait;
 import matrix.Matrix;
-
 import java.util.ArrayList;
 
 /**
  * Factory class for creating the actions matrix and filling the matrix
  */
 public class Factory {
-	// rules that have been read in from the xml
+	/**
+	 * rules that have been read in from the xml, will be set by XML_read class
+ 	 */
 	static private ArrayList<Rule> rules = new ArrayList<>();
 
 	/**
