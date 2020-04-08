@@ -1,6 +1,7 @@
 package connection;
 
 import Utilities.ByteUtil;
+import Utilities.Constants;
 import bus.BusDepot;
 import schedular.Schedular;
 
@@ -94,7 +95,7 @@ class Receiver {
 		msgLength = inputStr.read();
 
 		// skip Headbyte and read messageSize
-		while (msgLength == ConnectionConstants.RMX_HEAD) {
+		while (msgLength == Constants.RMX_HEAD) {
 			// Second byte of message always represents the messageSize (inclusive Headbyte)
 			msgLength = inputStr.read();
 		}

@@ -36,7 +36,7 @@ public class MatrixTest {
 		matrix.addAction(conditionThree, conditionFour, actionSequence2); // sollte zu wrapper hinzugefügt werden an 0-0
 
 
-		List<ActionSequence> resultCheckAll = matrix.checkAllConditions();
+		List<ActionSequence> resultCheckAll = matrix.checkAllFields();
 		for (ActionSequence actionSequence : resultCheckAll) {
 			List<Action> actions = actionSequence.getActions();
 

@@ -2,7 +2,7 @@ package schedular;
 
 import action.ActionWait;
 import bus.BusDepot;
-import connection.ConnectionConstants;
+import Utilities.Constants;
 import connection.Sender;
 import matrix.Matrix;
 
@@ -274,7 +274,7 @@ public class Schedular {
 
     public void checkAllConditions() {
 
-        List<ActionSequence> actionSequenceList = matrix.checkAllConditions();
+        List<ActionSequence> actionSequenceList = matrix.checkAllFields();
 
         // check if list is not empty
         if (!actionSequenceList.isEmpty()) {
@@ -324,7 +324,7 @@ public class Schedular {
     private byte[] buildRmxMessage(int[] intArr) {
         byte[] message = new byte[6];
         // headbyte
-        message[0] = ConnectionConstants.RMX_HEAD;
+        message[0] = Constants.RMX_HEAD;
         // Count
         message[1] = 6;
         // Opcode

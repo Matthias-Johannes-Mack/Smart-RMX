@@ -1,6 +1,8 @@
 package bus;
 
 import Utilities.ByteUtil;
+import Utilities.Constants;
+
 import java.util.ArrayList;
 import java.util.BitSet;
 
@@ -9,12 +11,6 @@ import java.util.BitSet;
  *
  */
 public class Bus {
-
-	/**
-	 * amount of systemadresses in each bus RMX-PC-Zentrale: 112 adressen (index 0
-	 * to 111)
-	 */
-	public static final int NUMBER_SYSTEMADRESSEN = 112;
 
 	/**
 	 * id of the bus
@@ -39,8 +35,8 @@ public class Bus {
 	 */
 	public Bus(byte rmx) {
 		busId = rmx;
-		systemadressen = new byte[NUMBER_SYSTEMADRESSEN]; // initial all values are 0
-		lastChanges = new ArrayList<>(NUMBER_SYSTEMADRESSEN);
+		systemadressen = new byte[Constants.NUMBER_SYSTEMADRESSES_PER_BUS]; // initial all values are 0
+		lastChanges = new ArrayList<>(Constants.NUMBER_SYSTEMADRESSES_PER_BUS);
 		initalizeArrayList(); // sets all values of lastChanges initaial at -1 (no changes)
 	}
 
@@ -48,7 +44,7 @@ public class Bus {
 	 * initalizes the all containing Integer Arrays in lastChanged to -1 (no changes)
 	 */
 	private void initalizeArrayList() {
-		for(int i=0; i < NUMBER_SYSTEMADRESSEN; i++) {
+		for(int i = 0; i < Constants.NUMBER_SYSTEMADRESSES_PER_BUS; i++) {
 			lastChanges.add(new Integer[]{-1, -1, -1, -1, -1, -1, -1, -1});
 		}
 	}

@@ -1,5 +1,7 @@
 package connection;
 
+import Utilities.Constants;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,9 +33,9 @@ public class Sender {
 	 */
 	protected static void initializeConnection() {
 		if (senderThread == null) {
-			addMessageAtIndex(0, ConnectionConstants.POSITIVE_HANDSHAKE);
-			addMessageAtIndex(1, ConnectionConstants.LOKDATENBANK_MESSAGE);
-			addMessageAtIndex(2, ConnectionConstants.INITALIZATION_MESSAGE);
+			addMessageAtIndex(0, Constants.POSITIVE_HANDSHAKE);
+			addMessageAtIndex(1, Constants.LOKDATENBANK_MESSAGE);
+			addMessageAtIndex(2, Constants.INITALIZATION_MESSAGE);
 			senderThread = new SenderThread();
 			senderThread.start();
 		}

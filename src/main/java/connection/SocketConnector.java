@@ -5,8 +5,6 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import Utilities.QuestionUtil;
-
 /**
  * Class that connects with a tcp socket and creates the connection to the RMX
  * PC-Zentrale
