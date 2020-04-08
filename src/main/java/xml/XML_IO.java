@@ -6,15 +6,6 @@ import org.xml.sax.SAXParseException;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
 import java.util.Scanner;
 
 /**
@@ -30,7 +21,7 @@ public class XML_IO {
     /**
      * validity of the xml document regarding the xsd schema
      */
-    private static boolean validationResult;
+    protected static boolean validationResult;
     /**
      * filepath of the xml file the user wants to read in
      */
@@ -67,7 +58,6 @@ public class XML_IO {
             System.out.println("XML laden fehlgeschlagen! Erneut versuchen y/n?");
             errorHandlerConsole();
         }
-
     }
 
     /**
@@ -78,7 +68,7 @@ public class XML_IO {
      */
     private static void readInXmlFile(String filePath) {
         try {
-            xmlDoc = parseXMLDocument(filePath);
+            xmlDoc = XML_Parser.parseXMLDocument(filePath);
             xmlDocumentSuccessfullyParsed = true;
         } catch (SAXException e) {
             System.out.println("XML laden fehlgeschlagen! Die Datei entspricht nicht dem Smart RMX Datei Schema!");
@@ -104,14 +94,6 @@ public class XML_IO {
         } else {
             System.exit(0);
         }
-    }
-
-
-    /**
-     * setter for validationResult
-     */
-    protected static void setValidationResultFalse(){
-        validationResult = false;
     }
 
     /**
@@ -143,79 +125,11 @@ public class XML_IO {
     }
 
     /**
-     * Method that reads the XML file and checks it against the xsd schema for validation
-     * * @param filePath
-     * * @return 	null if there was an parsing error or xml document is not valid regarding the xsd schema,
-     * * 			else the document as org.w3c.dom.Document
-     *
-     * @param filePath path of the xml file
-     * @return the parsed xml document
-     * @throws SAXException                 exception if the xml file does not meet the criteria of the xsd schema
-     * @throws IOException                  IO Exception
-     * @throws ParserConfigurationException parser config exception
-     */
-    private static org.w3c.dom.Document parseXMLDocument(String filePath) throws SAXException, IOException, ParserConfigurationException {
-        //set thrue here in case the method is called multiple times through the user
-        validationResult = true;
-
-        File xmlFile = new File(filePath);
-        File schemaFile = new File("./src/main/resources/RuleSet.xsd");
-
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-
-        //create the schema to check the xml document
-        String constant = XMLConstants.W3C_XML_SCHEMA_NS_URI;
-        SchemaFactory schemaFactory = SchemaFactory.newInstance(constant);
-        Schema schema = schemaFactory.newSchema(schemaFile);
-
-        //ignore comments and add xsd schema for validation of the xml document
-        documentBuilderFactory.setIgnoringComments(true);
-        documentBuilderFactory.setSchema(schema);
-
-        DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        //custom ErrorHandler for setting validationResult to false if xml document not valid regarding the schema
-        documentBuilder.setErrorHandler(new customErrorHandler());
-
-        //parse the document
-        org.w3c.dom.Document document = documentBuilder.parse(xmlFile);
-
-        //throw exception if xml document is not valid regarding the xsd schema
-        if (!validationResult) {
-            throw new SAXException("XML Dokument entspricht nicht dem XSD Schema");
-        }
-        return document;
-    }
-
-    /**
      * Get the XML file
      */
     public static org.w3c.dom.Document getXML() {
         return xmlDoc;
     }
+
 }
 
-/**
- * custom ErrorHandler for checking validating the xml document against the xsd schema
- * If the xml document is not valid regarding to the schema the ErrorHandler will set validationResult to false
- * and prevent the method to return the invalid xml document.
- */
-class customErrorHandler implements ErrorHandler {
-    @Override
-    public void warning(SAXParseException exception) throws SAXException {
-        System.err.println("Line " + exception.getLineNumber() + ": " + exception.getMessage());
-        XML_IO.setValidationResultFalse();
-    }
-
-    @Override
-    public void error(SAXParseException exception) throws SAXException {
-        System.err.println("Line " + exception.getLineNumber() + ": " + exception.getMessage());
-        XML_IO.setValidationResultFalse();
-
-    }
-
-    @Override
-    public void fatalError(SAXParseException exception) throws SAXException {
-        System.err.println("Line " + exception.getLineNumber() + ": " + exception.getMessage());
-        XML_IO.setValidationResultFalse();
-    }
-}
