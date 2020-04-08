@@ -255,7 +255,7 @@ class Receiver {
 		} else { // false -- init not successfull
 
 			// updates bus -> creates if not existing
-			BusDepot.getBusDepot().updateBus(message);
+			BusDepot.getBusDepot().updateBus(message[1], message[2],message[3]);
 		}
 
 	}
