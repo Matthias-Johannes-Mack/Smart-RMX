@@ -53,7 +53,7 @@
 
                     <xs:element name="Wait" minOccurs="0" maxOccurs="1">
                       <xs:simpleType>
-                        <xs:restriction base = "xs:integer">
+                        <xs:restriction base = "xs:long">
                           <xs:minInclusive value = "0"/>
                         </xs:restriction>
                       </xs:simpleType>
