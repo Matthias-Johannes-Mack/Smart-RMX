@@ -8,15 +8,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import Utilities.QuestionUtil;
 
 /**
- * Class that connects with a tcp socket
- *
+ * Class that connects with a tcp socket and creates the connection to the RMX
+ * PC-Zentrale
+ * 
  * @author Matthias Mack 3316380
  */
 public class SocketConnector {
-	// localhost 127.0.0.1
+	// string for the ip. Here: localhost 127.0.0.1
 	private static final String ip = "127.0.0.1";
-	// standard port for RMX 950
+	// standard port for RMX: 950
 	private static final int port = 950;
+	// create new InetSocketAddress to put ip and port together
 	private static InetSocketAddress inet;
 
 	// enum for connection states
@@ -26,7 +28,7 @@ public class SocketConnector {
 
 	// connection status
 	private static conState conStateStr = conState.DISCONNECTED;
-	// socket
+	// create the socket
 	private static Socket socket;
 
 	/*
@@ -69,7 +71,7 @@ public class SocketConnector {
 	}
 
 	/**
-	 * Method, that connects the Thread
+	 * Method, that connects to the RMX PC-Zentrale
 	 */
 	public static void Connect() {
 		if (getConStateStr() == conState.DISCONNECTED || getConStateStr() == conState.RECONNECT) {
@@ -79,20 +81,24 @@ public class SocketConnector {
 			try {
 				// checks if the server is alive
 				socket = new Socket();
+				// put the IP and port together
 				inet = new InetSocketAddress(ip, port);
 				socket.connect(inet);
 				// set the connection state to running
 				setConStateStr(conState.RUNNING);
+				// starts the receiver
 				Receiver.startReceiver();
-				// initialize
+				// initialize the sender
 				Sender.initializeConnection();
 				// show that server is connected
 				System.out.println("-> Mit Server " + ip + ":" + port + " verbunden!");
 				// start the server reload
 				ServerReload.setLastServerResponse(System.currentTimeMillis());
+				// Create a new ServerReload thread
 				ServerReload serverReload = new ServerReload();
 				serverReload.run();
 			} catch (Exception e) {
+				// set the status to disconnected
 				setConStateStr(conState.DISCONNECTED);
 				System.out.println("-> Server nicht erreichbar & " + getConStateStr());
 				// retry the connection
@@ -100,7 +106,6 @@ public class SocketConnector {
 			}
 		}
 	}
-
 
 	/**
 	 * Closes the connection
@@ -112,13 +117,10 @@ public class SocketConnector {
 		// when the connection is established kill it
 		if (getConStateStr() == conState.RUNNING) {
 			// set the connection string and put it out
-			// Threads got killed instantly
 			setConStateStr(conState.DISCONNECTED);
 			socket.close();
 			// put out the status
 			System.out.println(getConStateStr());
 		}
 	}
-
-
 }
