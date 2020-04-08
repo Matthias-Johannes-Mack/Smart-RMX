@@ -44,7 +44,7 @@ public class ActionDepot {
 	/**
 	 * list that contains all Actions
 	 */
-	private ArrayList<Action> actionDepot = new ArrayList<>();
+	private ArrayList<Action> actionDepotList = new ArrayList<>();
 
 	/**
 	 * adds an action to the ActionDepot
@@ -61,13 +61,13 @@ public class ActionDepot {
 	 */
 	public synchronized Action addAction(Action action) {
 
-		if (actionDepot.contains(action)) {
+		if (actionDepotList.contains(action)) {
 			// if the given Action already exists return the corresponding Action in the ActionDepot
-			int index = actionDepot.indexOf(action);
-			return actionDepot.get(index);
+			int index = actionDepotList.indexOf(action);
+			return actionDepotList.get(index);
 		}
 		// if the Action doesnt already exist in the ActionDepot: add it and return the action
-		actionDepot.add(action);
+		actionDepotList.add(action);
 		return action;
 	}
 
