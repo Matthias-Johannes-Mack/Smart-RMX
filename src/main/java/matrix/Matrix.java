@@ -103,8 +103,8 @@ public class Matrix {
                     int systemadress_bitIndexRow = getSystemadressByBitIndex(bitIndexRow);
                     int systemadress_bitIndexColumn = getSystemadressByBitIndex(bitIndexColumn);
 
-                    boolean bitValueRow = currentBusRow.isBitSet(systemadress_bitIndexRow, bitIndexRow);
-                    boolean bitValueColumn = currentBusColumn.isBitSet(systemadress_bitIndexColumn, bitIndexColumn);
+                    boolean bitValueRow = currentBusRow.isBitSet(systemadress_bitIndexRow, (bitIndexRow%8));
+                    boolean bitValueColumn = currentBusColumn.isBitSet(systemadress_bitIndexColumn, (bitIndexColumn%8));
 
                     // the other bit is currently set
                     if (bitValueColumn) {
@@ -199,9 +199,14 @@ public class Matrix {
         // bitIndex -> die Zeile
         int bitIndex = calcBerndFormula(bus, systemadresse, bit);
 
+        System.out.println("BITINDEX" + bitIndex);
+
         // Gaussche' Summenformel
         // index of first field in row
         int startPoint = calcGauss(bitIndex);
+
+        System.out.println("GAUSS" + startPoint);
+
 
         // current bus bits are checked
         Bus currentBus = null;
@@ -219,6 +224,7 @@ public class Matrix {
 
             // systemadress of current bitIndex that is being checked
             int systemadress_checkedBit = getSystemadressByBitIndex(columnIndex);
+            System.out.println("Systemadresse: " + systemadress_checkedBit + " columnIndex " + columnIndex);
 
 
             System.out.println("ROWPOINT-INDEX " + startPoint);
@@ -226,7 +232,7 @@ public class Matrix {
             if (matrix[startPoint] != null) {
                 ActionSequence actionSequence;
                 // the other bit is currently set
-                if (currentBus.isBitSet(systemadress_checkedBit, columnIndex)) {
+                if (currentBus.isBitSet(systemadress_checkedBit, (columnIndex%8))) {
                     // both conditions are true => get ActionSequence of point in matrix
 
                     if (bitvalue == 1) {
@@ -298,7 +304,7 @@ public class Matrix {
 
                 ActionSequence actionSequence;
                 // the other bit is currently set
-                if (currentBus.isBitSet(systemadress_checkedBit, bitIndex)) {
+                if (currentBus.isBitSet(systemadress_checkedBit, (bitIndex%8))) {
                     // both conditions are true => get ActionSequence of point in matrix
 
                     if (bitvalue == 1) {

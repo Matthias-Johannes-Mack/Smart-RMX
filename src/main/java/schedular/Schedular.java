@@ -188,6 +188,8 @@ public class Schedular {
                 System.out.println("ICH WERDE JETZT PRÜFEN");
 
 
+                System.out.println("LAST CHANGES: " + Arrays.toString(changes));
+
                List<ActionSequence> actionSequenceList = matrix.check(message[1], message[2], changes);
 
                 // check if list is not empty
