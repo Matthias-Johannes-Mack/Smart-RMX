@@ -1,9 +1,13 @@
-package action;
+package test.actions;
+
+import action.Action;
+import action.ActionMessage;
+import action.ActionSequence;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class TestActions {
+public class TestActionSequence {
 
     public static void main(String[] args) {
 
@@ -17,6 +21,7 @@ public class TestActions {
         ActionMessage action3 = new ActionMessage(message3);
         ActionMessage action4 = new ActionMessage(message4);
 
+        // add 4 actions to the ActionSequence
         ActionSequence actionSequence = new ActionSequence();
 
         actionSequence.addAction(action1);
@@ -24,19 +29,7 @@ public class TestActions {
         actionSequence.addAction(action3);
         actionSequence.addAction(action4);
 
-        List<Action> actionList = actionSequence.getActions();
-        System.out.println(actionList);
-
-        for(int i = 0; i < actionSequence.getActionCount(); i++) {
-            ActionMessage ac = (ActionMessage) actionSequence.getAction(i);
-
-            // if wait
-            // neuer thread i
-            // break;
-
-            System.out.println(Arrays.toString(ac.getActionMesssage()));
-        }
+        System.out.println(actionSequence.getActionCount()); // 4
 
     }
-    
 }

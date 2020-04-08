@@ -156,6 +156,8 @@ class Receiver {
 			case 4: // 0x04 - state info
 				process0x04(message);
 				SocketConnector.nextRequestAllowed.set(true);
+				// put in the current system time
+				ServerReload.setLastServerResponse(System.currentTimeMillis());
 				break;
 			case 6: // 0x06 - rmx-adress value (RMX-1 Bus)
 				process0x06(message);
@@ -219,8 +221,6 @@ class Receiver {
 	 * @param message a message to process
 	 */
 	private static void process0x04(byte[] message) {
-		// reset server connection
-		SocketConnector.setLastServerResponse(System.currentTimeMillis());
 
 		if (Schedular.INIT_SUCESSFULL.get() == false) {
 			// check initialization
@@ -246,10 +246,10 @@ class Receiver {
 	private static void process0x06(byte[] message) {
 
 		if (Schedular.INIT_SUCESSFULL.get()) { // true -- init successfull
-			
+
 			// forward message to schedular
 			Schedular.getSchedular().addMessageToRmxQueue(message);
-			System.out.println("Message zu Schedular hinzugefügt!");
+			System.out.println("Message zu Schedular hinzugefuegt!");
 
 		} else { // false -- init not successfull
 

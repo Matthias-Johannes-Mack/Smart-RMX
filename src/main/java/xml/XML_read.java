@@ -64,9 +64,9 @@ public class XML_read {
         //iterate over every rule nodes children
         for (NodeList nodeList : ruleNodeChildrenArrList) {
             // contains the first condition
-            Integer[] conditionsOne = new Integer[3];
+            Integer[] conditionsOne = new Integer[4];
             // contains the second condition
-            Integer[] conditionsTwo = new Integer[3];
+            Integer[] conditionsTwo = new Integer[4];
             // List containing all the actions for one rule als an integer Array
             ArrayList<Integer[]> actions = new ArrayList<>();
 
@@ -83,12 +83,21 @@ public class XML_read {
                         if (conditionNodeChild.getNodeName().equals("#text")) {
                             continue;
                         }
+                        //TODO bit value adden in processConditionAndActionChildNodes auslagern da in action und condition jetzt drin
 
                         if (conditionCount == 1) {
                             processConditionAndActionChildNodes(conditionsOne, conditionNodeChild);
+                            if (conditionNodeChild.getNodeName().equals("BitValue")) {
+                                conditionsOne[3] = Integer.parseInt(conditionNodeChild.getTextContent());
+                            }
                         } else if (conditionCount == 2) {
                             processConditionAndActionChildNodes(conditionsTwo, conditionNodeChild);
+                            if (conditionNodeChild.getNodeName().equals("BitValue")) {
+                                conditionsTwo[3] = Integer.parseInt(conditionNodeChild.getTextContent());
+                            }
                         }
+
+
                     }
                 } // end of if equals Condition
 

@@ -4,14 +4,19 @@ import java.util.ArrayList;
 
 /**
  * Class that contains all Actions in a list
+ * guarantees that no duplicates exist:
+ *
+ * - ActionsMessages are equal if their message is equal
+ * - ActionWait are equal if their waitTime is equal
  *
  * @author Matthias Mack 3316380
  */
 public class ActionDepot {
+
 	// Singleton-Pattern START -----------------------------------------
 
 	/**
-	 * Singleton instance of BusDepot
+	 * Singleton instance of ActionDepot
 	 */
 	private static ActionDepot instance = null;
 
@@ -23,9 +28,9 @@ public class ActionDepot {
 	}
 
 	/**
-	 * Returns singleton BusDepot instance
+	 * Returns singleton ActionDepot instance
 	 *
-	 * @return BusDepot Singleton instance
+	 * @return ActionDepot Singleton instance
 	 */
 	public static synchronized ActionDepot getActionDepot() {
 		if (instance == null) {
@@ -36,43 +41,34 @@ public class ActionDepot {
 
 	// Singleton-Pattern END ________________________________________________
 
-	private ArrayList<Action> actionDepot = new ArrayList<>();
-
-	public synchronized Action getAction(int actionID) {
-		return actionDepot.get(actionID);
-	}
+	/**
+	 * list that contains all Actions
+	 */
+	private ArrayList<Action> actionDepotList = new ArrayList<>();
 
 	/**
-	 * checks if actions exists in the ActionDepot
+	 * adds an action to the ActionDepot
+	 *
+	 * checks if the action already exits in the ActionDepot, if so the existing Action is returned, else the Action
+	 * is added to the ActionDepot an then is returned.
+	 *
+	 * - ActionsMessages are equal if their message is equal
+	 * - ActionWaits are equal if their waitTime is equal
 	 * 
-	 * @param action
-	 * @return Returns the action, -1 if action does not exist
+	 * @param action a action to add
+	 * @return action - the given Action if it does not already exist. If the action alreaady exists the corresponding
+	 * 					action from the ActionDepot
 	 */
 	public synchronized Action addAction(Action action) {
 
-		// if action exists return the action
-		if (actionDepot.contains(action)) {
-			int index = actionDepot.indexOf(action);
-			return actionDepot.get(index);
+		if (actionDepotList.contains(action)) {
+			// if the given Action already exists return the corresponding Action in the ActionDepot
+			int index = actionDepotList.indexOf(action);
+			return actionDepotList.get(index);
 		}
-		// if not add action to the depot & return action
-		actionDepot.add(action);
+		// if the Action doesnt already exist in the ActionDepot: add it and return the action
+		actionDepotList.add(action);
 		return action;
 	}
 
-	/**
-	 * removes a action
-	 * 
-	 * @param actionID
-	 */
-	public synchronized void removeAction(int actionID) {
-		actionDepot.remove(actionID);
-	}
-
-	/**
-	 * clears the Depot
-	 */
-	public synchronized void clearActionDepot() {
-		actionDepot.clear();
-	}
 }

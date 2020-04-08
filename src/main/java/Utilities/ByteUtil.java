@@ -19,8 +19,8 @@ public class ByteUtil {
 	/**
 	 * Method which converts 2 bytes (High and Low Byte) to an integer
 	 *
-	 * @param lowByte  low byte
-	 * @param highByte high byte
+	 * @param lowByte  low byte: byte to the right with the smaller x in 2^x
+	 * @param highByte high byte: byte to the left with the higher x in 2^x
 	 * @return int - int value of the two bytes
 	 */
 	public static int convertToInt(byte lowByte, byte highByte) {
@@ -39,9 +39,16 @@ public class ByteUtil {
 		return (value & (1 << bitIndex)) != 0;
 	}
 
-	public static int setBitAtPos(int currentbyte, int bitIndex, int value) {
+	/**
+	 * sets bit at the given index with given value
+	 * @param currentByte
+	 * @param bitIndex
+	 * @param value
+	 * @return
+	 */
+	public static int setBitAtPos(int currentByte, int bitIndex, int value) {
 		int mask = 1 << bitIndex;
-		return (currentbyte & ~mask) | ((value << bitIndex) & mask);
+		return (currentByte & ~mask) | ((value << bitIndex) & mask);
 	}
 
 }
