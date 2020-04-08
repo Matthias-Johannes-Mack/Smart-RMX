@@ -197,7 +197,7 @@ public class Matrix {
         // formula of Bernd Schneider
         // bitIndex = bus + systemadresse * 8 (bit) + gesetzter Bit (i)
         // bitIndex -> die Zeile
-        int bitIndex = calcBerndFormula(bus, systemadresse, bit);
+        int bitIndex = calcBitIndex(bus, systemadresse, bit);
 
         System.out.println("BITINDEX" + bitIndex);
 
@@ -346,15 +346,15 @@ public class Matrix {
 
 
     /**
-     * Method, that calculates Bernds Formula
+     * calc
      *
      * @param bus
-     * @param systemadresse
+     * @param systemadress
      * @param bit
      * @return
      */
-    public static int calcBerndFormula(int bus, int systemadresse, int bit) {
-        return (bus * 112) + (systemadresse * 8) + bit;
+    public static int calcBitIndex(int bus, int systemadress, int bit) {
+        return (bus * 112) + (systemadress * 8) + bit;
     }
 
     /**
@@ -386,8 +386,8 @@ public class Matrix {
         conditionTwo[0] -= conditionTwo[0];
 
         // calculate bernd value of both conditions
-        int bitIndexConditionOne = calcBerndFormula(conditionOne[0], conditionOne[1], conditionOne[2]);
-        int bitIndexConditionTwo = calcBerndFormula(conditionTwo[0], conditionTwo[1], conditionTwo[2]);
+        int bitIndexConditionOne = calcBitIndex(conditionOne[0], conditionOne[1], conditionOne[2]);
+        int bitIndexConditionTwo = calcBitIndex(conditionTwo[0], conditionTwo[1], conditionTwo[2]);
 
         // calculation of the pointindex = gaussian value of bigger + bernd of smaller
         int pointIndex;
