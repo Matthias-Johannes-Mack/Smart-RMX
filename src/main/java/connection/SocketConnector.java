@@ -12,21 +12,33 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Matthias Mack 3316380
  */
 public class SocketConnector {
-	// string for the ip. Here: localhost 127.0.0.1
+	/**
+	 * string for the ip. Here: localhost 127.0.0.1
+	 */
 	private static final String ip = "127.0.0.1";
-	// standard port for RMX: 950
+	/**
+	 * standard port for RMX: 950
+	 */
 	private static final int port = 950;
-	// create new InetSocketAddress to put ip and port together
+	/**
+	 * create new InetSocketAddress to put ip and port together
+	 */
 	private static InetSocketAddress inet;
 
-	// enum for connection states
+	/**
+	 * enum for connection states
+	 */
 	protected enum conState {
 		CONNECTING, RUNNING, DISCONNECTED, RECONNECT
 	}
 
-	// connection status
+	/**
+	 *  connection status variable
+	 */
 	private static conState conStateStr = conState.DISCONNECTED;
-	// create the socket
+	/**
+	 *  create the socket
+	 */
 	private static Socket socket;
 
 	/*
@@ -55,7 +67,7 @@ public class SocketConnector {
 	 * 
 	 * @return conStateStr
 	 */
-	public static conState getConStateStr() {
+	protected static conState getConStateStr() {
 		return conStateStr;
 	}
 
@@ -64,7 +76,7 @@ public class SocketConnector {
 	 * 
 	 * @param conStateStr Connection state
 	 */
-	static void setConStateStr(conState conStateStr) {
+	protected static void setConStateStr(conState conStateStr) {
 		SocketConnector.conStateStr = conStateStr;
 	}
 
@@ -73,10 +85,10 @@ public class SocketConnector {
 	 */
 	public static void Connect() {
 		if (getConStateStr() == conState.DISCONNECTED || getConStateStr() == conState.RECONNECT) {
-			setConStateStr(conState.CONNECTING);
-			System.out.println("Verbinde zu Server " + ip + ":" + port);
 			// establish the connection
 			try {
+				setConStateStr(conState.CONNECTING);
+				System.out.println("Verbinde zu Server " + ip + ":" + port);
 				// checks if the server is alive
 				socket = new Socket();
 				// put the IP and port together
@@ -100,7 +112,7 @@ public class SocketConnector {
 				setConStateStr(conState.DISCONNECTED);
 				System.out.println("-> Server nicht erreichbar & " + getConStateStr());
 				// retry the connection
-				QuestionUtil.retry();
+				QuestionUtil.retry("Connect");
 			}
 		}
 	}
@@ -111,7 +123,6 @@ public class SocketConnector {
 	 * @throws IOException
 	 */
 	public static void closeConnection() throws IOException {
-		System.out.println("Attempt disconnect!");
 		// when the connection is established kill it
 		if (getConStateStr() == conState.RUNNING) {
 			// set the connection string and put it out

@@ -20,74 +20,17 @@ Erstes bit ist Bit 0.
 		</Condition>
 		<Condition>
 			<Bus>1</Bus>
-			<SystemAddress>2</SystemAddress>
-			<Bit>3</Bit>
+			<SystemAddress>0</SystemAddress>
+			<Bit>0</Bit>
 			<BitValue>1</BitValue>
 		</Condition>
-		<Action>
-			<Bus>1</Bus>
-			<SystemAddress>2</SystemAddress>
-			<Bit>3</Bit>
-			<BitValue>1</BitValue>
-		</Action>
-		<Action>
-			<Bus>2</Bus>
-			<SystemAddress>6</SystemAddress>
-			<Bit>4</Bit>
-			<BitValue>0</BitValue>
-		</Action>
+		<Actions>
+			<Action>
+				<Bus>1</Bus>
+				<SystemAddress>2</SystemAddress>
+				<Bit>0</Bit>
+				<BitValue>1</BitValue>
+			</Action>
+		</Actions>
 	</Rule>
-
-	<Rule>
-		<Condition>
-			<Bus>1</Bus>
-			<SystemAddress>0</SystemAddress>
-			<Bit>0</Bit>
-			<BitValue>1</BitValue>
-		</Condition>
-		<Condition>
-			<Bus>1</Bus>
-			<SystemAddress>0</SystemAddress>
-			<Bit>0</Bit>
-			<BitValue>1</BitValue>
-		</Condition>
-		<Wait>1</Wait>
-		<Action>
-			<Bus>1</Bus>
-			<SystemAddress>0</SystemAddress>
-			<Bit>3</Bit>
-			<BitValue>1</BitValue>
-		</Action>
-	</Rule>
-
-
-	<Rule>
-		<Condition>
-			<Bus>1</Bus>
-			<SystemAddress>0</SystemAddress>
-			<Bit>0</Bit>
-			<BitValue>1</BitValue>
-		</Condition>
-		<Condition>
-			<Bus>1</Bus>
-			<SystemAddress>0</SystemAddress>
-			<Bit>0</Bit>
-			<BitValue>1</BitValue>
-		</Condition>
-		<Wait>1</Wait>
-		<Action>
-			<Bus>1</Bus>
-			<SystemAddress>0</SystemAddress>
-			<Bit>3</Bit>
-			<BitValue>1</BitValue>
-		</Action>
-		<Wait>1</Wait>
-		<Action>
-			<Bus>1</Bus>
-			<SystemAddress>0</SystemAddress>
-			<Bit>3</Bit>
-			<BitValue>1</BitValue>
-		</Action>
-	</Rule>
-
 </Ruleset>
