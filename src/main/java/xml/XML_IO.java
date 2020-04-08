@@ -14,27 +14,86 @@ import java.util.Scanner;
  * @author Matthias Mack 3316380
  */
 public class XML_IO {
+    /**
+     * xml_parser instrance
+     */
+    private XML_Parser xml_parser;
+
+    // Singleton-Pattern START -----------------------------------------
+
+    /**
+     * Singleton instance of XML_IO
+     */
+    private static XML_IO instance = null;
+
+    /**
+     * private constructor to prevent instantiation
+     */
+    private XML_IO() {
+
+    }
+
+    /**
+     * Returns singleton XML_IO instance
+     *
+     * @return XML_IO Singleton instance
+     */
+    public static synchronized XML_IO getXML_IO() {
+        if (instance == null) {
+            instance = new XML_IO();
+            instance.xml_parser = XML_Parser.getXML_Parser();
+        }
+
+        return instance;
+    }
+
+    // Singleton-Pattern END ________________________________________________
+
      /**
      * xml File
      */
-    private static org.w3c.dom.Document xmlDoc;
+    private org.w3c.dom.Document xmlDoc;
     /**
      * validity of the xml document regarding the xsd schema
      */
-    protected static boolean validationResult;
+    protected boolean validationResult;
     /**
      * filepath of the xml file the user wants to read in
      */
-    private static String filePath = null;
+    private String filePath = null;
     /**
      * indicates whether the xml document was parsed successfully without schema or file exceptions
      */
-    private static boolean xmlDocumentSuccessfullyParsed = false;
+    private boolean xmlDocumentSuccessfullyParsed = false;
+
 
     /**
-     * Constructor
+     * getter for validation result
+     * @return value of validationResult
      */
-    public XML_IO() {
+    public boolean getValidationResult() {
+        return validationResult;
+    }
+
+    /**
+     * setter for validationResult
+     * @param validationResult new value of validationResult
+     */
+    public void setValidationResult(boolean validationResult) {
+        this.validationResult = validationResult;
+    }
+
+    /**
+     * Get the XML file
+     */
+    public org.w3c.dom.Document getXML() {
+        return xmlDoc;
+    }
+
+    /**
+     * method to start the process of reading in the xml file for the user
+     */
+    public void startXmlReadInForUser() {
         // set the filepath from the XML-File
         while (filePath == null) {
             readInFilePathXML();
@@ -47,11 +106,12 @@ public class XML_IO {
         System.out.println("XML erfolgreich geladen!");
     }
 
+
     /**
      * opens file dialog via openFileDialog() and checks if filepath was read in successfully,
      * if not opens error handling in console
      */
-    private static void readInFilePathXML() {
+    private void readInFilePathXML() {
         filePath = openFileDialog();
 
         if (filePath == null) {
@@ -66,9 +126,9 @@ public class XML_IO {
      *
      * @param filePath file path of the xml document to be read in and parsed
      */
-    private static void readInXmlFile(String filePath) {
+    private void readInXmlFile(String filePath) {
         try {
-            xmlDoc = XML_Parser.parseXMLDocument(filePath);
+            xmlDoc = xml_parser.parseXMLDocument(filePath);
             xmlDocumentSuccessfullyParsed = true;
         } catch (SAXException e) {
             System.out.println("XML laden fehlgeschlagen! Die Datei entspricht nicht dem Smart RMX Datei Schema!");
@@ -83,7 +143,7 @@ public class XML_IO {
     /**
      * outputs the option for the user to either retry reading in a file or exit the program in the console via errorHandlerConsole()
      */
-    private static void errorHandlerConsole() {
+    private void errorHandlerConsole() {
         System.out.println("Erneut versuchen y/n?");
         Scanner in = new Scanner(System.in);
         String retryStr = in.nextLine().toLowerCase();
@@ -101,7 +161,7 @@ public class XML_IO {
      *
      * @return filepath
      */
-    private static String openFileDialog() {
+    private String openFileDialog() {
         try {
             // Create a filechooser
             final JFileChooser fc = new JFileChooser();
@@ -122,13 +182,6 @@ public class XML_IO {
             e.printStackTrace();
         }
         return null;
-    }
-
-    /**
-     * Get the XML file
-     */
-    public static org.w3c.dom.Document getXML() {
-        return xmlDoc;
     }
 
 }

@@ -1,5 +1,8 @@
 package xml;
 
+import action.ActionSequenceWrapper;
+import bus.BusDepot;
+import matrix.Matrix;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -11,17 +14,48 @@ import java.util.*;
  * @author Matthias Mack 3316380
  */
 public class XML_read {
+
+    // Singleton-Pattern START -----------------------------------------
+
+    /**
+     * Singleton instance of XML_read
+     */
+    private static XML_read instance = null;
+
+    /**
+     * private constructor to prevent instantiation
+     */
+    private XML_read() {
+
+    }
+
+    /**
+     * Returns singleton Matrix instance
+     *
+     * @return Matrix Singleton instance
+     */
+    public static synchronized XML_read getXML_read() {
+        if (instance == null) {
+            instance = new XML_read();
+        }
+
+        return instance;
+    }
+
+    // Singleton-Pattern END ________________________________________________
+
+
     /**
      * xml document that is read in
      */
     private org.w3c.dom.Document xmlDoc;
 
     /**
-     * Constructor
+     * reads and processes the given xml document
      *
      * @param xmlDoc xml Document
      */
-    public XML_read(org.w3c.dom.Document xmlDoc) {
+    public void processXMLDocument(org.w3c.dom.Document xmlDoc) {
         if (xmlDoc != null) {
             this.xmlDoc = xmlDoc;
         }
@@ -41,7 +75,7 @@ public class XML_read {
      *
      */
     private void readXML() {
-		/*
+		/**
 		contains NodeLists containing all of the child elements of a Rule Node. Each index is for a different Rule node
 		 */
         ArrayList<NodeList> ruleNodeChildrenArrList = new ArrayList<>();
@@ -169,7 +203,7 @@ public class XML_read {
      * @param nodeList List of XML Nodes
      * @return next Node
      */
-    public static Iterable<Node> iterable(final NodeList nodeList) {
+    private Iterable<Node> iterable(final NodeList nodeList) {
         return () -> new Iterator<Node>() {
 
             private int index = 0;
