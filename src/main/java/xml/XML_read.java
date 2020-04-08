@@ -11,6 +11,9 @@ import java.util.*;
  * @author Matthias Mack 3316380
  */
 public class XML_read {
+    /**
+     * xml document that is read in
+     */
     private org.w3c.dom.Document xmlDoc;
 
     /**
@@ -36,10 +39,8 @@ public class XML_read {
      * - Integer Array for each of the two Conditions [Bus, SystemAddress, Bit]
      * - List containing Integer Arrays for each Action [Bus, SystemAddress, Bit, Bitvalue] and Arrays for the Wait operation [time in ms]
      *
-     *
-     * @throws IllegalArgumentException
      */
-    private void readXML() throws IllegalArgumentException {
+    private void readXML() {
 		/*
 		contains NodeLists containing all of the child elements of a Rule Node. Each index is for a different Rule node
 		 */
@@ -50,10 +51,7 @@ public class XML_read {
         }
 
         xmlDoc.getDocumentElement().normalize();
-        String rootElement = xmlDoc.getDocumentElement().getNodeName();
-        if (!rootElement.equals("Ruleset")) {
-            throw new IllegalArgumentException("Root Element of XML File must be <Ruleset>!");
-        }
+
 
         //gets the rule child nodes
         for (Node node : iterable(xmlDoc.getElementsByTagName("Rule"))) {
@@ -70,64 +68,59 @@ public class XML_read {
             // List containing all the actions for one rule als an integer Array
             ArrayList<Integer[]> actions = new ArrayList<>();
 
-            // conditon counter to know which condition Array to save to
+            // condition counter to know which condition Array to save to
             int conditionCount = 0;
             //iterate over every child node of the rule
             for (Node ruleNodeChild : iterable(nodeList)) {
-                if (ruleNodeChild.getNodeName().equals("#text")) {
-                    continue;
-                }
+                if (ruleNodeChild.getNodeName().equals("#text"))  continue;
+
+                //Condition
                 if (ruleNodeChild.getNodeName().equals("Condition")) {
                     conditionCount++;
+                    //check every child node of condition
                     for (Node conditionNodeChild : iterable(ruleNodeChild.getChildNodes())) {
-                        if (conditionNodeChild.getNodeName().equals("#text")) {
-                            continue;
-                        }
-                        //TODO bit value adden in processConditionAndActionChildNodes auslagern da in action und condition jetzt drin
+                        if (conditionNodeChild.getNodeName().equals("#text"))  continue;
 
                         if (conditionCount == 1) {
                             processConditionAndActionChildNodes(conditionsOne, conditionNodeChild);
-                            if (conditionNodeChild.getNodeName().equals("BitValue")) {
-                                conditionsOne[3] = Integer.parseInt(conditionNodeChild.getTextContent());
-                            }
                         } else if (conditionCount == 2) {
                             processConditionAndActionChildNodes(conditionsTwo, conditionNodeChild);
-                            if (conditionNodeChild.getNodeName().equals("BitValue")) {
-                                conditionsTwo[3] = Integer.parseInt(conditionNodeChild.getTextContent());
-                            }
                         }
-
-
                     }
                 } // end of if equals Condition
 
-                if (ruleNodeChild.getNodeName().equals("Action")) {
-                    Integer[] action = new Integer[4];
+                //Actions
+                if (ruleNodeChild.getNodeName().equals("Actions")) {
+                    //check every child node of actions
+                    for (Node actionsNodeChild : iterable(ruleNodeChild.getChildNodes())) {
+                        if (actionsNodeChild.getNodeName().equals("#text"))  continue;
 
-                    for (Node actionNodeChild : iterable(ruleNodeChild.getChildNodes())) {
-                        if (actionNodeChild.getNodeName().equals("#text")) {
-                            continue;
+                        //Message Action
+                        if (actionsNodeChild.getNodeName().equals("Action")) {
+                            Integer[] action = new Integer[4];
+
+                            //check every child node of message action
+                            for (Node actionNodeChild : iterable(actionsNodeChild.getChildNodes())) {
+                                if (actionNodeChild.getNodeName().equals("#text")) continue;
+
+                                processConditionAndActionChildNodes(action, actionNodeChild);
+                            }
+                            actions.add(action);
                         }
 
-                        processConditionAndActionChildNodes(action, actionNodeChild);
-
-                        if (actionNodeChild.getNodeName().equals("BitValue")) {
-                            action[3] = Integer.parseInt(actionNodeChild.getTextContent());
+                        //Wait Action
+                        if (actionsNodeChild.getNodeName().equals("Wait")) {
+                            //add a IntegerArray containing only the wait time
+                            Integer[] wait = new Integer[1];
+                            wait[0] = Integer.parseInt(actionsNodeChild.getTextContent());
+                            actions.add(wait);
                         }
                     }
-                    actions.add(action);
                 }
 
-                // for the wait add a IntegerArray containing only the wait time
-                if (ruleNodeChild.getNodeName().equals("Wait")) {
-                    Integer[] wait = new Integer[1];
-                    wait[0] = Integer.parseInt(ruleNodeChild.getTextContent());
-                    actions.add(wait);
-                }
             }
-            /*
-              Iterating over one rule block done, add conditions and actions to new rule
-             */
+
+            //  Iterating over one rule block done, add conditions and actions to new rule
             Factory.addRule(new Rule(conditionsOne, conditionsTwo, actions));
         }
     }
@@ -148,6 +141,9 @@ public class XML_read {
                 break;
             case "Bit":
                 targetArray[2] = Integer.parseInt(node.getTextContent());
+                break;
+            case "BitValue":
+                targetArray[3] = Integer.parseInt(node.getTextContent());
                 break;
         }
     }

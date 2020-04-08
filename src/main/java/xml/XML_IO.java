@@ -21,12 +21,17 @@ import java.util.Scanner;
  * @author Matthias Mack 3316380
  */
 public class XML_IO {
-
-	// component for the file dialog
+	/**
+	 * 	component for the file dialog
+	 */
 	private static Component aComponent;
-	// xml File
+	/**
+	 * 	xml File
+	 */
 	private static org.w3c.dom.Document xmlDoc;
-	//validity of the xml document regarding the xsd schema
+	/**
+	 * validity of the xml document regarding the xsd schema
+	 */
 	private static boolean validationResult = true;
 
 	/**
@@ -115,15 +120,13 @@ public class XML_IO {
 			SchemaFactory schemaFactory = SchemaFactory.newInstance(constant);
 			Schema schema = schemaFactory.newSchema(schemaFile);
 
-			//TODO uncomment and adapt xsd
 			//ignore comments and add xsd schema for validation of the xml document
-			//documentBuilderFactory.setIgnoringComments(true);
-			//documentBuilderFactory.setSchema(schema);
+			documentBuilderFactory.setIgnoringComments(true);
+			documentBuilderFactory.setSchema(schema);
 
 			DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
 			//custom ErrorHandler for setting validationResult to false if xml document not valid regarding the schema
-			//TODO uncomment
-			//documentBuilder.setErrorHandler(new customErrorHandler());
+			documentBuilder.setErrorHandler(new customErrorHandler());
 
 			org.w3c.dom.Document document = documentBuilder.parse(xmlFile);
 
