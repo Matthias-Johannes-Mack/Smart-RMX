@@ -122,9 +122,9 @@ public class SocketConnector {
 				// set the connection state to running
 				setConStateStr(conState.RUNNING);
 				// starts the receiver
-				Receiver.startReceiver();
+				Receiver.getReceiver().startReceiver();
 				// initialize the sender
-				Sender.initializeConnection();
+				Sender.getSender().initializeConnection();
 				// show that server is connected
 				System.out.println("-> Mit Server " + ip + ":" + port + " verbunden!");
 				// start the server reload

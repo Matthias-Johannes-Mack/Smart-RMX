@@ -62,7 +62,7 @@ class Receiver {
 		// if the socketConnector is requesting a new thread, do it
 		if (receiverThread == null) {
 			try {
-				inputStr = SocketConnector.getSocket().getInputStream();
+				inputStr = SocketConnector.getSocketConnector().getSocket().getInputStream();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -143,7 +143,7 @@ class Receiver {
 
 				if (message[1] == 0) {
 					// "final" positive acknowledgement
-					SocketConnector.nextRequestAllowed.set(true);
+					SocketConnector.getSocketConnector().nextRequestAllowed.set(true);
 				}
 
 				// else message[1] == 0x01: positive acknowledgment "Bearbeitung läuft"
@@ -151,16 +151,16 @@ class Receiver {
 				break;
 			case 1: // 0x01 - negative acknowledgement
 				process0x01(message);
-				SocketConnector.nextRequestAllowed.set(true);
+				SocketConnector.getSocketConnector().nextRequestAllowed.set(true);
 				break;
 			case 3: // 0x03 - initialisation response
 				// TODO Wenn nicht gleiche RMX Version terminieren
 
-				SocketConnector.nextRequestAllowed.set(true);
+				SocketConnector.getSocketConnector().nextRequestAllowed.set(true);
 				break;
 			case 4: // 0x04 - state info
 				process0x04(message);
-				SocketConnector.nextRequestAllowed.set(true);
+				SocketConnector.getSocketConnector().nextRequestAllowed.set(true);
 				// put in the current system time
 				ServerReload.setLastServerResponse(System.currentTimeMillis());
 				break;
@@ -175,11 +175,11 @@ class Receiver {
 				break;
 			case 36: // 0x24 - lok-info speed and direction
 				process0x24(message);
-				SocketConnector.nextRequestAllowed.set(true);
+				SocketConnector.getSocketConnector().nextRequestAllowed.set(true);
 				break;
 			case 40: // 0x28 - lok-info functions (f0 - f16)
 				process0x28(message);
-				SocketConnector.nextRequestAllowed.set(true);
+				SocketConnector.getSocketConnector().nextRequestAllowed.set(true);
 				break;
 			case 192: // 0x0c0 read lok-decoder
 				break;
@@ -294,7 +294,7 @@ class Receiver {
 	private class ReceiverThread extends Thread {
 		public void run() {
 			// Loop while Connection is established
-			while (SocketConnector.getConStateStr().equals(SocketConnector.conState.RUNNING)) {
+			while (SocketConnector.getSocketConnector().getConStateStr().equals(SocketConnector.conState.RUNNING)) {
 				// wait for next message
 
 				try {

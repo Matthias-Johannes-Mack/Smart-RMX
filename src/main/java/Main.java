@@ -25,6 +25,6 @@ public class Main {
 		// create the connection
 		// schedular MUSS vor Receiver Thread gestartet sein
 		Schedular.getSchedular().startScheduling();
-		SocketConnector.Connect();
+		SocketConnector.getSocketConnector().Connect();
 	}
 }
