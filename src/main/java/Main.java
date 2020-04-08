@@ -17,9 +17,12 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		// open the file
-		XML_IO xml_io = new XML_IO();
+		XML_IO xml_io = XML_IO.getXML_IO();
+		xml_io.startXmlReadInForUser();
 		// read the xml
-		XML_read xml_read = new XML_read(xml_io.getXML());
+		XML_read xml_read = XML_read.getXML_read();
+		xml_read.processXMLDocument(xml_io.getXML());
+
 		// create the factory, actionDepot and the matrix
 		Factory.createActionsAndMatrix();
 		// create the connection
