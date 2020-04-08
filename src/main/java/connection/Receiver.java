@@ -15,19 +15,50 @@ import java.io.InputStream;
  * 
  */
 class Receiver {
-	private static InputStream inputStr;
-	private static ReceiverThread receiverThread;
+
+	// Singleton-Pattern START -----------------------------------------
 
 	/**
-	 * private Constructor to prevent instantiation
+	 * Singleton instance of Receiver
+	 */
+	private static Receiver receiverInstance;
+
+	/**
+	 * private constructor to prevent instantiation
 	 */
 	private Receiver() {
+
 	}
 
 	/**
-	 * Starts the receiver Thread and ets uop the inputstream
+	 * Returns singleton Receiver instance
+	 *
+	 * @return Receiver Singleton instance
 	 */
-	protected static void startReceiver() {
+	public static synchronized Receiver getReceiver() {
+		if (receiverInstance == null) {
+			receiverInstance = new Receiver();
+
+		}
+		return receiverInstance;
+	}
+
+	// Singleton-Pattern END ________________________________________________
+
+	/**
+	 * Thread for sending the messages
+	 */
+	private ReceiverThread receiverThread;
+
+	/**
+	 * InputStream for the messages to the RMX-PC-Zentrale
+	 */
+	private InputStream inputStr;
+
+	/**
+	 * Starts the receiver Thread and sets up the InputStream to the RMX-PC-Zentrale
+	 */
+	public void startReceiver() {
 		// if the socketConnector is requesting a new thread, do it
 		if (receiverThread == null) {
 			try {
@@ -41,53 +72,14 @@ class Receiver {
 	}
 
 	/**
-	 * Method that sets the thread to null
-	 */
-	public synchronized static void setNull() {
-		receiverThread = null;
-	}
-
-	/**
-	 * private Thread responsible for receiving messages from the Server
-	 */
-	private static class ReceiverThread extends Thread {
-		public void run() {
-			// Loop while Connection is established
-			while (SocketConnector.getConStateStr().equals(SocketConnector.conState.RUNNING)) {
-				// wait for next message
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
-				}
-				try {
-					// while there is a message loop
-					while (inputStr.available() > 0) {
-						byte[] msg = receive();
-						// write all messages to console
-						OutputUtil.writeMsgToConsole(msg);
-						// switch the opt codes
-						processMessage(msg);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
-	// ======================================================================
-	// --------------- Implementierung mit Nachrichtenerkennung -------------
-
-	/**
-	 * Receives Message from server and returns message without the RMXnet Headbyte
+	 * Receives Message from server and returns thee message without the RMXnet Headbyte
 	 * (HEAD) and Number of Bytes (COUNT)
-	 * <p>
-	 * RMXnet message format: HEAD-COUNT-OPCODE-DATA
+	 *
+	 * RMXnet message format: <HEAD><COUNT><OPCODE><DATA>
 	 *
 	 * @return byte[] - message
 	 */
-	private static byte[] receive() throws IOException {
+	private byte[] receive() throws IOException {
 
 		int msgLength;
 
@@ -111,11 +103,23 @@ class Receiver {
 		return message;
 	}
 
+
+	/**
+	 * Method that sets the thread to null
+	 */
+	public synchronized void setNull() {
+		receiverThread = null;
+	}
+
+	/*-----------------------------------------------------------------------------------------------
+	  MESSAGE OPCODE RECOGNITION
+     ----------------------------------------------------------------------------------------------*/
+
 	/**
 	 * Processes message (without HEAD and COUNT) in dependence of the OPCODE. Sets
 	 * nextRequestAllowed in SocketConnecter to true, if message is an
 	 * acknoledgement.
-	 * <p>
+	 *
 	 * RMXnet OPCODE (receiving): - 0 (0x00) positive acknowledgement - 1 (0x01)
 	 * negative acknowledgement - 3 (0x03) initialisation response - 4 (0x04) state
 	 * info - 6 (0x06) rmx-adress value (RMX-1 Bus) - 8 (0x08) lok-info (adress,
@@ -125,7 +129,7 @@ class Receiver {
 	 *
 	 * @param message a message to process without HEAD and COUNT
 	 */
-	public static void processMessage(byte[] message) {
+	public void processMessage(byte[] message) {
 
 		int opcode = -1;
 
@@ -192,7 +196,7 @@ class Receiver {
 	 *
 	 * @param message a message to process
 	 */
-	private static void process0x01(byte[] message) {
+	private void process0x01(byte[] message) {
 
 		switch (message[1]) {
 		case 1: // 0x01 - unknown OPCODE
@@ -221,7 +225,7 @@ class Receiver {
 	 *
 	 * @param message a message to process
 	 */
-	private static void process0x04(byte[] message) {
+	private void process0x04(byte[] message) {
 
 		if (Schedular.INIT_SUCESSFULL.get() == false) {
 			// check initialization
@@ -244,7 +248,7 @@ class Receiver {
 	 *
 	 * @param message a message to process
 	 */
-	private static void process0x06(byte[] message) {
+	private void process0x06(byte[] message) {
 
 		if (Schedular.INIT_SUCESSFULL.get()) { // true -- init successfull
 
@@ -260,38 +264,53 @@ class Receiver {
 
 	}
 
-	/**
-	 * @param message
+	/*
+		unused for know
 	 */
-	private static void process0x08(byte[] message) {
+
+	private void process0x08(byte[] message) {
 
 	}
 
-	/**
-	 * @param message
-	 */
-	private static void process0x20(byte[] message) {
+	private void process0x20(byte[] message) {
 
 	}
 
-	/**
-	 * processsing lok-info speed and direction OPCODE 0x24. format
-	 * <0x24><ADRH><ADRL><SPEED><DIR>
-	 *
-	 * @param message a message to process
-	 */
-	private static void process0x24(byte[] message) {
+	private void process0x24(byte[] message) {
 
 	}
 
-	/**
-	 * processsing lok-info functions (f0 - f16) OPCODE 0x28. format
-	 * <0x28><ADRH><ADRL><F0F7><F8F15><F16F23>
-	 *
-	 * @param message a message to process
-	 */
-	private static void process0x28(byte[] message) {
+	private void process0x28(byte[] message) {
 
+	}
+
+	/*-----------------------------------------------------------------------------------------------
+	  RECEIVER-THREAD
+     ----------------------------------------------------------------------------------------------*/
+
+	/**
+	 * Thread for receiving messages from the RMX-PC-Zentrale
+	 */
+	private class ReceiverThread extends Thread {
+		public void run() {
+			// Loop while Connection is established
+			while (SocketConnector.getConStateStr().equals(SocketConnector.conState.RUNNING)) {
+				// wait for next message
+
+				try {
+					// while there is a message loop
+					while (inputStr.available() > 0) {
+						byte[] msg = receive();
+						// write all messages to console
+						OutputUtil.writeMsgToConsole(msg);
+						// switch the opt codes
+						processMessage(msg);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 }

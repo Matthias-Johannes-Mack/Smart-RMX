@@ -26,13 +26,6 @@ public class Schedular {
     private static Schedular schedularInstance;
 
     /**
-     * object for schedular thread. Used for handling all schedular tasks
-     */
-    private static Thread sThread;
-
-    private boolean WORK = true;
-
-    /**
      * private constructor to prevent instantiation
      */
     private Schedular() {
@@ -53,6 +46,15 @@ public class Schedular {
 
     // Singleton-Pattern END ________________________________________________
 
+    /**
+     * object for schedular thread. Used for handling all schedular tasks
+     */
+    private static Thread sThread;
+
+    /**
+     * indicates if the SchdularThread should schedule messages, used for cleanup to stop the schedularThread
+     */
+    private boolean WORK = true;
 
     /**
      * number of threads in the thread pool that are responsible for processing ActionWaits
@@ -288,7 +290,7 @@ public class Schedular {
                     busDepot.updateBus(message[1], message[2],message[3]);
 
                     // add (real) message to the sender for sending to the RMX-PC-Zentrale
-                    Sender.addMessageQueue(message);
+                    Sender.getSender().addMessageQueue(message);
 
                     // add fake message to the fakeMessageQueue so the changes are checked
                     addMessageToFakeQueue(fakeMessage);
