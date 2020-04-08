@@ -12,21 +12,33 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Matthias Mack 3316380
  */
 public class SocketConnector {
-	// string for the ip. Here: localhost 127.0.0.1
+	/**
+	 * string for the ip. Here: localhost 127.0.0.1
+	 */
 	private static final String ip = "127.0.0.1";
-	// standard port for RMX: 950
+	/**
+	 * standard port for RMX: 950
+	 */
 	private static final int port = 950;
-	// create new InetSocketAddress to put ip and port together
+	/**
+	 * create new InetSocketAddress to put ip and port together
+	 */
 	private static InetSocketAddress inet;
 
-	// enum for connection states
+	/**
+	 * enum for connection states
+	 */
 	protected enum conState {
 		CONNECTING, RUNNING, DISCONNECTED, RECONNECT
 	}
 
-	// connection status
+	/**
+	 *  connection status variable
+	 */
 	private static conState conStateStr = conState.DISCONNECTED;
-	// create the socket
+	/**
+	 *  create the socket
+	 */
 	private static Socket socket;
 
 	/*

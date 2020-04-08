@@ -8,7 +8,9 @@ import connection.SocketConnector.conState;
  * @author Matthias Mack 3316380
  */
 public class ServerReload implements Runnable {
-	// return the last server response
+	/**
+	 * return the last server response
+	 */
 	private static long lastServerResponse;
 
 	/**
