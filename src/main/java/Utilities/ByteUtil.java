@@ -19,8 +19,8 @@ public class ByteUtil {
 	/**
 	 * Method which converts 2 bytes (High and Low Byte) to an integer
 	 *
-	 * @param lowByte  low byte
-	 * @param highByte high byte
+	 * @param lowByte  low byte: byte to the right with the smaller x in 2^x
+	 * @param highByte high byte: byte to the left with the higher x in 2^x
 	 * @return int - int value of the two bytes
 	 */
 	public static int convertToInt(byte lowByte, byte highByte) {
