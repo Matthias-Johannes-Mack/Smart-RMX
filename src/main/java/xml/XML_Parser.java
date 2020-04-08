@@ -107,13 +107,13 @@ class XML_Parser {
         @Override
         public void warning(SAXParseException exception) throws SAXException {
             System.err.println("Line " + exception.getLineNumber() + ": " + exception.getMessage());
-            xml_io.setValidationResult(true);
+            xml_io.setValidationResult(false);
         }
 
         @Override
         public void error(SAXParseException exception) throws SAXException {
             System.err.println("Line " + exception.getLineNumber() + ": " + exception.getMessage());
-            xml_io.setValidationResult(true);
+            xml_io.setValidationResult(false);
 
         }
 
