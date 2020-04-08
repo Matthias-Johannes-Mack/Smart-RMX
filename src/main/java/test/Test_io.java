@@ -1,4 +1,7 @@
-package xml;
+package test;
+
+import xml.XML_IO;
+import xml.XML_read;
 
 /**
  * Testtool für die XML-IO
