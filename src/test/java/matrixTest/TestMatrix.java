@@ -50,14 +50,14 @@ public class TestMatrix {
 	 */
 	public void testCalcBerndsFormula() {
 		// test the 0
-		assertEquals(0, Matrix.calcBerndFormula(0, 0, 0));
+		assertEquals(0, Matrix.calcBitIndex(0, 0, 0));
 		// formula : (n(n+1))/2)
 		// for the -1
-		assertEquals(-121, Matrix.calcBerndFormula(-1, -1, -1));
+		assertEquals(-121, Matrix.calcBitIndex(-1, -1, -1));
 		// upper bounds
-		assertEquals(1007, Matrix.calcBerndFormula(1, 111, 7));
+		assertEquals(1007, Matrix.calcBitIndex(1, 111, 7));
 		// the max bus 4, sysaddr 111, bit 7
-		assertEquals(1343, Matrix.calcBerndFormula(4, 111, 7));
+		assertEquals(1343, Matrix.calcBitIndex(4, 111, 7));
 	}
 
 	@Test
@@ -85,20 +85,20 @@ public class TestMatrix {
 
 		Matrix matrix = Matrix.getMatrix();
 		matrix.addAction(conditionOne, conditionTwo, actionSequence);
-		System.out.println("matrix: " + matrix.matrix[0].getActions());
+		//System.out.println("matrix: " + matrix.matrix[0].get.getActions());
 
-		List<ActionSequence> result = matrix.check((byte) 1, (byte) 0, (byte) 1);
+		//List<ActionSequence> result = matrix.check((byte) 1, (byte) 0, (byte) 1);
 
-		for (ActionSequence actionSequence1 : result) {
-			List<Action> actions = actionSequence.getActions();
-
-			for (Action action : actions) {
-				if (action instanceof ActionWait) {
-					ActionWait waitaction = (ActionWait) action;
-					System.out.println(waitaction.getWaitTime());
-				}
-			}
-		}
+//		for (ActionSequence actionSequence1 : result) {
+//			List<Action> actions = actionSequence.getActions();
+//
+//			for (Action action : actions) {
+//				if (action instanceof ActionWait) {
+//					ActionWait waitaction = (ActionWait) action;
+//					System.out.println(waitaction.getWaitTime());
+//				}
+//			}
+//		}
 	}
 
 }
