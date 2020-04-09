@@ -6,6 +6,8 @@ import org.xml.sax.SAXParseException;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import java.io.File;
 import java.util.Scanner;
 
 /**
@@ -166,9 +168,10 @@ public class XML_IO {
             // Create a filechooser
             final JFileChooser fc = new JFileChooser();
             // sets the name of the file dialog
-            fc.setDialogTitle("Bitte XML-Datei wählen");
+            fc.setDialogTitle("Bitte XML-Datei waehlen");
             // set the filter
             fc.setAcceptAllFileFilterUsed(false);
+            fc.setCurrentDirectory(new File(XML_IO.class.getProtectionDomain().getCodeSource().getLocation().toURI()));
             // set the thing to xml
             FileNameExtensionFilter filter = new FileNameExtensionFilter(".xml", "xml");
             fc.addChoosableFileFilter(filter);
