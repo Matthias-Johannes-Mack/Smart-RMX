@@ -4,7 +4,7 @@ import action.ActionDepot;
 import action.ActionMessage;
 import action.ActionSequence;
 import action.ActionWait;
-import matrix.Matrix;
+import matrix.BitMatrix;
 import java.util.ArrayList;
 
 /**
@@ -60,7 +60,7 @@ public class Factory {
 				}
 			}
 			// Add rule to Matrix
-			Matrix.getMatrix().addAction(rule.getConditionOne(), rule.getConditionTwo(), actionSeq);
+			BitMatrix.getMatrix().addAction(rule.getConditionOne(), rule.getConditionTwo(), actionSeq);
 		}
 	}
 

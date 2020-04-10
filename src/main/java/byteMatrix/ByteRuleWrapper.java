@@ -1,5 +1,7 @@
 package byteMatrix;
 
+import action.ActionSequence;
+
 import java.util.ArrayList;
 
 /**
@@ -9,13 +11,13 @@ public class ByteRuleWrapper {
 	/**
 	 * 
 	 */
-	private ArrayList<ByteRule> ruleWrapper;
+	private ArrayList<ByteRule> byteRuleList;
 
 	/**
 	 * Constructor
 	 */
 	public ByteRuleWrapper() {
-		ruleWrapper = new ArrayList<>();
+		byteRuleList = new ArrayList<>();
 	}
 
 	/**
@@ -23,10 +25,38 @@ public class ByteRuleWrapper {
 	 * 
 	 * @param byteRule
 	 */
-	public void setRuleWrapper(ByteRule byteRule) {
+	public void setByteRuleList(ByteRule byteRule) {
 		if (byteRule != null) {
-			ruleWrapper.add(byteRule);
+			byteRuleList.add(byteRule);
 		}
+	}
+
+
+	//TODO später in implementiertung drauf achten in row schleife bin ich immer größer, in column schleife bin ich
+	// immer kleiner
+
+	/**
+	 * Checks if the ByteRuleWrapper has a ActionSequence for the given byteValues
+	 *
+	 * @param byteValueSmall
+	 * @param byteValueBig
+	 * @return the ActionSequence if a Rule has been defined with the given values, null otherwise
+	 */
+	public ActionSequence getActionSequenceByState(Integer[] byteValueSmall, Integer[] byteValueBig) {
+
+		ActionSequence result = null;
+
+		for (ByteRule rule: byteRuleList) {
+
+			if(rule.check(byteValueSmall, byteValueBig)) {
+				// condition is true
+				result = rule.getActionSequence();
+				break;
+			}
+
+		}
+
+		return result;
 	}
 
 }

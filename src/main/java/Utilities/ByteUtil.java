@@ -51,4 +51,14 @@ public class ByteUtil {
 		return (currentByte & ~mask) | ((value << bitIndex) & mask);
 	}
 
+    public static Integer[] getByteArrayByByte(byte currentByte) {
+
+		Integer[] result = new Integer[8];
+
+		for (int i = 7; i >= 0; --i) {
+			result[i] = (currentByte >>> i & 1);
+		}
+
+		return result;
+    }
 }

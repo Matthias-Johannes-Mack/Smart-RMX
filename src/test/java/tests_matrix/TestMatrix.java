@@ -3,7 +3,6 @@ package tests_matrix;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -14,7 +13,7 @@ import action.Action;
 import action.ActionSequence;
 import action.ActionWait;
 import bus.BusDepot;
-import matrix.Matrix;
+import matrix.BitMatrix;
 
 /**
  * Class that tests the matrix
@@ -85,7 +84,7 @@ public class TestMatrix {
 		Integer[] conditionThree = new Integer[] { 1, 111, 0, 0 };
 		Integer[] conditionFour = new Integer[] { 1, 111, 0, 0 };
 
-		Matrix matrix = Matrix.getMatrix();
+		BitMatrix matrix = BitMatrix.getMatrix();
 		matrix.addAction(conditionOne, conditionTwo, actionSequence1); // sollte zu wrapper hinzugefügt werden an 1-1
 		matrix.addAction(conditionThree, conditionFour, actionSequence2); // sollte zu wrapper hinzugefügt werden an
 																			// 0-0

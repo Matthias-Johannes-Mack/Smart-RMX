@@ -4,7 +4,7 @@ import action.ActionWait;
 import bus.BusDepot;
 import Utilities.Constants;
 import connection.Sender;
-import matrix.Matrix;
+import matrix.BitMatrix;
 
 import java.util.Arrays;
 import java.util.List;
@@ -91,7 +91,7 @@ public class Schedular {
      * Provided Matrix (=Tabelle) the schedular works with to determine which
      * ActionSequence(s) are triggered for the changes of the messages
      */
-    private volatile Matrix matrix;
+    private volatile BitMatrix matrix;
 
     /**
      * busDepot handling the access to the different busses
@@ -130,7 +130,7 @@ public class Schedular {
             busDepot = BusDepot.getBusDepot();
 
             // matrix
-            matrix = Matrix.getMatrix();
+            matrix = BitMatrix.getMatrix();
         }
     }
 
