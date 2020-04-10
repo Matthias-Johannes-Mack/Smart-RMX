@@ -11,7 +11,8 @@ public final class Constants {
 	 */
 	private Constants() {
 	}
-
+	// Main
+	public static final String OPERATING_SYSTEM = System.getProperty("os.name");
 	// Connection
 	public static byte RMX_VERSION = 0x01;
 	public static final byte RMX_HEAD = 0x7c;
