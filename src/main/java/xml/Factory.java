@@ -5,6 +5,7 @@ import byteMatrix.ByteMatrix;
 import byteMatrix.ByteRule;
 import matrix.BitMatrix;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Factory class for creating the actions matrix and filling the matrix
@@ -98,7 +99,7 @@ public class Factory {
 				ActionMessageBit messageBit = new ActionMessageBit(parseIntegerToIntArr(action));
 				// only add action to actionDepot if it doesnt exists already
 				actionSeq.addAction(actionDepot.addAction(messageBit));
-			} else if(action.length ==3) {
+			} else if(action.length == 3) {
 				ActionMessageByte messageByte = new ActionMessageByte(parseIntegerToIntArr(action));
 				// only add action to actionDepot if it doesnt exists already
 				actionSeq.addAction(actionDepot.addAction(messageByte));

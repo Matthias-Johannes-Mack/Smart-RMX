@@ -68,17 +68,18 @@ public class XML_read {
     //Todo boolean if its a Byte rule
     private boolean byteRule = false;
 
+    private boolean byteAction = false;
+
     /**
      * reads in the rules from the file and saves them to the Factory Class.
      * A rule consists of
      * - Integer Array for each of the two Conditions [Bus, SystemAddress, Bit]
      * - List containing Integer Arrays for each Action [Bus, SystemAddress, Bit, Bitvalue] and Arrays for the Wait operation [time in ms]
-     *
      */
     private void readXML() {
-		/**
-		contains NodeLists containing all of the child elements of a Rule Node. Each index is for a different Rule node
-		 */
+        /**
+         contains NodeLists containing all of the child elements of a Rule Node. Each index is for a different Rule node
+         */
         ArrayList<NodeList> ruleNodeChildrenArrList = new ArrayList<>();
 
         if (xmlDoc == null) {
@@ -95,7 +96,6 @@ public class XML_read {
         }
 
 
-
         //iterate over every rule nodes children
         for (NodeList nodeList : ruleNodeChildrenArrList) {
             // contains the first condition
@@ -109,14 +109,14 @@ public class XML_read {
             int conditionCount = 0;
             //iterate over every child node of the rule
             for (Node ruleNodeChild : iterable(nodeList)) {
-                if (ruleNodeChild.getNodeName().equals("#text"))  continue;
+                if (ruleNodeChild.getNodeName().equals("#text")) continue;
 
                 //Condition
                 if (ruleNodeChild.getNodeName().equals("Condition")) {
                     conditionCount++;
                     //check every child node of condition
                     for (Node conditionNodeChild : iterable(ruleNodeChild.getChildNodes())) {
-                        if (conditionNodeChild.getNodeName().equals("#text"))  continue;
+                        if (conditionNodeChild.getNodeName().equals("#text")) continue;
 
                         if (conditionCount == 1) {
                             processConditionChildNodes(conditionsOne, conditionNodeChild);
@@ -130,7 +130,7 @@ public class XML_read {
                 if (ruleNodeChild.getNodeName().equals("Actions")) {
                     //check every child node of actions
                     for (Node actionsNodeChild : iterable(ruleNodeChild.getChildNodes())) {
-                        if (actionsNodeChild.getNodeName().equals("#text"))  continue;
+                        if (actionsNodeChild.getNodeName().equals("#text")) continue;
 
                         //Message Action
                         if (actionsNodeChild.getNodeName().equals("Action")) {
@@ -141,7 +141,16 @@ public class XML_read {
                                 if (actionNodeChild.getNodeName().equals("#text")) continue;
 
                                 processActionChildNodes(action, actionNodeChild);
+
+
+
                             }
+
+                            // if this is a byteAction the array is only 3 long
+                            if(byteAction) {
+                                action = Arrays.copyOfRange(action, 0, 3);
+                            }
+
                             actions.add(action);
                         }
 
@@ -158,7 +167,7 @@ public class XML_read {
             }
 
             //  Iterating over one rule block done, add conditions and actions to new rule
-            if(!byteRule) {
+            if (!byteRule) {
                 Factory.addBitRule(conditionsOne, conditionsTwo, actions);
             } else {
                 //byte rule
@@ -166,6 +175,8 @@ public class XML_read {
                 Integer[] conditionTwoAdress = Arrays.copyOfRange(conditionsTwo, 0, 2);
                 Integer[] conditionOneValue = ByteUtil.getByteArrayByByte(conditionsOne[2].byteValue());
                 Integer[] conditionTwoValue = ByteUtil.getByteArrayByByte(conditionsTwo[2].byteValue());
+
+                System.out.println("ACTION IN XML READ " + Arrays.toString(actions.get(0)));
                 Factory.addByteRule(conditionOneAdress, conditionOneValue, conditionTwoAdress, conditionTwoValue, actions);
             }
 
@@ -176,8 +187,9 @@ public class XML_read {
     /**
      * helper method for readXML
      * processes the Bus, SystemAdress and Bit node of the Action and Condition nodes and puts them in the given array
+     *
      * @param targetArray array to which the node values should be written
-     * @param node node whose content should be written to the array
+     * @param node        node whose content should be written to the array
      */
     private void processConditionChildNodes(Integer[] targetArray, Node node) {
         switch (node.getNodeName()) {
@@ -204,14 +216,14 @@ public class XML_read {
     /**
      * helper method for readXML
      * processes the Bus, SystemAdress and Bit node of the Action and Condition nodes and puts them in the given array
-     *
+     * <p>
      * for a bit action message targetArray: [Bus][Systemadress][Bit][Bitvalue]
      * for a byte action message targetArray: [Bus][Systemadress][ByteValue][]
      *
-     * @param targetArray array to which the node values should be written
-     * @param node node whose content should be written to the array
+     * @param node        node whose content should be written to the array
      */
-    private void processActionChildNodes(Integer[] targetArray, Node node) {
+    private Integer[] processActionChildNodes(Integer[]targetArray, Node node) {
+
         switch (node.getNodeName()) {
             case "Bus":
                 targetArray[0] = Integer.parseInt(node.getTextContent());
@@ -221,16 +233,18 @@ public class XML_read {
                 break;
             case "Bit":
                 targetArray[2] = Integer.parseInt(node.getTextContent());
+                byteAction = false;
                 break;
             case "BitValue":
                 targetArray[3] = Integer.parseInt(node.getTextContent());
                 break;
             case "ByteValue":
                 targetArray[2] = Integer.parseInt(node.getTextContent());
-                // shorten target array since the last index is not needed anymore, needed for identification
-                targetArray = Arrays.copyOfRange(targetArray, 0, 3);
+                byteAction = true;
                 break;
         }
+
+        return targetArray;
     }
 
 
@@ -240,8 +254,8 @@ public class XML_read {
         System.out.println("Number of Rules " + Factory.getBitRules().size());
         for (BitRule bitRule : Factory.getBitRules()) {
             System.out.println("----Rule----");
-            System.out.println("Condition1: "+Arrays.toString(bitRule.getConditionOne()));
-            System.out.println("Condition2:"+Arrays.toString(bitRule.getConditionOne()));
+            System.out.println("Condition1: " + Arrays.toString(bitRule.getConditionOne()));
+            System.out.println("Condition2:" + Arrays.toString(bitRule.getConditionOne()));
             for (Integer[] action : bitRule.getActions()) {
                 System.out.println("Action: " + Arrays.toString(action));
             }
