@@ -5,7 +5,7 @@ import Utilities.Constants;
 public class MatrixUtil {
 
     /**
-     * calculates the bitIndex of the given bus, systemadress and bit
+     * calculates the bitIndex of the given bus, systemadress and bit for bit matrix
      * Formula: (busId * Number_Systemadresses_per_bus) + (systemadress * 8) + bitIndexSystemadress
      *
      * @param busId
@@ -15,6 +15,16 @@ public class MatrixUtil {
      */
     public static int calcBitIndex(int busId, int systemadress, int bitIndexSystemadress) {
         return (busId * Constants.NUMBER_SYSTEMADRESSES_PER_BUS) + (systemadress * 8) + bitIndexSystemadress;
+    }
+
+    /**
+     * calculates the byteIndex of given bus and systemadress for byte matrix
+     * @param busId
+     * @param systemadress
+     * @return the byteIndex of the given byte at the given systemadress and bus
+     */
+    public static int calcByteIndex(int busId, int systemadress) {
+        return (busId * Constants.NUMBER_SYSTEMADRESSES_PER_BUS) + systemadress;
     }
 
     /**

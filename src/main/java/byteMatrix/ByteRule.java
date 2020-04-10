@@ -4,6 +4,7 @@ import action.ActionSequence;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * Class for a byte Rule
@@ -124,4 +125,16 @@ public class ByteRule {
 		return conditionTwoValue;
 	}
 
+	// to make sure there is only one rule for each byte state and combination
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		ByteRule byteRule = (ByteRule) o;
+		return Arrays.equals(conditionOneAdress, byteRule.conditionOneAdress) &&
+				Arrays.equals(conditionOneValue, byteRule.conditionOneValue) &&
+				Arrays.equals(conditionTwoAdress, byteRule.conditionTwoAdress) &&
+				Arrays.equals(conditionTwoValue, byteRule.conditionTwoValue) &&
+				Objects.equals(actionSequence, byteRule.actionSequence);
+	}
 }

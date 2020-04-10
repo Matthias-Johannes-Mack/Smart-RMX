@@ -59,4 +59,14 @@ public class ByteRuleWrapper {
 		return result;
 	}
 
+	/**
+	 * adds the given rule to the wrapper, makes sure there is only one rule for a specific byte combination /value pair
+	 * @param rule rule to add
+	 */
+	public void addByteRule(ByteRule rule) {
+		if(!byteRuleList.contains(rule)) {
+			this.byteRuleList.add(rule);
+		}
+	}
+
 }

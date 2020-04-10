@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * Rule object for storing the conditions and actions until the matrix is created
  */
-public class Rule {
+public class BitRule {
     /**
      * Integer Array for first Conditions [Bus, SystemAddress, Bit, Bitvalue]
      */
@@ -25,7 +25,7 @@ public class Rule {
      * @param conditionTwo second Condition
      * @param actions list containing actions
      */
-    public Rule(Integer[] conditionOne, Integer[] conditionTwo, ArrayList<Integer[]> actions) {
+    public BitRule(Integer[] conditionOne, Integer[] conditionTwo, ArrayList<Integer[]> actions) {
         this.conditionOne = conditionOne;
         this.conditionTwo = conditionTwo;
         this.actions = actions;

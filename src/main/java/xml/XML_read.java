@@ -1,5 +1,7 @@
 package xml;
 
+import Utilities.ByteUtil;
+import byteMatrix.ByteRule;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -64,6 +66,9 @@ public class XML_read {
         }
     }
 
+    //Todo boolean if its a Byte rule
+    private boolean byteRule = false;
+
     /**
      * reads in the rules from the file and saves them to the Factory Class.
      * A rule consists of
@@ -89,6 +94,8 @@ public class XML_read {
             NodeList nodeList = node.getChildNodes();
             ruleNodeChildrenArrList.add(nodeList);
         }
+
+
 
         //iterate over every rule nodes children
         for (NodeList nodeList : ruleNodeChildrenArrList) {
@@ -152,7 +159,18 @@ public class XML_read {
             }
 
             //  Iterating over one rule block done, add conditions and actions to new rule
-            Factory.addRule(new Rule(conditionsOne, conditionsTwo, actions));
+            if(!byteRule) {
+                Factory.addBitRule(conditionsOne, conditionsTwo, actions);
+            } else {
+                //byte rule
+                Integer[] conditionOneAdress = Arrays.copyOfRange(conditionsOne, 0, 2);
+                Integer[] conditionTwoAdress = Arrays.copyOfRange(conditionsTwo, 0, 2);
+                Integer[] conditionOneValue = ByteUtil.getByteArrayByByte(conditionsOne[2].byteValue());
+                Integer[] conditionTwoValue = ByteUtil.getByteArrayByByte(conditionsTwo[2].byteValue());
+                Factory.addByteRule(conditionOneAdress, conditionOneValue, conditionTwoAdress, conditionTwoValue, actions);
+            }
+
+
         }
     }
 
@@ -172,9 +190,14 @@ public class XML_read {
                 break;
             case "Bit":
                 targetArray[2] = Integer.parseInt(node.getTextContent());
+                byteRule = false;
                 break;
             case "BitValue":
                 targetArray[3] = Integer.parseInt(node.getTextContent());
+                break;
+            case "ByteValue":
+                targetArray[2] = Integer.parseInt(node.getTextContent());
+                byteRule = true;
                 break;
         }
     }
@@ -183,12 +206,12 @@ public class XML_read {
     //TODO Delete
     public void test() {
         System.out.println("Test:");
-        System.out.println("Number of Rules " + Factory.getRules().size());
-        for (Rule rule : Factory.getRules()) {
+        System.out.println("Number of Rules " + Factory.getBitRules().size());
+        for (BitRule bitRule : Factory.getBitRules()) {
             System.out.println("----Rule----");
-            System.out.println("Condition1: "+Arrays.toString(rule.getConditionOne()));
-            System.out.println("Condition2:"+Arrays.toString(rule.getConditionOne()));
-            for (Integer[] action : rule.getActions()) {
+            System.out.println("Condition1: "+Arrays.toString(bitRule.getConditionOne()));
+            System.out.println("Condition2:"+Arrays.toString(bitRule.getConditionOne()));
+            for (Integer[] action : bitRule.getActions()) {
                 System.out.println("Action: " + Arrays.toString(action));
             }
         }
