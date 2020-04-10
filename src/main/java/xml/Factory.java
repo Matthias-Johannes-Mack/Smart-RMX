@@ -1,8 +1,7 @@
 package xml;
 
-import Utilities.ByteUtil;
 import action.ActionDepot;
-import action.ActionMessage;
+import action.ActionMessageBit;
 import action.ActionSequence;
 import action.ActionWait;
 import byteMatrix.ByteMatrix;
@@ -94,7 +93,7 @@ public class Factory {
 				// only add action to actionDepot if it doesnt exists already
 				actionSeq.addAction(actionDepot.addAction(waitAction));
 			} else {
-				ActionMessage messageAction = new ActionMessage(parseIntegerToIntArr(action));
+				ActionMessageBit messageAction = new ActionMessageBit(parseIntegerToIntArr(action));
 				// only add action to actionDepot if it doesnt exists already
 				actionSeq.addAction(actionDepot.addAction(messageAction));
 			}

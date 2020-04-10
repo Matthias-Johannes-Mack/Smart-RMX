@@ -7,14 +7,14 @@ import java.util.Arrays;
  *
  * @author Matthias Mack 3316380
  */
-public class ActionMessage extends Action {
+public class ActionMessageBit extends Action {
 
 	/**
 	 * Integer Array that contains the info of the actionMessage
 	 * Format:
 	 * [BUS][Systemadresse][bitIndex][bitValue]
 	 */
-	private int[] actionMessage;
+	private int[] actionMessageBit;
 
 	/**
 	 * Constructor for an ActionMessage
@@ -24,8 +24,8 @@ public class ActionMessage extends Action {
 	 *
 	 * @param actionMessage
 	 */
-	public ActionMessage(int[] actionMessage) {
-		this.actionMessage = actionMessage;
+	public ActionMessageBit(int[] actionMessage) {
+		this.actionMessageBit = actionMessage;
 	}
 
 	/**
@@ -33,8 +33,8 @@ public class ActionMessage extends Action {
 	 * 
 	 * @return actionMessage
 	 */
-	public int[] getActionMesssage() {
-		return actionMessage;
+	public int[] getActionMessageBit() {
+		return actionMessageBit;
 	}
 
 	/**
@@ -56,8 +56,8 @@ public class ActionMessage extends Action {
 		}
 
 		// Compare their waitTime
-		ActionMessage that = (ActionMessage) o;
-		return Arrays.equals(actionMessage, that.actionMessage);
+		ActionMessageBit that = (ActionMessageBit) o;
+		return Arrays.equals(actionMessageBit, that.actionMessageBit);
 	}
 
 }
