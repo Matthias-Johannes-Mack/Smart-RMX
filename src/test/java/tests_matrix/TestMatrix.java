@@ -67,7 +67,7 @@ public class TestMatrix {
 	public void testMatrix() {
 
 		BusDepot busDepot = BusDepot.getBusDepot();
-		busDepot.getBusDepot().updateBus((byte) 0, (byte)0x6f, (byte) 0);
+		busDepot.updateBus((byte) 1, (byte) 0x6f, (byte) 0);
 
 		// ActionSequence that contains ActionWait with waitTime 1
 		Action actionWait1 = new ActionWait(1);
@@ -104,7 +104,10 @@ public class TestMatrix {
 
 		// format <0x06><RMX><ADRRMX><VALUE>
 		byte[] message1 = new byte[] { 6, 1, 111, 1 };
-		Integer[] changes1 = busDepot.getBusDepot().getChangesAndUpdate((byte) 0, message1[2],message1[3]); // bit 0 wurde auf 1 gesetzt
+		Integer[] changes1 = busDepot.getChangesAndUpdate((byte) 1, message1[2], message1[3]); // bit 0
+																												// wurde
+																												// auf 1
+																												// gesetzt
 
 		List<ActionSequence> resultCheck = matrix.check(message1[1], message1[2], changes1);
 		for (ActionSequence actionSequence : resultCheck) {
