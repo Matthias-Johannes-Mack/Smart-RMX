@@ -35,9 +35,7 @@ public class Main {
 				command();
 			}
 		} else if (Constants.OPERATING_SYSTEM.contains("Linux")) {
-			
 		}
-
 	}
 
 	/**
