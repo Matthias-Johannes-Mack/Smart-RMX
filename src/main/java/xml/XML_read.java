@@ -189,7 +189,6 @@ public class XML_read {
                 break;
             case "Bit":
                 targetArray[2] = Integer.parseInt(node.getTextContent());
-                System.out.println("ICH BIN ABER HIEr");
                 byteRule = false;
                 break;
             case "BitValue":
@@ -197,7 +196,6 @@ public class XML_read {
                 break;
             case "ByteValue":
                 targetArray[2] = Integer.parseInt(node.getTextContent());
-                System.out.println("I BIM IN DIESEM CASE");
                 byteRule = true;
                 break;
         }
@@ -206,6 +204,10 @@ public class XML_read {
     /**
      * helper method for readXML
      * processes the Bus, SystemAdress and Bit node of the Action and Condition nodes and puts them in the given array
+     *
+     * for a bit action message targetArray: [Bus][Systemadress][Bit][Bitvalue]
+     * for a byte action message targetArray: [Bus][Systemadress][ByteValue][]
+     *
      * @param targetArray array to which the node values should be written
      * @param node node whose content should be written to the array
      */
@@ -222,6 +224,11 @@ public class XML_read {
                 break;
             case "BitValue":
                 targetArray[3] = Integer.parseInt(node.getTextContent());
+                break;
+            case "ByteValue":
+                targetArray[2] = Integer.parseInt(node.getTextContent());
+                // shorten target array since the last index is not needed anymore, needed for identification
+                targetArray = Arrays.copyOfRange(targetArray, 0, 3);
                 break;
         }
     }

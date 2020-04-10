@@ -1,9 +1,6 @@
 package xml;
 
-import action.ActionDepot;
-import action.ActionMessageBit;
-import action.ActionSequence;
-import action.ActionWait;
+import action.*;
 import byteMatrix.ByteMatrix;
 import byteMatrix.ByteRule;
 import matrix.BitMatrix;
@@ -79,6 +76,11 @@ public class Factory {
 
 	/**
 	 * creates an action sequence for a given list of actions
+	 *
+	 * Integer Array for ActionMessageBit: [Bus][Systemadress][Bit][BitValue]
+	 * Integer Array for ActionMessageByte: [Bus][Systemadress][Bit][ByteValue]
+	 *  Integer Array for waitAction: [Wait time in ms]
+	 *
 	 * @param actions actions to be converted into an action sequence
 	 * @return action sequence
 	 */
@@ -92,10 +94,14 @@ public class Factory {
 				ActionWait waitAction = new ActionWait(action[0]);
 				// only add action to actionDepot if it doesnt exists already
 				actionSeq.addAction(actionDepot.addAction(waitAction));
-			} else {
-				ActionMessageBit messageAction = new ActionMessageBit(parseIntegerToIntArr(action));
+			} else if(action.length == 4) {
+				ActionMessageBit messageBit = new ActionMessageBit(parseIntegerToIntArr(action));
 				// only add action to actionDepot if it doesnt exists already
-				actionSeq.addAction(actionDepot.addAction(messageAction));
+				actionSeq.addAction(actionDepot.addAction(messageBit));
+			} else if(action.length ==3) {
+				ActionMessageByte messageByte = new ActionMessageByte(parseIntegerToIntArr(action));
+				// only add action to actionDepot if it doesnt exists already
+				actionSeq.addAction(actionDepot.addAction(messageByte));
 			}
 		}
 		return actionSeq;
