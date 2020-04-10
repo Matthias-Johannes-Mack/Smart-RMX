@@ -21,21 +21,23 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		// check the operating system
-		if (Constants.OPERATING_SYSTEM.contains("Windows")) {
-			if (args.length == 0) {
-				try {
-					Process p = Runtime.getRuntime().exec("cmd.exe /c start java -jar "
-							+ (new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath()))
-									.getAbsolutePath()
-							+ " cmd");
-				} catch (IOException e) {
-				}
-			} else {
-				// Execute commands
-				command();
-			}
-		} else if (Constants.OPERATING_SYSTEM.contains("Linux")) {
-		}
+//		if (Constants.OPERATING_SYSTEM.contains("Windows")) {
+//			if (args.length == 0) {
+//				try {
+//					Process p = Runtime.getRuntime().exec("cmd.exe /c start java -jar "
+//							+ (new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath()))
+//									.getAbsolutePath()
+//							+ " cmd");
+//				} catch (IOException e) {
+//				}
+//			} else {
+//				// Execute commands
+//				command();
+//			}
+//		} else if (Constants.OPERATING_SYSTEM.contains("Linux")) {
+//		}
+
+		command();
 	}
 
 	/**

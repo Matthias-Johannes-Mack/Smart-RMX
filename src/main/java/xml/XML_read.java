@@ -1,7 +1,6 @@
 package xml;
 
 import Utilities.ByteUtil;
-import byteMatrix.ByteRule;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -120,9 +119,9 @@ public class XML_read {
                         if (conditionNodeChild.getNodeName().equals("#text"))  continue;
 
                         if (conditionCount == 1) {
-                            processConditionAndActionChildNodes(conditionsOne, conditionNodeChild);
+                            processConditionChildNodes(conditionsOne, conditionNodeChild);
                         } else if (conditionCount == 2) {
-                            processConditionAndActionChildNodes(conditionsTwo, conditionNodeChild);
+                            processConditionChildNodes(conditionsTwo, conditionNodeChild);
                         }
                     }
                 } // end of if equals Condition
@@ -141,7 +140,7 @@ public class XML_read {
                             for (Node actionNodeChild : iterable(actionsNodeChild.getChildNodes())) {
                                 if (actionNodeChild.getNodeName().equals("#text")) continue;
 
-                                processConditionAndActionChildNodes(action, actionNodeChild);
+                                processActionChildNodes(action, actionNodeChild);
                             }
                             actions.add(action);
                         }
@@ -180,7 +179,7 @@ public class XML_read {
      * @param targetArray array to which the node values should be written
      * @param node node whose content should be written to the array
      */
-    private void processConditionAndActionChildNodes(Integer[] targetArray, Node node) {
+    private void processConditionChildNodes(Integer[] targetArray, Node node) {
         switch (node.getNodeName()) {
             case "Bus":
                 targetArray[0] = Integer.parseInt(node.getTextContent());
@@ -190,6 +189,7 @@ public class XML_read {
                 break;
             case "Bit":
                 targetArray[2] = Integer.parseInt(node.getTextContent());
+                System.out.println("ICH BIN ABER HIEr");
                 byteRule = false;
                 break;
             case "BitValue":
@@ -197,7 +197,31 @@ public class XML_read {
                 break;
             case "ByteValue":
                 targetArray[2] = Integer.parseInt(node.getTextContent());
+                System.out.println("I BIM IN DIESEM CASE");
                 byteRule = true;
+                break;
+        }
+    }
+
+    /**
+     * helper method for readXML
+     * processes the Bus, SystemAdress and Bit node of the Action and Condition nodes and puts them in the given array
+     * @param targetArray array to which the node values should be written
+     * @param node node whose content should be written to the array
+     */
+    private void processActionChildNodes(Integer[] targetArray, Node node) {
+        switch (node.getNodeName()) {
+            case "Bus":
+                targetArray[0] = Integer.parseInt(node.getTextContent());
+                break;
+            case "SystemAddress":
+                targetArray[1] = Integer.parseInt(node.getTextContent());
+                break;
+            case "Bit":
+                targetArray[2] = Integer.parseInt(node.getTextContent());
+                break;
+            case "BitValue":
+                targetArray[3] = Integer.parseInt(node.getTextContent());
                 break;
         }
     }
