@@ -185,6 +185,16 @@ public class BitMatrix {
     /**
      * traverses the matrix, checks if any conditions are true and returns the commulated actionsequences
      *
+     * logic of ByteMatrix traversal
+     * - the traversal happens simultaneously to the traversal of the BitMatrix
+     * - through traversal the state of each byte is recorded
+     * - after one byte is recorded fully check of exisiting rule containing the currentByte and  last recorded Byte
+     * - simultaneously we move in the ByteMatrix one field to the right (recording is done in the row loop) or
+     *      one field down (recorded is done in the column loop)
+     * - since the check of a byte happens after fully recording each bit (which means they have been traversed in the
+     *      BitMatrix) we have to check the last recording outside of the loops, since the loops only traverse to bits
+     *      inside the bitMatrix
+     *
      * @param busId                 includes bus id of RMX bus -1
      * @param systemadress          index of the systemadrese in which bit that has changed
      * @param systemadress_bitIndex index of the bit that has changed
@@ -192,10 +202,11 @@ public class BitMatrix {
      */
     private List<ActionSequence> traverseBitAndByteMatrixAndCheck(int busId, int systemadress, int systemadress_bitIndex, boolean bitValue) {
 
+        // currentByte Value of the given systemadress of the given bus
         Integer[] currentByte = ByteUtil.getByteArrayByByte(busDepot.getBus(busId+1).getCurrentByte(systemadress));
-        System.out.println("CURRENTBYTE: " + Arrays.toString(currentByte));
 
-        // init recordedByte as Byte of first systemadress
+        // init recordedByte
+        // always includes the last 8 traversed bit values
         Integer[] recordByte = new Integer[8];
 
         List<ActionSequence> result = new ArrayList<>();
@@ -219,11 +230,13 @@ public class BitMatrix {
         int byteIndexChangedBit = bitIndexChangedBit/8;
         //get index of first field in byte matrix
         int fieldByteMatrix = MatrixUtil.calcGauss(byteIndexChangedBit);
-        //counter of who many fields i moved to the next field
+
+        //counter of who many fields i moved in the matrix
         int counter = 0;
 
         Bus currentBusColumn = null;
 
+        // indicates if the for loop is in its first iteration
         boolean firstTime = true;
 
         //TODO zustand aufnaheme für jeweils zwei bytes, das aktuelle und das davor
@@ -265,15 +278,17 @@ public class BitMatrix {
         Byte Matrix
          */
             // we enterted the next byte, we are at the first index of the next byte
+            // dont go in in the first iteration since no bits have been recorded
             if(counter % 8 == 0 && firstTime == false) {
 
                 System.out.println("recorded:" + Arrays.toString(recordByte));
                 System.out.println("current:" + Arrays.toString(currentByte));
 
                 System.out.println("FELD BYTE MATRIX " + fieldByteMatrix);
+
+                // check field of the ByteMatrix for rule including the states of the recordByte and currentByte
                 ActionSequence actionSequenceByteMatrix = byteMatrix.checkField(recordByte, currentByte, fieldByteMatrix);
                 System.out.println("ACTIONSEQUENZ: " + actionSequenceByteMatrix);
-
 
                 if (actionSequenceByteMatrix != null) {
                     // ActionSequence for point exists = a rule has been defined
@@ -291,6 +306,7 @@ public class BitMatrix {
             //because i moved one field to the right
             counter++;
 
+            // after the first iteration = false
             firstTime = false;
         }
 
@@ -311,6 +327,9 @@ public class BitMatrix {
          */
         // bitIndexRow starts at the bitIndex
         int byteIndexRow = byteIndexChangedBit + 1; // start column traversal one row below
+
+        // need to save the lastField of the ByteMatrix before update since I have to check the last recorded byte in the end
+        // with the field of the ByteMatrix it corresponds to
         int lastFieldByteMatrix = fieldByteMatrix;
 
         // loop until field is outside of the triangular matrix
@@ -345,9 +364,9 @@ public class BitMatrix {
             bitIndexRow++; // move bitindex one field down
             fieldBitMatrix = MatrixUtil.calcGauss(bitIndexRow) + bitIndexChangedBit; // move one field down
 
-            /*
-        Byte Matrix
-         */
+                /*
+                Byte Matrix
+              */
             // we enterted the next byte, we are at the first index of the next byte
             if(counter % 8 == 0) {
 
@@ -387,7 +406,6 @@ public class BitMatrix {
             // ActionSequence for point exists = a rule has been defined
             result.add(actionSequenceByteMatrix);
         }
-
 
         // return ActionSequences of true conditions
         return result;
