@@ -285,7 +285,7 @@ public class Schedular {
 
                     // update bus
                     // format <0x99><RMX><ADRRMX><VALUE>
-                    busDepot.updateBus(message[1], message[2],message[3]);
+                    busDepot.updateBus(fakeMessage[1], fakeMessage[2], fakeMessage[3]);
 
                     // add (real) message to the sender for sending to the RMX-PC-Zentrale
                     Sender.addMessageQueue(message);
@@ -334,7 +334,7 @@ public class Schedular {
 
                     // update bus
                     // format <0x99><RMX><ADRRMX><VALUE>
-                    busDepot.updateBus(message[1], message[2],message[3]);
+                    busDepot.updateBus(fakeMessage[1], fakeMessage[2], fakeMessage[3]);
 
                     // add (real) message to the sender for sending to the RMX-PC-Zentrale
                     Sender.addMessageQueue(message);
@@ -349,10 +349,12 @@ public class Schedular {
             } else if (action instanceof ActionMessageByteIncDecRement) {
                 // the action is a ActionMessageByteIncrement
                 ActionMessageByteIncDecRement actionMessageByteIncDecRement = (ActionMessageByteIncDecRement) action;
-                System.out.println("------ACTION-Byte--INCREMENT " + actionMessageByteIncDecRement.getActionMessageByteIncDecRement());
+                System.out.println("Schedular------ACTION-Byte--INCREMENT " + actionMessageByteIncDecRement.getActionMessageByteIncDecRement());
 
                 // actionArr with the action message
                 int[] actionArr = actionMessageByteIncDecRement.getActionMessageByteIncDecRement();
+
+                System.err.println("Schedular actionArr ActionMessageByteIncDec: " + Arrays.toString(actionArr));
 
                 // need to check if bus exists otherwise the connection will be killed by the RMX-PC-Zentrale
                 if (busDepot.busExists(actionArr[0])) {
@@ -373,7 +375,7 @@ public class Schedular {
 
                     // update bus
                     // format <0x99><RMX><ADRRMX><VALUE>
-                    busDepot.updateBus(message[1], message[2],message[3]);
+                    busDepot.updateBus(fakeMessage[1], fakeMessage[2], fakeMessage[3]);
 
                     // add (real) message to the sender for sending to the RMX-PC-Zentrale
                     Sender.addMessageQueue(message);
@@ -554,10 +556,15 @@ public class Schedular {
         // value
         int currentbyte = busDepot.getBus(incrementValue[0]).getCurrentByte(incrementValue[1]);
 
+        System.out.println("Schedular buildRMXMessageByteIncDec - currentbyte: " + currentbyte);
+
         int newByteValue = currentbyte + incrementValue[2];
         if(newByteValue > 255 || newByteValue < 0) {
             throw new OutOfRangeException(newByteValue, 0, 255);
         }
+
+        System.out.println("Schedular buildRMXMessageByteIncDec - newByteValue: " + newByteValue);
+
         message[5] = newByteValue;
 
         return message;

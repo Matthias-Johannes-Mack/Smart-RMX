@@ -278,9 +278,9 @@ public class XML_read {
             System.out.println("----Rule----");
             System.out.println("Condition1: " + Arrays.toString(bitRule.getConditionOne()));
             System.out.println("Condition2:" + Arrays.toString(bitRule.getConditionOne()));
-            for (Integer[] action : bitRule.getActions()) {
-                System.out.println("Action: " + Arrays.toString(action));
-            }
+//            for (Integer[] action : bitRule.getActions()) {
+//                System.out.println("Action: " + Arrays.toString(action));
+//            }
         }
     }
 
