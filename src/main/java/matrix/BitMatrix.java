@@ -79,11 +79,26 @@ public class BitMatrix {
      ----------------------------------------------------------------------------------------------*/
 
     /**
-     * Method, that checks all fields of the matrix
+     * Method, that checks all fields of the bit and byte matrix
      *
      * @return List of ActionSequences that have been triggered, the list is empty if no ActionSequences have been triggered
      */
     public List<ActionSequence> checkAllFields() {
+
+        List<ActionSequence> result = new ArrayList<>();
+
+        result.addAll(checkAllFieldsBitMatrix());
+        result.addAll(checkAllFieldsByteMatrix());
+
+        return result;
+    }
+
+    /**
+     * Method, that checks all fields of the matrix
+     *
+     * @return List of ActionSequences that have been triggered, the list is empty if no ActionSequences have been triggered
+     */
+    private List<ActionSequence> checkAllFieldsBitMatrix() {
 
         List<ActionSequence> result = new ArrayList<>();
 
@@ -97,7 +112,7 @@ public class BitMatrix {
 
             // updates the bus if the bitIndexRow is in the next higher bus
             Bus tempBusRow;
-            currentBusRow = ((tempBusRow = updateBus(bitIndexRow)) != null) ? tempBusRow : currentBusRow;
+            currentBusRow = ((tempBusRow = getNextHigherBusBitMatrix(bitIndexRow)) != null) ? tempBusRow : currentBusRow;
 
             //inner for loop goes along the column
             for (int bitIndexColumn = 0; bitIndexColumn < bitIndexRow + 1; bitIndexColumn++) {
@@ -105,7 +120,7 @@ public class BitMatrix {
 
                 // updates the bus if the bitIndexColumn is in the next higher bus
                 Bus tempBusColumn;
-                currentBusColumn = ((tempBusColumn = updateBus(bitIndexColumn)) != null) ? tempBusColumn : currentBusColumn;
+                currentBusColumn = ((tempBusColumn = getNextHigherBusBitMatrix(bitIndexColumn)) != null) ? tempBusColumn : currentBusColumn;
 
                 if (matrix[field] != null) {
                     // an ActionSequenceWrapper is in the field
@@ -124,6 +139,62 @@ public class BitMatrix {
                         result.add(actionSequence);
                     }
 
+                }
+
+                field++; // go to the next field
+
+            } // inner for-loop
+        } // outer for-loop
+
+        return result;
+    }
+
+    /**
+     * Checks all fields in the ByteMatrix
+     * @return List of ActionSequences that have been triggered
+     */
+    private List<ActionSequence> checkAllFieldsByteMatrix() {
+        List<ActionSequence> result = new ArrayList<>();
+
+        Bus currentBusRow = null;
+        Bus currentBusColumn = null;
+
+        // pointer for the field in the matrix
+        int field = 0;
+        // outer for loop goes along the row
+        for (int byteIndexRow = 0; byteIndexRow < (Constants.NUMBER_OF_BUSSES * Constants.NUMBER_SYSTEMADRESSES_PER_BUS); byteIndexRow++) {
+
+            // updates the bus if the byteIndexRow is in the next higher bus
+            Bus tempBusRow;
+            currentBusRow = ((tempBusRow = getNextHigherBusByteMatrix(byteIndexRow)) != null) ? tempBusRow : currentBusRow;
+
+            //inner for loop goes along the column
+            for (int byteIndexColumn = 0; byteIndexColumn < byteIndexRow + 1; byteIndexColumn++) {
+                // only check conditions if a ByteRuleWrapper is in the matrix (= a rule is defined)
+
+                // updates the bus if the byteIndexColumn is in the next higher bus
+                Bus tempBusColumn;
+                currentBusColumn = ((tempBusColumn = getNextHigherBusByteMatrix(byteIndexColumn)) != null) ? tempBusColumn : currentBusColumn;
+
+
+                // byte needed for checking
+                Integer[] byteValueSmall;
+                Integer[] byteValueBig;
+
+                // determine which has the smaller byteIndex
+                if(byteIndexRow < byteIndexColumn) {
+                    byteValueSmall = ByteUtil.getByteArrayByByte(currentBusRow.getCurrentByte(byteIndexRow));
+                    byteValueBig = ByteUtil.getByteArrayByByte(currentBusColumn.getCurrentByte(byteIndexColumn));
+                } else {
+                    byteValueSmall = ByteUtil.getByteArrayByByte(currentBusColumn.getCurrentByte(byteIndexColumn));
+                    byteValueBig = ByteUtil.getByteArrayByByte(currentBusRow.getCurrentByte(byteIndexRow));
+                }
+
+                ActionSequence actionSequenceByteMatrix = byteMatrix.checkField(byteValueSmall,byteValueBig, field);
+
+                if (actionSequenceByteMatrix != null) {
+                    // ActionSequence for point exists = a rule has been defined
+                    result.add(actionSequenceByteMatrix);
                 }
 
                 field++; // go to the next field
@@ -249,7 +320,7 @@ public class BitMatrix {
 
             // updates the bus if the bitIndexColumn is in the next higher bus
             Bus tempBusColumn;
-            currentBusColumn = ((tempBusColumn = updateBus(bitIndexColumn)) != null) ? tempBusColumn : currentBusColumn;
+            currentBusColumn = ((tempBusColumn = getNextHigherBusBitMatrix(bitIndexColumn)) != null) ? tempBusColumn : currentBusColumn;
 
             // get BitValue of bitIndexColumn (needs to be recorded for the byteMatrix)
             int systemadress_bitIndexColumn = MatrixUtil.getSystemadressByBitIndex(bitIndexColumn);
@@ -339,7 +410,7 @@ public class BitMatrix {
 
             // updates the bus if the bitIndexRow is in the next higher bus
             Bus tempBusRow;
-            currentBusRow = ((tempBusRow = updateBus(bitIndexRow)) != null) ? tempBusRow : currentBusRow;
+            currentBusRow = ((tempBusRow = getNextHigherBusBitMatrix(bitIndexRow)) != null) ? tempBusRow : currentBusRow;
 
             // get BitValue of bitIndexRow (needs to be recorded for the byteMatrix)
             int systemadress_bitIndexRow = MatrixUtil.getSystemadressByBitIndex(bitIndexRow);
@@ -443,7 +514,7 @@ public class BitMatrix {
 
             // updates the bus if the bitIndexColumn is in the next higher bus
             Bus tempBusColumn;
-            currentBusColumn = ((tempBusColumn = updateBus(bitIndexColumn)) != null) ? tempBusColumn : currentBusColumn;
+            currentBusColumn = ((tempBusColumn = getNextHigherBusBitMatrix(bitIndexColumn)) != null) ? tempBusColumn : currentBusColumn;
 
             System.out.println("ROW-FIELD" + fieldBitMatrix);
 
@@ -487,7 +558,7 @@ public class BitMatrix {
 
             // updates the bus if the bitIndexRow is in the next higher bus
             Bus tempBusRow;
-            currentBusRow = ((tempBusRow = updateBus(bitIndexRow)) != null) ? tempBusRow : currentBusRow;
+            currentBusRow = ((tempBusRow = getNextHigherBusBitMatrix(bitIndexRow)) != null) ? tempBusRow : currentBusRow;
 
             System.out.println("COLUMN-FIELD " + fieldBitMatrix);
 
@@ -580,13 +651,32 @@ public class BitMatrix {
      * @param bitIndex bitIndex to check
      * @return the bus of the given bitindex, null if bitIndex isnt exactly at a "changing point"
      */
-    public Bus updateBus(int bitIndex) {
+    public Bus getNextHigherBusBitMatrix(int bitIndex) {
 
         Bus bus = null;
 
         if (bitIndex % Constants.NUMBER_BITS_PER_BUS == 0) {
             // get current bus => + 1 since RMX starts counting at 1
             bus = busDepot.getBus(((bitIndex / Constants.NUMBER_BITS_PER_BUS) + 1));
+        }
+
+        return bus;
+    }
+
+    /**
+     * Updates the given bus to the next higher bus if the byteIndex surpasses the last byte of the last bus.
+     * Change happens exactly at the start of the new bus, for other byteIndexes this method returns null
+     *
+     * @param byteIndex byteIndex to check
+     * @return the bus of the given byteindex, null if bitIndex isnt exactly at a "changing point"
+     */
+    public Bus getNextHigherBusByteMatrix(int byteIndex) {
+
+        Bus bus = null;
+
+        if (byteIndex % Constants.NUMBER_SYSTEMADRESSES_PER_BUS == 0) {
+            // get current bus => + 1 since RMX starts counting at 1
+            bus = busDepot.getBus(((byteIndex / Constants.NUMBER_SYSTEMADRESSES_PER_BUS) + 1));
         }
 
         return bus;
