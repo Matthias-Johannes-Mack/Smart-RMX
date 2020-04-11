@@ -11,13 +11,14 @@ public final class Constants {
 	 */
 	private Constants() {
 	}
-
+	// Main
+	public static final String OPERATING_SYSTEM = System.getProperty("os.name");
 	// Connection
 	public static byte RMX_VERSION = 0x01;
-	public static final byte RMX_HEAD = 0x7c;
-	public static final byte[] LOKDATENBANK_MESSAGE = new byte[] { RMX_HEAD, 0x04, 0x08, 0x01 };
-	public static final byte[] INITALIZATION_MESSAGE = new byte[] { RMX_HEAD, 0x05, 0x03, 0x02, RMX_VERSION };
-	public static final byte[] POSITIVE_HANDSHAKE = new byte[] { RMX_HEAD, 0x04, 0x00, 0x00 };
+	public static final int RMX_HEAD = 0x7c;
+	public static final int[] LOKDATENBANK_MESSAGE = new int[] { RMX_HEAD, 0x04, 0x08, 0x01 };
+	public static final int[] INITALIZATION_MESSAGE = new int[] { RMX_HEAD, 0x05, 0x03, 0x02, RMX_VERSION };
+	public static final int[] POSITIVE_HANDSHAKE = new int[] { RMX_HEAD, 0x04, 0x00, 0x00 };
 
 	// Bus
 	public static final int NUMBER_SYSTEMADRESSES_PER_BUS = 112;

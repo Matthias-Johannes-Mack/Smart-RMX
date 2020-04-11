@@ -58,7 +58,7 @@ public class BusDepot {
      * @param systemadress
      * @param byteValue
      */
-    public synchronized void updateBus(byte busId, byte systemadress, byte byteValue) {
+    public synchronized void updateBus(int busId, int systemadress, int byteValue) {
 
         if(!busExists(busId)){
             // the bus doesnt exist => create Bus with given busid
@@ -69,7 +69,7 @@ public class BusDepot {
             System.out.println("New Bus created: " + busId + " and updated Systemadresse: " + systemadress + " ByteValue: " + byteValue);
 
             // add the bus to the depot
-            busDepotMap.put((int)busId, newBus);
+            busDepotMap.put(busId, newBus);
         } else {
 
             // bus already exists => only need to update
@@ -89,7 +89,7 @@ public class BusDepot {
      * @param systemadress
      * @return Integer[] size 8 that represents the last Changes of the given systemadress
      */
-    public synchronized Integer[] getChanges(byte busId, byte systemadress) {
+    public synchronized Integer[] getChanges(int busId, int systemadress) {
 
         // get changes of given systemadress
         Bus bus = getBus(busId);
@@ -109,7 +109,7 @@ public class BusDepot {
      * @param byteValue
      * @return Integer[] size 8 that represents the last Changes of the given systemadress
      */
-    public synchronized Integer[] getChangesAndUpdate(byte busId, byte systemadress, byte byteValue) {
+    public synchronized Integer[] getChangesAndUpdate(int busId, int systemadress, int byteValue) {
 
         // update bus
         updateBus(busId, systemadress, byteValue);

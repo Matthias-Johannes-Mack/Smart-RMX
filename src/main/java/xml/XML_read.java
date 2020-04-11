@@ -1,12 +1,13 @@
 package xml;
 
-import action.ActionSequenceWrapper;
-import bus.BusDepot;
-import matrix.Matrix;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 
 /**
  * Class that reads a XML-File into a buffer
@@ -44,6 +45,7 @@ public class XML_read {
 
     // Singleton-Pattern END ________________________________________________
 
+    private static XML_ActionType actionType;
 
     /**
      * xml document that is read in
@@ -67,17 +69,20 @@ public class XML_read {
         }
     }
 
+    //Todo boolean if its a Byte rule
+    private boolean byteRule = false;
+
+
     /**
      * reads in the rules from the file and saves them to the Factory Class.
      * A rule consists of
      * - Integer Array for each of the two Conditions [Bus, SystemAddress, Bit]
      * - List containing Integer Arrays for each Action [Bus, SystemAddress, Bit, Bitvalue] and Arrays for the Wait operation [time in ms]
-     *
      */
     private void readXML() {
-		/**
-		contains NodeLists containing all of the child elements of a Rule Node. Each index is for a different Rule node
-		 */
+        /**
+         contains NodeLists containing all of the child elements of a Rule Node. Each index is for a different Rule node
+         */
         ArrayList<NodeList> ruleNodeChildrenArrList = new ArrayList<>();
 
         if (xmlDoc == null) {
@@ -88,66 +93,70 @@ public class XML_read {
 
 
         //gets the rule child nodes
-        for (Node node : iterable(xmlDoc.getElementsByTagName("Rule"))) {
+        for (Node node : iterable(xmlDoc.getElementsByTagName(XML_Constants.Rule))) {
             NodeList nodeList = node.getChildNodes();
             ruleNodeChildrenArrList.add(nodeList);
         }
 
+
         //iterate over every rule nodes children
         for (NodeList nodeList : ruleNodeChildrenArrList) {
             // contains the first condition
-            Integer[] conditionsOne = new Integer[4];
+            Integer[] conditionOne = new Integer[6];
             // contains the second condition
-            Integer[] conditionsTwo = new Integer[4];
+            Integer[] conditionTwo = new Integer[6];
             // List containing all the actions for one rule als an integer Array
-            ArrayList<Integer[]> actions = new ArrayList<>();
+            ArrayList<XML_ActionWrapper> actions = new ArrayList<>();
 
             // condition counter to know which condition Array to save to
             int conditionCount = 0;
             //iterate over every child node of the rule
             for (Node ruleNodeChild : iterable(nodeList)) {
-                if (ruleNodeChild.getNodeName().equals("#text"))  continue;
+                if (ruleNodeChild.getNodeName().equals("#text")) continue;
 
                 //Condition
-                if (ruleNodeChild.getNodeName().equals("Condition")) {
+                if (ruleNodeChild.getNodeName().equals(XML_Constants.Condition)) {
                     conditionCount++;
                     //check every child node of condition
                     for (Node conditionNodeChild : iterable(ruleNodeChild.getChildNodes())) {
-                        if (conditionNodeChild.getNodeName().equals("#text"))  continue;
+                        if (conditionNodeChild.getNodeName().equals("#text")) continue;
 
                         if (conditionCount == 1) {
-                            processConditionAndActionChildNodes(conditionsOne, conditionNodeChild);
+                            processConditionChildNodes(conditionOne, conditionNodeChild);
                         } else if (conditionCount == 2) {
-                            processConditionAndActionChildNodes(conditionsTwo, conditionNodeChild);
+                            processConditionChildNodes(conditionTwo, conditionNodeChild);
                         }
                     }
                 } // end of if equals Condition
 
-                //Actions
-                if (ruleNodeChild.getNodeName().equals("Actions")) {
+                // the read XML tag is a "Actions"
+                if (ruleNodeChild.getNodeName().equals(XML_Constants.Actions)) {
                     //check every child node of actions
                     for (Node actionsNodeChild : iterable(ruleNodeChild.getChildNodes())) {
-                        if (actionsNodeChild.getNodeName().equals("#text"))  continue;
+                        if (actionsNodeChild.getNodeName().equals("#text")) continue;
 
                         //Message Action
-                        if (actionsNodeChild.getNodeName().equals("Action")) {
-                            Integer[] action = new Integer[4];
+                        if (actionsNodeChild.getNodeName().equals(XML_Constants.Action)) {
+                            int[] actionArray = new int[4];
 
                             //check every child node of message action
                             for (Node actionNodeChild : iterable(actionsNodeChild.getChildNodes())) {
                                 if (actionNodeChild.getNodeName().equals("#text")) continue;
 
-                                processConditionAndActionChildNodes(action, actionNodeChild);
+                                // fill the actionArray with the given Data from the XML
+                                processActionChildNodes(actionArray, actionNodeChild);
                             }
-                            actions.add(action);
+
+                            // add XML_ActionWrapper to List of actions for this rule
+                            actions.add(new XML_ActionWrapper(actionArray, actionType));
                         }
 
-                        //Wait Action
-                        if (actionsNodeChild.getNodeName().equals("Wait")) {
+                        // the read XML tag is a Wait
+                        if (actionsNodeChild.getNodeName().equals(XML_Constants.Wait)) {
                             //add a IntegerArray containing only the wait time
-                            Integer[] wait = new Integer[1];
+                            int[] wait = new int[1];
                             wait[0] = Integer.parseInt(actionsNodeChild.getTextContent());
-                            actions.add(wait);
+                            actions.add(new XML_ActionWrapper(wait, XML_ActionType.WAIT));
                         }
                     }
                 }
@@ -155,45 +164,121 @@ public class XML_read {
             }
 
             //  Iterating over one rule block done, add conditions and actions to new rule
-            Factory.addRule(new Rule(conditionsOne, conditionsTwo, actions));
+            if (!byteRule) {
+                // need to shorten Integer Array to length 4, since this is required for bit Rule
+                //TODO conditionType Array also for the ArrayLength
+                Integer[] conditionOneAdress = Arrays.copyOfRange(conditionOne, 0, 3);
+                Integer[] conditionTwoAdress = Arrays.copyOfRange(conditionTwo, 0, 3);
+                Factory.addBitRule(conditionOneAdress, conditionTwoAdress, actions);
+            } else {
+                // the rule is a byte rule
+                Factory.addByteRule(conditionOne, conditionTwo, actions);
+            }
+
+
         }
     }
 
     /**
      * helper method for readXML
      * processes the Bus, SystemAdress and Bit node of the Action and Condition nodes and puts them in the given array
+     *
      * @param targetArray array to which the node values should be written
-     * @param node node whose content should be written to the array
+     * @param node        node whose content should be written to the array
      */
-    private void processConditionAndActionChildNodes(Integer[] targetArray, Node node) {
+    private void processConditionChildNodes(Integer[] targetArray, Node node) {
         switch (node.getNodeName()) {
-            case "Bus":
+            case XML_Constants.Bus:
                 targetArray[0] = Integer.parseInt(node.getTextContent());
                 break;
-            case "SystemAddress":
+            case XML_Constants.SystemAddress:
                 targetArray[1] = Integer.parseInt(node.getTextContent());
                 break;
-            case "Bit":
+            case XML_Constants.Bit:
                 targetArray[2] = Integer.parseInt(node.getTextContent());
+                byteRule = false;
                 break;
-            case "BitValue":
+            case XML_Constants.BitValue:
                 targetArray[3] = Integer.parseInt(node.getTextContent());
                 break;
+            case XML_Constants.Equal:
+                targetArray[2] = Integer.parseInt(node.getTextContent());
+                byteRule = true;
+                break;
+            case XML_Constants.NotEqual:
+                targetArray[3] = Integer.parseInt(node.getTextContent());
+                byteRule = true;
+                break;
+            case XML_Constants.Bigger:
+                targetArray[4] = Integer.parseInt(node.getTextContent());
+                byteRule = true;
+                break;
+            case XML_Constants.Smaller:
+                targetArray[5] = Integer.parseInt(node.getTextContent());
+                byteRule = true;
+                break;
         }
+    }
+
+    /**
+     * helper method for readXML
+     * processes the Bus, SystemAdress and Bit node of the Action and Condition nodes and puts them in the given array
+     * <p>
+     * for a bit action message targetArray: [Bus][Systemadress][Bit][Bitvalue]
+     * for a byte action message targetArray: [Bus][Systemadress][ByteValue]
+     *
+     * @param node        node whose content should be written to the array
+     */
+    private int[] processActionChildNodes(int[]targetArray, Node node) {
+
+        switch (node.getNodeName()) {
+            case XML_Constants.Bus:
+                targetArray[0] = Integer.parseInt(node.getTextContent());
+                break;
+            case XML_Constants.SystemAddress:
+                targetArray[1] = Integer.parseInt(node.getTextContent());
+                break;
+            case XML_Constants.Bit:
+                targetArray[2] = Integer.parseInt(node.getTextContent());
+                break;
+            case XML_Constants.BitValue:
+                if(node.getTextContent().equals(XML_Constants.Toggle)) {
+                    actionType = XML_ActionType.BITTOGGLE;
+                } else {
+                    targetArray[3] = Integer.parseInt(node.getTextContent());
+                    actionType = XML_ActionType.BITMESSAGE;
+                }
+                break;
+            case XML_Constants.ByteValue:
+                targetArray[2] = Integer.parseInt(node.getTextContent());
+                actionType = XML_ActionType.BYTEMESSAGE;
+                break;
+            case XML_Constants.Increment:
+                targetArray[2] = Integer.parseInt(node.getTextContent());
+                actionType = XML_ActionType.INCREMENT;
+                break;
+            case XML_Constants.Decrement:
+                // decrement holds negative values
+                targetArray[2] = Integer.parseInt(node.getTextContent()) * -1;
+                actionType = XML_ActionType.DECREMENT;
+                break;
+        }
+
+        return targetArray;
     }
 
 
     //TODO Delete
     public void test() {
         System.out.println("Test:");
-        System.out.println("Number of Rules " + Factory.getRules().size());
-        for (Rule rule : Factory.getRules()) {
+        System.out.println("Number of Rules " + Factory.getBitRules().size());
+        for (BitRule bitRule : Factory.getBitRules()) {
             System.out.println("----Rule----");
-            System.out.println("Condition1: "+Arrays.toString(rule.getConditionOne()));
-            System.out.println("Condition2:"+Arrays.toString(rule.getConditionOne()));
-            for (Integer[] action : rule.getActions()) {
-                System.out.println("Action: " + Arrays.toString(action));
-            }
+            System.out.println("Condition1: " + Arrays.toString(bitRule.getConditionOne()));
+            System.out.println("Condition2:" + Arrays.toString(bitRule.getConditionOne()));
+//            for (Integer[] action : bitRule.getActions()) {
+//                System.out.println("Action: " + Arrays.toString(action));
+//            }
         }
     }
 

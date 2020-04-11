@@ -3,7 +3,6 @@ package tests_matrix;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -14,7 +13,7 @@ import action.Action;
 import action.ActionSequence;
 import action.ActionWait;
 import bus.BusDepot;
-import matrix.Matrix;
+import matrix.BitMatrix;
 
 /**
  * Class that tests the matrix
@@ -67,7 +66,7 @@ public class TestMatrix {
 	public void testMatrix() {
 
 		BusDepot busDepot = BusDepot.getBusDepot();
-		busDepot.getBusDepot().updateBus((byte) 0, (byte)0x6f, (byte) 0);
+		busDepot.updateBus((byte) 1, (byte) 0x6f, (byte) 0);
 
 		// ActionSequence that contains ActionWait with waitTime 1
 		Action actionWait1 = new ActionWait(1);
@@ -85,7 +84,7 @@ public class TestMatrix {
 		Integer[] conditionThree = new Integer[] { 1, 111, 0, 0 };
 		Integer[] conditionFour = new Integer[] { 1, 111, 0, 0 };
 
-		Matrix matrix = Matrix.getMatrix();
+		BitMatrix matrix = BitMatrix.getMatrix();
 		matrix.addAction(conditionOne, conditionTwo, actionSequence1); // sollte zu wrapper hinzugefügt werden an 1-1
 		matrix.addAction(conditionThree, conditionFour, actionSequence2); // sollte zu wrapper hinzugefügt werden an
 																			// 0-0
@@ -104,7 +103,10 @@ public class TestMatrix {
 
 		// format <0x06><RMX><ADRRMX><VALUE>
 		byte[] message1 = new byte[] { 6, 1, 111, 1 };
-		Integer[] changes1 = busDepot.getBusDepot().getChangesAndUpdate((byte) 0, message1[2],message1[3]); // bit 0 wurde auf 1 gesetzt
+		Integer[] changes1 = busDepot.getChangesAndUpdate((byte) 1, message1[2], message1[3]); // bit 0
+																												// wurde
+																												// auf 1
+																												// gesetzt
 
 		List<ActionSequence> resultCheck = matrix.check(message1[1], message1[2], changes1);
 		for (ActionSequence actionSequence : resultCheck) {

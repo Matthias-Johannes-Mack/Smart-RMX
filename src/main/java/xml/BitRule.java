@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * Rule object for storing the conditions and actions until the matrix is created
  */
-public class Rule {
+public class BitRule {
     /**
      * Integer Array for first Conditions [Bus, SystemAddress, Bit, Bitvalue]
      */
@@ -17,15 +17,15 @@ public class Rule {
     /**
      * List containing Integer Arrays for each Action [Bus, SystemAddress, Bit, Bitvalue] and Arrays for the Wait operation [time in ms]
      */
-    private ArrayList<Integer[]> actions;
+    private ArrayList<XML_ActionWrapper> actions;
 
     /**
      * Constructor
-     * @param conditionOne first Condition
-     * @param conditionTwo second Condition
-     * @param actions list containing actions
+     * @param conditionOne first Condition [Bus, SystemAddress, Bit]
+     * @param conditionTwo second Condition [Bus, SystemAddress, Bit]
+     * @param actions list containing XML_ActionsWrapper
      */
-    public Rule(Integer[] conditionOne, Integer[] conditionTwo, ArrayList<Integer[]> actions) {
+    public BitRule(Integer[] conditionOne, Integer[] conditionTwo, ArrayList<XML_ActionWrapper> actions) {
         this.conditionOne = conditionOne;
         this.conditionTwo = conditionTwo;
         this.actions = actions;
@@ -35,7 +35,7 @@ public class Rule {
      * getter for actions
      * @return ArrayList containing actions
      */
-    public ArrayList<Integer[]> getActions() {
+    public ArrayList<XML_ActionWrapper> getActions() {
         return actions;
     }
 
