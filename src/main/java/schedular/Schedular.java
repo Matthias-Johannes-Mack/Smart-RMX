@@ -388,8 +388,38 @@ public class Schedular {
                     // the has not been initialized
                     System.out.println("-> Adress bus " + actionArr[0] + " from rule does not exist!");
                 }
-            }
+            }  else if (action instanceof ActionMessageBitToggle) {
+                // the action is a ActionMessageBitToggle
+                ActionMessageBitToggle actionMessageBitToggle = (ActionMessageBitToggle) action;
+                System.out.println("------ACTION-Byte " + Arrays.toString(actionMessageBitToggle.getActionMessageBitToggle()));
 
+                // actionArr with the action message
+                int[] actionArr = actionMessageBitToggle.getActionMessageBitToggle();
+
+                // need to check if bus exists otherwise the connection will be killed by the RMX-PC-Zentrale
+                if (busDepot.busExists(actionArr[0])) {
+
+                    // message for updating the server
+                    int[] message = buildRmxMessageBitToggle(actionMessageBitToggle.getActionMessageBitToggle());
+
+                    // fake message so the changed bits by the action are getting checked in the matrix
+                    int[] fakeMessage = buildFakeMessageBitToggle(actionMessageBitToggle.getActionMessageBitToggle());
+
+                    // update bus
+                    // format <0x99><RMX><ADRRMX><VALUE>
+                    busDepot.updateBus(fakeMessage[1], fakeMessage[2], fakeMessage[3]);
+
+                    // add (real) message to the sender for sending to the RMX-PC-Zentrale
+                    Sender.addMessageQueue(message);
+
+                    // add fake message to the fakeMessageQueue so the changes are checked
+                    addMessageToFakeQueue(fakeMessage);
+
+                } else {
+                    // the has not been initialized
+                    System.out.println("-> Adress bus " + actionArr[0] + " from rule does not exist!");
+                }
+            }
         }
     }
 
@@ -443,6 +473,61 @@ public class Schedular {
         // value
         int currentbyte = busDepot.getBus(intArr[0]).getCurrentByte(intArr[1]);
         message[5] = ByteUtil.setBitAtPos(currentbyte, intArr[2], intArr[3]);
+
+        return message;
+    }
+
+    /**
+     * Method that converts the int Array of an ActionMessageBitToggle to a FakeMessage (OPCODE 0x99)
+     * Necessary because change needs to be checked, but status has already been updateed
+     *
+     * Format:
+     *  OPCODE [busId](1-4) [systemAdress](0-111) [bitIndex](0-7)
+     * <0x99>  <RMX><ADRRMX><VALUE>
+     *
+     *
+     * @param intArr array containing the busId, systemadress, bit to toggle
+     * @return a fake Message in RMXnet Syntax
+     */
+    private int[] buildFakeMessageBitToggle(int[] intArr) {
+        int[] message = new int[4];
+        // OPCODE
+        message[0] = 153; //0x99
+        // bus <rmx>
+        message[1] = intArr[0];
+        // systemadress <addrRMX>
+        message[2] = intArr[1];
+        // value
+        int currentbyte = busDepot.getBus(intArr[0]).getCurrentByte(intArr[1]);
+        message[3] = ByteUtil.toggleBitAtPos(currentbyte, intArr[2]);
+
+        return message;
+    }
+
+    /**
+     * Method that converts the int Array of the ActionMessage to a RMXnet Message
+     *
+     * OPCODE [busId](1-4) [systemAdress](0-111) [bitIndex](0-7)
+     * <0x06>  <RMX><ADRRMX><VALUE>
+     *
+     * @param intArr array containing the busId, systemadress, bitIndex of the given Action
+     * @return a Message in RMXnet Syntax
+     */
+    private int[] buildRmxMessageBitToggle(int[] intArr) {
+        int[] message = new int[6];
+        // RMX-Headbyte
+        message[0] = Constants.RMX_HEAD;
+        // COUNT
+        message[1] = 6;
+        // OPCODE
+        message[2] = 5;
+        // bus <rmx>
+        message[3] = intArr[0];
+        // systemadress <addrRMX>
+        message[4] = intArr[1];
+        // value
+        int currentbyte = busDepot.getBus(intArr[0]).getCurrentByte(intArr[1]);
+        message[5] = ByteUtil.toggleBitAtPos(currentbyte, intArr[2]);
 
         return message;
     }

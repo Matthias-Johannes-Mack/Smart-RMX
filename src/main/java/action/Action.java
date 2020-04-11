@@ -69,6 +69,14 @@ public abstract class Action {
 
                 return object.equals(o);
             }
+        } else if (obj instanceof ActionMessageBitToggle) {
+            if (this instanceof ActionMessageBitToggle) {
+                // obj is a ActionMessageByteDecrement and this is a ActionMessageByteDecrement
+                ActionMessageBitToggle o = (ActionMessageBitToggle) this; // this
+                ActionMessageBitToggle object = (ActionMessageBitToggle) obj; // obj
+
+                return object.equals(o);
+            }
         }
 
         return false;

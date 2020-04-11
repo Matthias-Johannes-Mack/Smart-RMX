@@ -58,6 +58,17 @@ public class ByteUtil {
         return (currentByte & ~mask) | ((value << bitIndex) & mask);
     }
 
+    /**
+     * toggles bit at the given index
+     *
+     * @param currentByte byte to toggle the bit
+     * @param bitIndex Index of the bit to toggle
+     * @return
+     */
+    public static int toggleBitAtPos(int currentByte, int bitIndex) {
+        return (currentByte ^= 1 << bitIndex);
+    }
+
     public static Integer[] getByteArrayByByte(byte currentByte) {
 
         Integer[] result = new Integer[8];
