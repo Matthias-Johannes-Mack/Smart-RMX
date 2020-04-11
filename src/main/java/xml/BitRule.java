@@ -21,9 +21,9 @@ public class BitRule {
 
     /**
      * Constructor
-     * @param conditionOne first Condition
-     * @param conditionTwo second Condition
-     * @param actions list containing actions
+     * @param conditionOne first Condition [Bus, SystemAddress, Bit]
+     * @param conditionTwo second Condition [Bus, SystemAddress, Bit]
+     * @param actions list containing XML_ActionsWrapper
      */
     public BitRule(Integer[] conditionOne, Integer[] conditionTwo, ArrayList<XML_ActionWrapper> actions) {
         this.conditionOne = conditionOne;

@@ -1,6 +1,5 @@
 package xml;
 
-import Utilities.ByteUtil;
 import action.*;
 import byteMatrix.ByteMatrix;
 import byteMatrix.ByteRule;
@@ -44,9 +43,15 @@ public class Factory {
 		byteRules.add(new ByteRule(conditionOneObj, conditionTwoObj, actionSequence));
 	}
 
+	/**
+	 * creates a condition object
+	 * @param conditionArray [Bus, Systemadress, Equals, NotEquals, Bigger, Smaller]
+	 * @return Condition Object
+	 */
 	private static Condition createCondition(Integer[] conditionArray) {
 		System.out.println("ConditionArray in createCondition: " + Arrays.toString(conditionArray));
 
+		//only need the bus and Systemadress for the constructor
 		Condition cond = new Condition(Arrays.copyOfRange(conditionArray, 0, 2));
 
 		if(conditionArray[2] != null) {
@@ -73,9 +78,10 @@ public class Factory {
 	}
 
 	/**
-	 * adds a rule to the rule list
-	 * TODO
-	 * @param
+	 * adds a bit rule to the bit rules
+	 * @param conditionsOne [Bus, SystemAddress, Bit]
+	 * @param conditionsTwo [Bus, SystemAddress, Bit]
+	 * @param actions ArrayList<XML_ActionWrapper>
 	 */
 	protected static void addBitRule(Integer[] conditionsOne, Integer[] conditionsTwo, ArrayList actions) {
 		bitRules.add(new BitRule(conditionsOne, conditionsTwo, actions));
@@ -108,14 +114,10 @@ public class Factory {
 	}
 
 	/**
-	 * creates an action sequence for a given list of actions
+	 * creates an action sequence for a given list of XML_ActionWrapper
 	 *
-	 * Integer Array for ActionMessageBit: [Bus][Systemadress][Bit][BitValue]
-	 * Integer Array for ActionMessageByte: [Bus][Systemadress][ByteValue]
-	 *  Integer Array for waitAction: [Wait time in ms]
-	 *
-	 * @param actions actions to be converted into an action sequence
-	 * @return action sequence
+	 * @param actions List of XML_ActionWrappers to be converted into an action sequence
+	 * @return action sequence containing the action elements to be added to the matrix
 	 */
 	private static ActionSequence createActionSequence(ArrayList<XML_ActionWrapper> actions) {
 		ActionSequence actionSeq = new ActionSequence();
@@ -139,16 +141,10 @@ public class Factory {
 					actionSeq.addAction(actionDepot.addAction(messageByte));
 					break;
 				case DECREMENT:
+				case INCREMENT:
 					ActionMessageByteIncDecRement messageByteDecrement = new ActionMessageByteIncDecRement(action.getActionArray());
 					// only add action to actionDepot if it doesnt exists already
-					//TODO muss hierzu noch was implementiert werden
 					actionSeq.addAction(actionDepot.addAction(messageByteDecrement));
-					break;
-				case INCREMENT:
-					ActionMessageByteIncDecRement messageByteIncrement = new ActionMessageByteIncDecRement(action.getActionArray());
-					// only add action to actionDepot if it doesnt exists already
-					//TODO muss hierzu noch was implementiert werden
-					actionSeq.addAction(actionDepot.addAction(messageByteIncrement));
 					break;
 			}
 
