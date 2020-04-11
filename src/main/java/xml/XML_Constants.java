@@ -20,4 +20,5 @@ public class XML_Constants {
     public static final String NotEqual = "NotEqual";
     public static final String Bigger = "Bigger";
     public static final String Smaller = "Smaller";
+    public static final String Toggle = "toggle";
 }

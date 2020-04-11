@@ -146,6 +146,11 @@ public class Factory {
 					// only add action to actionDepot if it doesnt exists already
 					actionSeq.addAction(actionDepot.addAction(messageByteDecrement));
 					break;
+				case BITTOGGLE:
+					ActionMessageBitToggle messageBitToggle = new ActionMessageBitToggle(action.getActionArray());
+					// only add action to actionDepot if it doesnt exists already
+					actionSeq.addAction(actionDepot.addAction(messageBitToggle));
+					break;
 			}
 
 		}
