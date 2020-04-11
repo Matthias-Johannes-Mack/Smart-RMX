@@ -3,7 +3,7 @@ package action;
 import java.util.Arrays;
 
 /**
- * Class that represents a ActionMessage
+ * Class that represents a ActionMessage for a Bit Change in the RMX PC zentrale
  *
  * @author Matthias Mack 3316380
  */

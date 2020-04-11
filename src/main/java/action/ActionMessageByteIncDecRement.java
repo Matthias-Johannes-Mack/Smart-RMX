@@ -2,26 +2,29 @@ package action;
 
 import java.util.Arrays;
 
+/**
+ * class that represents an action that will send a message to the RMX PC Zentrale that increments or decrements the value of a specific byte
+ */
 public class ActionMessageByteIncDecRement extends Action {
     /**
-     * Integer Array that contains the info of the actionMessageByte TODO
+     * Integer Array that contains the info of the actionMessageByte
      * Format:
      * [BUS][Systemadresse][IncDecValue]
-     * IncDecValue if negative decrement, positive = increment
+     * IncDecValue if negative decrement, positive  increment
      */
     private int[] actionMessageByteIncDecRement;
 
     /**
-     * Constructor for an ActionMessageByteIncrement
-     * @param incrementValue specifies the numberthat should be added to the byte
+     * Constructor for an ActionMessageByteIncDecRement
+     * @param incrementDecrementValue specifies the number the byte should be incremented or decremented
      */
-    public ActionMessageByteIncDecRement(int[] incrementValue) {
-        this.actionMessageByteIncDecRement = incrementValue;
+    public ActionMessageByteIncDecRement(int[] incrementDecrementValue) {
+        this.actionMessageByteIncDecRement = incrementDecrementValue;
     }
 
     /**
-     *
-     * @return waitTime
+     * gets the actionsArray of the actionMessageByteIncDecRement
+     * @return int Array [BUS][Systemadresse][IncDecValue]
      */
     public int[] getActionMessageByteIncDecRement() {
         return actionMessageByteIncDecRement;
@@ -30,8 +33,8 @@ public class ActionMessageByteIncDecRement extends Action {
 
 
     /**
-     * Compares two ActionWaits
-     * @param o object to compare the current ActionWait with
+     * Compares two ActionMessageByteIncDecRement
+     * @param o object to compare the current ActionMessageByteIncDecRement with
      * @return true if their waitTime is equal, false otherwise
      */
     @Override
