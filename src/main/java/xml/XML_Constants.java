@@ -1,6 +1,9 @@
 package xml;
 
-public class XmlConstants {
+/**
+ * Constants that define the used tags in the XML
+ */
+public class XML_Constants {
     public static final String Increment = "Increment";
     public static final String Decrement = "Decrement";
     public static final String ByteValue = "ByteValue";
@@ -8,4 +11,9 @@ public class XmlConstants {
     public static final String Bit = "Bit";
     public static final String SystemAddress = "SystemAddress";
     public static final String Bus = "Bus";
+    public static final String Action = "Action";
+    public static final String Actions = "Actions";
+    public static final String Condition = "Condition";
+    public static final String Rule = "Rule";
+    public static final String Wait = "Wait";
 }

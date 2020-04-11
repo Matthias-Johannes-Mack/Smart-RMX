@@ -3,6 +3,7 @@ package xml;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javax.xml.XMLConstants;
 import java.util.*;
 
 /**
@@ -89,7 +90,7 @@ public class XML_read {
 
 
         //gets the rule child nodes
-        for (Node node : iterable(xmlDoc.getElementsByTagName("Rule"))) {
+        for (Node node : iterable(xmlDoc.getElementsByTagName(XML_Constants.Rule))) {
             NodeList nodeList = node.getChildNodes();
             ruleNodeChildrenArrList.add(nodeList);
         }
@@ -111,13 +112,11 @@ public class XML_read {
                 if (ruleNodeChild.getNodeName().equals("#text")) continue;
 
                 //Condition
-                if (ruleNodeChild.getNodeName().equals("Condition")) {
+                if (ruleNodeChild.getNodeName().equals(XML_Constants.Condition)) {
                     conditionCount++;
                     //check every child node of condition
                     for (Node conditionNodeChild : iterable(ruleNodeChild.getChildNodes())) {
                         if (conditionNodeChild.getNodeName().equals("#text")) continue;
-
-                        System.out.println("ICH WAR LESEN");
 
                         if (conditionCount == 1) {
                             processConditionChildNodes(conditionOne, conditionNodeChild);
@@ -127,38 +126,30 @@ public class XML_read {
                     }
                 } // end of if equals Condition
 
-                //Actions
-                if (ruleNodeChild.getNodeName().equals("Actions")) {
+                // the read XML tag is a "Actions"
+                if (ruleNodeChild.getNodeName().equals(XML_Constants.Actions)) {
                     //check every child node of actions
                     for (Node actionsNodeChild : iterable(ruleNodeChild.getChildNodes())) {
                         if (actionsNodeChild.getNodeName().equals("#text")) continue;
 
                         //Message Action
-                        if (actionsNodeChild.getNodeName().equals("Action")) {
+                        if (actionsNodeChild.getNodeName().equals(XML_Constants.Action)) {
                             int[] actionArray = new int[4];
 
                             //check every child node of message action
                             for (Node actionNodeChild : iterable(actionsNodeChild.getChildNodes())) {
                                 if (actionNodeChild.getNodeName().equals("#text")) continue;
 
+                                // fill the actionArray with the given Data from the XML
                                 processActionChildNodes(actionArray, actionNodeChild);
-
-
-
                             }
 
-                            // if this is a byteAction the array is only 3 long
-                            if(actionType == XML_ActionType.BYTEMESSAGE) {
-
-                            } else if (actionType == XML_ActionType.INCREMENT || actionType == XML_ActionType.DECREMENT) {
-
-                            }
-
+                            // add XML_ActionWrapper to List of actions for this rule
                             actions.add(new XML_ActionWrapper(actionArray, actionType));
                         }
 
-                        //Wait Action
-                        if (actionsNodeChild.getNodeName().equals("Wait")) {
+                        // the read XML tag is a Wait
+                        if (actionsNodeChild.getNodeName().equals(XML_Constants.Wait)) {
                             //add a IntegerArray containing only the wait time
                             int[] wait = new int[1];
                             wait[0] = Integer.parseInt(actionsNodeChild.getTextContent());
@@ -193,7 +184,7 @@ public class XML_read {
      */
     private void processConditionChildNodes(Integer[] targetArray, Node node) {
         switch (node.getNodeName()) {
-            case "Bus":
+            case XML_Constants.Bus:
                 targetArray[0] = Integer.parseInt(node.getTextContent());
                 break;
             case "SystemAddress":
@@ -238,28 +229,28 @@ public class XML_read {
     private int[] processActionChildNodes(int[]targetArray, Node node) {
 
         switch (node.getNodeName()) {
-            case XmlConstants.Bus:
+            case XML_Constants.Bus:
                 targetArray[0] = Integer.parseInt(node.getTextContent());
                 break;
-            case XmlConstants.SystemAddress:
+            case XML_Constants.SystemAddress:
                 targetArray[1] = Integer.parseInt(node.getTextContent());
                 break;
-            case XmlConstants.Bit:
+            case XML_Constants.Bit:
                 targetArray[2] = Integer.parseInt(node.getTextContent());
                 break;
-            case XmlConstants.BitValue:
+            case XML_Constants.BitValue:
                 targetArray[3] = Integer.parseInt(node.getTextContent());
                 actionType = XML_ActionType.BITMESSAGE;
                 break;
-            case XmlConstants.ByteValue:
+            case XML_Constants.ByteValue:
                 targetArray[2] = Integer.parseInt(node.getTextContent());
                 actionType = XML_ActionType.BYTEMESSAGE;
                 break;
-            case XmlConstants.Increment:
+            case XML_Constants.Increment:
                 targetArray[2] = Integer.parseInt(node.getTextContent());
                 actionType = XML_ActionType.INCREMENT;
                 break;
-            case XmlConstants.Decrement:
+            case XML_Constants.Decrement:
                 // decrement holds negative values
                 targetArray[2] = Integer.parseInt(node.getTextContent()) * -1;
                 actionType = XML_ActionType.DECREMENT;
