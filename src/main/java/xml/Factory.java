@@ -96,8 +96,7 @@ public class Factory {
 	public static void createActionsAndMatrix() {
 		//adds rules to byte matrix
 		for (BitRule bitRule : bitRules) {
-			ArrayList<Integer[]> actions = bitRule.getActions();
-			ActionSequence actionSeq = createActionSequence(actions);
+			ActionSequence actionSeq = createActionSequence(bitRule.getActions());
 
 			BitMatrix.getMatrix().addAction(bitRule.getConditionOne(), bitRule.getConditionTwo(), actionSeq);
 		}
@@ -112,31 +111,47 @@ public class Factory {
 	 * creates an action sequence for a given list of actions
 	 *
 	 * Integer Array for ActionMessageBit: [Bus][Systemadress][Bit][BitValue]
-	 * Integer Array for ActionMessageByte: [Bus][Systemadress][Bit][ByteValue]
+	 * Integer Array for ActionMessageByte: [Bus][Systemadress][ByteValue]
 	 *  Integer Array for waitAction: [Wait time in ms]
 	 *
 	 * @param actions actions to be converted into an action sequence
 	 * @return action sequence
 	 */
-	private static ActionSequence createActionSequence(ArrayList<Integer[]> actions) {
+	private static ActionSequence createActionSequence(ArrayList<XML_ActionWrapper> actions) {
 		ActionSequence actionSeq = new ActionSequence();
 
-		for (Integer[] action : actions) {
-			// wait action
-			if (action.length == 1) {
-				// create wait action and save it to action depot with id
-				ActionWait waitAction = new ActionWait(action[0]);
-				// only add action to actionDepot if it doesnt exists already
-				actionSeq.addAction(actionDepot.addAction(waitAction));
-			} else if(action.length == 4) {
-				ActionMessageBit messageBit = new ActionMessageBit(parseIntegerToIntArr(action));
-				// only add action to actionDepot if it doesnt exists already
-				actionSeq.addAction(actionDepot.addAction(messageBit));
-			} else if(action.length == 3) {
-				ActionMessageByte messageByte = new ActionMessageByte(parseIntegerToIntArr(action));
-				// only add action to actionDepot if it doesnt exists already
-				actionSeq.addAction(actionDepot.addAction(messageByte));
+		for (XML_ActionWrapper action : actions) {
+			switch (action.getType()) {
+				case WAIT:
+					// create wait action and save it to action depot with id
+					ActionWait waitAction = new ActionWait(action.getActionArray()[0]);
+					// only add action to actionDepot if it doesnt exists already
+					actionSeq.addAction(actionDepot.addAction(waitAction));
+					break;
+				case BITMESSAGE:
+					ActionMessageBit messageBit = new ActionMessageBit(action.getActionArray());
+					// only add action to actionDepot if it doesnt exists already
+					actionSeq.addAction(actionDepot.addAction(messageBit));
+					break;
+				case BYTEMESSAGE:
+					ActionMessageByte messageByte = new ActionMessageByte(action.getActionArray());
+					// only add action to actionDepot if it doesnt exists already
+					actionSeq.addAction(actionDepot.addAction(messageByte));
+					break;
+				case DECREMENT:
+					ActionMessageByteIncDecRement messageByteDecrement = new ActionMessageByteIncDecRement(action.getActionArray());
+					// only add action to actionDepot if it doesnt exists already
+					//TODO muss hierzu noch was implementiert werden
+					actionSeq.addAction(actionDepot.addAction(messageByteDecrement));
+					break;
+				case INCREMENT:
+					ActionMessageByteIncDecRement messageByteIncrement = new ActionMessageByteIncDecRement(action.getActionArray());
+					// only add action to actionDepot if it doesnt exists already
+					//TODO muss hierzu noch was implementiert werden
+					actionSeq.addAction(actionDepot.addAction(messageByteIncrement));
+					break;
 			}
+
 		}
 		return actionSeq;
 	}

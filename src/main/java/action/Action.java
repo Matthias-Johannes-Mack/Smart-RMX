@@ -61,6 +61,14 @@ public abstract class Action {
 
                 return object.equals(o);
             }
+        }  else if (obj instanceof ActionMessageByteIncDecRement) {
+            if (this instanceof ActionMessageByteIncDecRement) {
+                // obj is a ActionMessageByteDecrement and this is a ActionMessageByteDecrement
+                ActionMessageByteIncDecRement o = (ActionMessageByteIncDecRement) this; // this
+                ActionMessageByteIncDecRement object = (ActionMessageByteIncDecRement) obj; // obj
+
+                return object.equals(o);
+            }
         }
 
         return false;

@@ -12,6 +12,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import Utilities.ByteUtil;
+import org.apache.commons.math3.exception.OutOfRangeException;
 
 public class Schedular {
 
@@ -260,7 +261,7 @@ public class Schedular {
     private void scheduleActionSequence(ActionSequence actionSequence, int startIndex) {
 
         // for each Action starting from the startIndex
-        for (int i = startIndex; i < actionSequence.getActionCount(); i++) {
+        loop: for (int i = startIndex; i < actionSequence.getActionCount(); i++) {
 
             // get the action at the given index
             Action action = actionSequence.getAction(i);
@@ -330,6 +331,45 @@ public class Schedular {
 
                     // fake message so the changed bits by the action are getting checked in the matrix
                     int[] fakeMessage = buildFakeMessageByte(actionMessageByte.getActionMessageByte());
+
+                    // update bus
+                    // format <0x99><RMX><ADRRMX><VALUE>
+                    busDepot.updateBus(message[1], message[2],message[3]);
+
+                    // add (real) message to the sender for sending to the RMX-PC-Zentrale
+                    Sender.addMessageQueue(message);
+
+                    // add fake message to the fakeMessageQueue so the changes are checked
+                    addMessageToFakeQueue(fakeMessage);
+
+                } else {
+                    // the has not been initialized
+                    System.out.println("-> Adress bus " + actionArr[0] + " from rule does not exist!");
+                }
+            } else if (action instanceof ActionMessageByteIncDecRement) {
+                // the action is a ActionMessageByteIncrement
+                ActionMessageByteIncDecRement actionMessageByteIncDecRement = (ActionMessageByteIncDecRement) action;
+                System.out.println("------ACTION-Byte--INCREMENT " + actionMessageByteIncDecRement.getActionMessageByteIncDecRement());
+
+                // actionArr with the action message
+                int[] actionArr = actionMessageByteIncDecRement.getActionMessageByteIncDecRement();
+
+                // need to check if bus exists otherwise the connection will be killed by the RMX-PC-Zentrale
+                if (busDepot.busExists(actionArr[0])) {
+
+                    int[] message = null;
+                    int[] fakeMessage = null;
+                    try {
+                        // message for updating the server
+                        message = buildRmxMessageByteInDecRement(actionArr);
+
+                        // fake message so the changed bits by the action are getting checked in the matrix
+                        fakeMessage = buildFakeMessageByteIncDecRement(actionArr);
+                    } catch(OutOfRangeException e) {
+                        e.printStackTrace();
+                        break loop;
+                    }
+
 
                     // update bus
                     // format <0x99><RMX><ADRRMX><VALUE>
@@ -453,6 +493,72 @@ public class Schedular {
         message[4] = intArr[1];
         // value
         message[5] = intArr[2];
+
+        return message;
+    }
+
+
+    /**
+     * Method that converts the int Array of an ActionMessageByte to a FakeMessage (OPCODE 0x99)
+     * Necessary because change needs to be checked, but status has already been updateed
+     * TODO
+     * Format:
+     *  OPCODE [busId][systemAdress][incDecRementValue]
+     * <0x99>  <RMX><ADRRMX><VALUE>
+     *
+     * @param  incrementValue array containing the busId, systemadress, byteValue of the given Action
+     * @return a fake Message in RMXnet Syntax      returns null if the incremented or decremented valueis out of bounds
+     */
+    private int[] buildFakeMessageByteIncDecRement(int[] incrementValue) throws OutOfRangeException {
+
+        int[] message = new int[4];
+        // OPCODE
+        message[0] = 153; //0x99
+        // bus <rmx>
+        message[1] = incrementValue[0];
+        // systemadress <addrRMX>
+        message[2] = incrementValue[1];
+        // value
+        int currentbyte = busDepot.getBus(incrementValue[0]).getCurrentByte(incrementValue[1]);
+
+        int newByteValue = currentbyte + incrementValue[2];
+        if(newByteValue > 255 || newByteValue < 0) {
+            throw new OutOfRangeException(newByteValue, 0, 255);
+        }
+        message[3] = newByteValue;
+
+        return message;
+    }
+
+    /**
+     * Method that converts the int Array of the ActionMessageByte to a RMXnet Message
+     * TODO
+     * OPCODE  [busId][systemAdress][byteValue
+     * <0x06>  <RMX><ADRRMX><VALUE>
+     *
+     * @param  incrementValue array containing the busId, systemadress, byteValue
+     * @return a Message in RMXnet Syntax
+     */
+    private int[] buildRmxMessageByteInDecRement(int[] incrementValue) {
+        int[] message = new int[6];
+        // RMX-Headbyte
+        message[0] = Constants.RMX_HEAD;
+        // COUNT
+        message[1] = 6;
+        // OPCODE
+        message[2] = 5;
+        // bus <rmx>
+        message[3] = incrementValue[0];
+        // systemadress <addrRMX>
+        message[4] = incrementValue[1];
+        // value
+        int currentbyte = busDepot.getBus(incrementValue[0]).getCurrentByte(incrementValue[1]);
+
+        int newByteValue = currentbyte + incrementValue[2];
+        if(newByteValue > 255 || newByteValue < 0) {
+            throw new OutOfRangeException(newByteValue, 0, 255);
+        }
+        message[5] = newByteValue;
 
         return message;
     }
