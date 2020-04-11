@@ -99,9 +99,9 @@ public class XML_read {
         //iterate over every rule nodes children
         for (NodeList nodeList : ruleNodeChildrenArrList) {
             // contains the first condition
-            Integer[] conditionsOne = new Integer[4];
+            Integer[] conditionOne = new Integer[6];
             // contains the second condition
-            Integer[] conditionsTwo = new Integer[4];
+            Integer[] conditionTwo = new Integer[6];
             // List containing all the actions for one rule als an integer Array
             ArrayList<Integer[]> actions = new ArrayList<>();
 
@@ -118,10 +118,12 @@ public class XML_read {
                     for (Node conditionNodeChild : iterable(ruleNodeChild.getChildNodes())) {
                         if (conditionNodeChild.getNodeName().equals("#text")) continue;
 
+                        System.out.println("ICH WAR LESEN");
+
                         if (conditionCount == 1) {
-                            processConditionChildNodes(conditionsOne, conditionNodeChild);
+                            processConditionChildNodes(conditionOne, conditionNodeChild);
                         } else if (conditionCount == 2) {
-                            processConditionChildNodes(conditionsTwo, conditionNodeChild);
+                            processConditionChildNodes(conditionTwo, conditionNodeChild);
                         }
                     }
                 } // end of if equals Condition
@@ -168,16 +170,16 @@ public class XML_read {
 
             //  Iterating over one rule block done, add conditions and actions to new rule
             if (!byteRule) {
-                Factory.addBitRule(conditionsOne, conditionsTwo, actions);
+                // need to shorten Integer Array to length 4, since this is required for bit Rule
+                Integer[] conditionOneAdress = Arrays.copyOfRange(conditionOne, 0, 4);
+                Integer[] conditionTwoAdress = Arrays.copyOfRange(conditionTwo, 0, 4);
+                Factory.addBitRule(conditionOneAdress, conditionTwoAdress, actions);
             } else {
                 //byte rule
-                Integer[] conditionOneAdress = Arrays.copyOfRange(conditionsOne, 0, 2);
-                Integer[] conditionTwoAdress = Arrays.copyOfRange(conditionsTwo, 0, 2);
-                Integer[] conditionOneValue = ByteUtil.getByteArrayByByte(conditionsOne[2].byteValue());
-                Integer[] conditionTwoValue = ByteUtil.getByteArrayByByte(conditionsTwo[2].byteValue());
-
                 System.out.println("ACTION IN XML READ " + Arrays.toString(actions.get(0)));
-                Factory.addByteRule(conditionOneAdress, conditionOneValue, conditionTwoAdress, conditionTwoValue, actions);
+                System.out.println("ConditionONe in XML READ: " + Arrays.toString(conditionOne));
+                System.out.println("ConditionONe in XML READ: " + Arrays.toString(conditionTwo));
+                Factory.addByteRule(conditionOne, conditionTwo, actions);
             }
 
 
@@ -206,8 +208,21 @@ public class XML_read {
             case "BitValue":
                 targetArray[3] = Integer.parseInt(node.getTextContent());
                 break;
-            case "ByteValue":
+            case "Equal":
                 targetArray[2] = Integer.parseInt(node.getTextContent());
+                byteRule = true;
+                break;
+            case "NotEqual":
+                targetArray[3] = Integer.parseInt(node.getTextContent());
+                byteRule = true;
+                break;
+            case "Bigger":
+                targetArray[4] = Integer.parseInt(node.getTextContent());
+                byteRule = true;
+                break;
+            case "Smaller":
+                System.out.println("SMALLER REIN");
+                targetArray[5] = Integer.parseInt(node.getTextContent());
                 byteRule = true;
                 break;
         }

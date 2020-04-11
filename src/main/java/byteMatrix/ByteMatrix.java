@@ -2,8 +2,6 @@ package byteMatrix;
 
 import Utilities.Constants;
 import action.ActionSequence;
-import action.ActionSequenceWrapper;
-import bus.BusDepot;
 import matrix.MatrixUtil;
 
 public class ByteMatrix {
@@ -50,7 +48,7 @@ public class ByteMatrix {
     private ByteRuleWrapper[] matrix;
 
 
-    public ActionSequence checkField(Integer[] byteValueSmall, Integer[] byteValueBig, int fieldByteMatrix) {
+    public ActionSequence checkField(int byteValueSmall, int byteValueBig, int fieldByteMatrix) {
 
         ActionSequence result = null;
 
@@ -63,9 +61,9 @@ public class ByteMatrix {
 
     public void addByteRule(ByteRule rule) {
         //[Bus][Systemadress] smaller index of the two conditions
-        Integer[] conditionOneAdress = rule.getConditionOneAdress();
+        Integer[] conditionOneAdress = rule.getConditionOne().getConditionAdress();
         //[Bus][Systemadress] bigger index of the two conditions
-        Integer[] conditionTwoAdress = rule.getConditionTwoAdress();
+        Integer[] conditionTwoAdress = rule.getConditionTwo().getConditionAdress();
         //[Bus][Systemadress] bigger index of the two conditions
 
 

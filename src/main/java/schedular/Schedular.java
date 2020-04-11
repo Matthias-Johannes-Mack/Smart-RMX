@@ -69,14 +69,14 @@ public class Schedular {
      * this queue has a higher priority than the RMXMessageQueue, so fake messages are checked at first
      * BlockingQueue to ensure thread safety.
      */
-    private BlockingQueue<byte[]> fakeMessageQueue;
+    private BlockingQueue<int[]> fakeMessageQueue;
 
     /**
      * Queue of fake messages (OPCODE 0x06)
      * this queue stores incoming messages by the Receiver that need to be processed by the schedular.
      * BlockingQueue to ensure thread safety.
      */
-    private BlockingQueue<byte[]> rmxMessageQueue;
+    private BlockingQueue<int[]> rmxMessageQueue;
 
 
     /**
@@ -137,7 +137,7 @@ public class Schedular {
      *
      * @param message a message to add
      */
-    public void addMessageToFakeQueue(byte[] message) {
+    public void addMessageToFakeQueue(int[] message) {
         fakeMessageQueue.add(message);
     }
 
@@ -147,7 +147,7 @@ public class Schedular {
      *
      * @param message a message to add
      */
-    public void addMessageToRmxQueue(byte[] message) {
+    public void addMessageToRmxQueue(int[] message) {
         rmxMessageQueue.add(message);
     }
 
@@ -188,7 +188,7 @@ public class Schedular {
             while (WORK) {
 
                 Integer[] changes = new Integer[8];
-                byte[] message;
+                int[] message;
 
                 while (fakeMessageQueue.isEmpty() && rmxMessageQueue.isEmpty()) {
                     // wait until one queue isnt emtpty
@@ -277,10 +277,10 @@ public class Schedular {
                 if (busDepot.busExists(actionArr[0])) {
 
                     // message for updating the server
-                    byte[] message = buildRmxMessageBit(actionMessageBit.getActionMessageBit());
+                    int[] message = buildRmxMessageBit(actionMessageBit.getActionMessageBit());
 
                     // fake message so the changed bits by the action are getting checked in the matrix
-                    byte[] fakeMessage = buildFakeMessageBit(actionMessageBit.getActionMessageBit());
+                    int[] fakeMessage = buildFakeMessageBit(actionMessageBit.getActionMessageBit());
 
                     // update bus
                     // format <0x99><RMX><ADRRMX><VALUE>
@@ -326,10 +326,10 @@ public class Schedular {
                 if (busDepot.busExists(actionArr[0])) {
 
                     // message for updating the server
-                    byte[] message = buildRmxMessageByte(actionMessageByte.getActionMessageByte());
+                    int[] message = buildRmxMessageByte(actionMessageByte.getActionMessageByte());
 
                     // fake message so the changed bits by the action are getting checked in the matrix
-                    byte[] fakeMessage = buildFakeMessageByte(actionMessageByte.getActionMessageByte());
+                    int[] fakeMessage = buildFakeMessageByte(actionMessageByte.getActionMessageByte());
 
                     // update bus
                     // format <0x99><RMX><ADRRMX><VALUE>
@@ -361,17 +361,17 @@ public class Schedular {
      * @param intArr array containing the busId, systemadress, bitIndex, bitvalue of the given Action
      * @return a fake Message in RMXnet Syntax
      */
-    private byte[] buildFakeMessageBit(int[] intArr) {
-        byte[] message = new byte[4];
+    private int[] buildFakeMessageBit(int[] intArr) {
+        int[] message = new int[4];
         // OPCODE
-        message[0] = (byte) 153; //0x99
+        message[0] = 153; //0x99
         // bus <rmx>
-        message[1] = (byte) intArr[0];
+        message[1] = intArr[0];
         // systemadress <addrRMX>
-        message[2] = (byte) intArr[1];
+        message[2] = intArr[1];
         // value
-        Byte currentbyte = busDepot.getBus(intArr[0]).getCurrentByte(intArr[1]);
-        message[3] = (byte) ByteUtil.setBitAtPos(currentbyte, intArr[2], intArr[3]);
+        int currentbyte = busDepot.getBus(intArr[0]).getCurrentByte(intArr[1]);
+        message[3] = ByteUtil.setBitAtPos(currentbyte, intArr[2], intArr[3]);
 
         return message;
     }
@@ -385,8 +385,8 @@ public class Schedular {
      * @param intArr array containing the busId, systemadress, bitIndex, bitValue of the given Action
      * @return a Message in RMXnet Syntax
      */
-    private byte[] buildRmxMessageBit(int[] intArr) {
-        byte[] message = new byte[6];
+    private int[] buildRmxMessageBit(int[] intArr) {
+        int[] message = new int[6];
         // RMX-Headbyte
         message[0] = Constants.RMX_HEAD;
         // COUNT
@@ -394,12 +394,12 @@ public class Schedular {
         // OPCODE
         message[2] = 5;
         // bus <rmx>
-        message[3] = (byte) intArr[0];
+        message[3] = intArr[0];
         // systemadress <addrRMX>
-        message[4] = (byte) intArr[1];
+        message[4] = intArr[1];
         // value
-        Byte currentbyte = busDepot.getBus(intArr[0]).getCurrentByte(intArr[1]);
-        message[5] = (byte) ByteUtil.setBitAtPos(currentbyte, intArr[2], intArr[3]);
+        int currentbyte = busDepot.getBus(intArr[0]).getCurrentByte(intArr[1]);
+        message[5] = ByteUtil.setBitAtPos(currentbyte, intArr[2], intArr[3]);
 
         return message;
     }
@@ -415,17 +415,17 @@ public class Schedular {
      * @param intArr array containing the busId, systemadress, byteValue of the given Action
      * @return a fake Message in RMXnet Syntax
      */
-    private byte[] buildFakeMessageByte(int[] intArr) {
+    private int[] buildFakeMessageByte(int[] intArr) {
 
-        byte[] message = new byte[4];
+        int[] message = new int[4];
         // OPCODE
-        message[0] = (byte) 153; //0x99
+        message[0] = 153; //0x99
         // bus <rmx>
-        message[1] = (byte) intArr[0];
+        message[1] = intArr[0];
         // systemadress <addrRMX>
-        message[2] = (byte) intArr[1];
+        message[2] = intArr[1];
         // value
-        message[3]= (byte) intArr[2];
+        message[3]= intArr[2];
 
         return message;
     }
@@ -439,8 +439,8 @@ public class Schedular {
      * @param intArr array containing the busId, systemadress, byteValue
      * @return a Message in RMXnet Syntax
      */
-    private byte[] buildRmxMessageByte(int[] intArr) {
-        byte[] message = new byte[6];
+    private int[] buildRmxMessageByte(int[] intArr) {
+        int[] message = new int[6];
         // RMX-Headbyte
         message[0] = Constants.RMX_HEAD;
         // COUNT
@@ -448,11 +448,11 @@ public class Schedular {
         // OPCODE
         message[2] = 5;
         // bus <rmx>
-        message[3] = (byte) intArr[0];
+        message[3] = intArr[0];
         // systemadress <addrRMX>
-        message[4] = (byte) intArr[1];
+        message[4] = intArr[1];
         // value
-        message[5] = (byte) intArr[2];
+        message[5] = intArr[2];
 
         return message;
     }
