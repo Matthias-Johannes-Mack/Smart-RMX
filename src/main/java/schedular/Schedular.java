@@ -502,15 +502,16 @@ public class Schedular {
 
 
     /**
-     * Method that converts the int Array of an ActionMessageByte to a FakeMessage (OPCODE 0x99)
+     * Method that converts the int Array of an ActionMessageIncDec to a FakeMessage (OPCODE 0x99)
      * Necessary because change needs to be checked, but status has already been updateed
-     * TODO
+     *
      * Format:
      *  OPCODE [busId][systemAdress][incDecRementValue]
      * <0x99>  <RMX><ADRRMX><VALUE>
      *
-     * @param  incrementValue array containing the busId, systemadress, byteValue of the given Action
-     * @return a fake Message in RMXnet Syntax      returns null if the incremented or decremented valueis out of bounds
+     * @param  incrementValue array containing the busId, systemadress, incDecRementValue of the given Action
+     * @return a fake Message in RMXnet Syntax
+     * @throws OutOfRangeException if the incremented or decremented value is out of bounds (not in 0 <= x <= 255)
      */
     private int[] buildFakeMessageByteIncDecRement(int[] incrementValue) throws OutOfRangeException {
 
@@ -534,13 +535,14 @@ public class Schedular {
     }
 
     /**
-     * Method that converts the int Array of the ActionMessageByte to a RMXnet Message
-     * TODO
+     * Method that converts the int Array of the ActionMessageIncDec to a RMXnet Message
+     *
      * OPCODE  [busId][systemAdress][byteValue
      * <0x06>  <RMX><ADRRMX><VALUE>
      *
-     * @param  incrementValue array containing the busId, systemadress, byteValue
-     * @return a Message in RMXnet Syntax
+     * @param  incrementValue array containing the busId, systemadress, incDecRementValue of the given Action
+     * @return a fake Message in RMXnet Syntax
+     * @throws OutOfRangeException if the incremented or decremented value is out of bounds (not in 0 <= x <= 255)
      */
     private int[] buildRmxMessageByteInDecRement(int[] incrementValue) {
         int[] message = new int[6];
