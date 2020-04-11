@@ -12,6 +12,7 @@ import java.util.Objects;
  * @author Team RMX
  */
 public class ByteRule {
+
 	/**
 	 * Integer Array for first Conditions [Bus, SystemAddress]
 	 */
