@@ -368,6 +368,7 @@ public class Schedular {
                         // fake message so the changed bits by the action are getting checked in the matrix
                         fakeMessage = buildFakeMessageByteIncDecRement(actionArr);
                     } catch(OutOfRangeException e) {
+                        System.err.println("Catch OutofRangeException");
                         e.printStackTrace();
                         break loop;
                     }
