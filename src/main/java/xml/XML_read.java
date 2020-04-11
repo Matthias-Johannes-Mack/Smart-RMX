@@ -225,7 +225,7 @@ public class XML_read {
      * processes the Bus, SystemAdress and Bit node of the Action and Condition nodes and puts them in the given array
      * <p>
      * for a bit action message targetArray: [Bus][Systemadress][Bit][Bitvalue]
-     * for a byte action message targetArray: [Bus][Systemadress][ByteValue][]
+     * for a byte action message targetArray: [Bus][Systemadress][ByteValue]
      *
      * @param node        node whose content should be written to the array
      */
