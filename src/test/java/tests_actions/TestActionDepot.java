@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import action.ActionDepot;
-import action.ActionMessage;
+import action.ActionMessageBit;
 import action.ActionWait;
 
 /**
@@ -22,8 +22,8 @@ public class TestActionDepot {
 		// the int array of the message
 		int[] message1 = new int[] { 1, 1, 1 };
 		// create message actions
-		ActionMessage actionMessage1 = new ActionMessage(message1);
-		ActionMessage actionMessage2 = new ActionMessage(message1);
+		ActionMessageBit actionMessageBit1 = new ActionMessageBit(message1);
+		ActionMessageBit actionMessageBit2 = new ActionMessageBit(message1);
 		// create wait actions
 		ActionWait actionWait1 = new ActionWait(1000);
 		ActionWait actionWait2 = new ActionWait(1000);
@@ -33,10 +33,10 @@ public class TestActionDepot {
 
 		// == to compare the reference
 		// true
-		assertTrue(actionMessage1 == actionDepot.addAction(actionMessage1));
+		assertTrue(actionMessageBit1 == actionDepot.addAction(actionMessageBit1));
 		assertTrue(actionWait1 == actionDepot.addAction(actionWait1));
 		// false
-		assertFalse(actionMessage2 == actionDepot.addAction(actionMessage2));
+		assertFalse(actionMessageBit2 == actionDepot.addAction(actionMessageBit2));
 		assertFalse(actionWait2 == actionDepot.addAction(actionWait2));
 	}
 

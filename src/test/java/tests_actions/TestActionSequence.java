@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import action.ActionMessage;
+import action.ActionMessageBit;
 import action.ActionSequence;
 
 /**
@@ -23,10 +23,10 @@ public class TestActionSequence {
 		int[] message3 = new int[] { 1, 1, 3 };
 		int[] message4 = new int[] { 1, 1, 4 };
 
-		ActionMessage action1 = new ActionMessage(message1);
-		ActionMessage action2 = new ActionMessage(message2);
-		ActionMessage action3 = new ActionMessage(message3);
-		ActionMessage action4 = new ActionMessage(message4);
+		ActionMessageBit action1 = new ActionMessageBit(message1);
+		ActionMessageBit action2 = new ActionMessageBit(message2);
+		ActionMessageBit action3 = new ActionMessageBit(message3);
+		ActionMessageBit action4 = new ActionMessageBit(message4);
 
 		// add 4 actions to the ActionSequence
 		ActionSequence actionSequence = new ActionSequence();

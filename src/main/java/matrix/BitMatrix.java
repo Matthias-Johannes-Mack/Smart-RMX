@@ -1,32 +1,35 @@
 package matrix;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import Utilities.ByteUtil;
 import Utilities.Constants;
 import action.ActionSequence;
 import action.ActionSequenceWrapper;
 import bus.Bus;
 import bus.BusDepot;
+import byteMatrix.ByteMatrix;
 
 /**
  * Class that represents the matrix for checking the rules
  *
  * @author Team SmartRMX
  */
-public class Matrix {
+public class BitMatrix {
 
     // Singleton-Pattern START -----------------------------------------
 
     /**
      * Singleton instance of Matrix
      */
-    private static Matrix instance = null;
+    private static BitMatrix instance = null;
 
     /**
      * private constructor to prevent instantiation
      */
-    private Matrix() {
+    private BitMatrix() {
 
     }
 
@@ -35,11 +38,13 @@ public class Matrix {
      *
      * @return Matrix Singleton instance
      */
-    public static synchronized Matrix getMatrix() {
+    public static synchronized BitMatrix getMatrix() {
         if (instance == null) {
-            instance = new Matrix();
+            instance = new BitMatrix();
             instance.matrix = new ActionSequenceWrapper[arraySize];
             instance.busDepot = BusDepot.getBusDepot();
+            instance.byteMatrix = ByteMatrix.getMatrix();
+
         }
 
         return instance;
@@ -63,6 +68,8 @@ public class Matrix {
      */
     private BusDepot busDepot;
 
+    private ByteMatrix byteMatrix;
+
 
     /*-----------------------------------------------------------------------------------------------
       METHODS FOR CHECKING
@@ -72,11 +79,26 @@ public class Matrix {
      ----------------------------------------------------------------------------------------------*/
 
     /**
-     * Method, that checks all fields of the matrix
+     * Method, that checks all fields of the bit and byte matrix
      *
      * @return List of ActionSequences that have been triggered, the list is empty if no ActionSequences have been triggered
      */
     public List<ActionSequence> checkAllFields() {
+
+        List<ActionSequence> result = new ArrayList<>();
+
+        result.addAll(checkAllFieldsBitMatrix());
+        result.addAll(checkAllFieldsByteMatrix());
+
+        return result;
+    }
+
+    /**
+     * Method, that checks all fields of the matrix
+     *
+     * @return List of ActionSequences that have been triggered, the list is empty if no ActionSequences have been triggered
+     */
+    private List<ActionSequence> checkAllFieldsBitMatrix() {
 
         List<ActionSequence> result = new ArrayList<>();
 
@@ -90,7 +112,7 @@ public class Matrix {
 
             // updates the bus if the bitIndexRow is in the next higher bus
             Bus tempBusRow;
-            currentBusRow = ((tempBusRow = updateBus(bitIndexRow)) != null) ? tempBusRow : currentBusRow;
+            currentBusRow = ((tempBusRow = getNextHigherBusBitMatrix(bitIndexRow)) != null) ? tempBusRow : currentBusRow;
 
             //inner for loop goes along the column
             for (int bitIndexColumn = 0; bitIndexColumn < bitIndexRow + 1; bitIndexColumn++) {
@@ -98,7 +120,7 @@ public class Matrix {
 
                 // updates the bus if the bitIndexColumn is in the next higher bus
                 Bus tempBusColumn;
-                currentBusColumn = ((tempBusColumn = updateBus(bitIndexColumn)) != null) ? tempBusColumn : currentBusColumn;
+                currentBusColumn = ((tempBusColumn = getNextHigherBusBitMatrix(bitIndexColumn)) != null) ? tempBusColumn : currentBusColumn;
 
                 if (matrix[field] != null) {
                     // an ActionSequenceWrapper is in the field
@@ -128,6 +150,62 @@ public class Matrix {
     }
 
     /**
+     * Checks all fields in the ByteMatrix
+     * @return List of ActionSequences that have been triggered
+     */
+    private List<ActionSequence> checkAllFieldsByteMatrix() {
+        List<ActionSequence> result = new ArrayList<>();
+
+        Bus currentBusRow = null;
+        Bus currentBusColumn = null;
+
+        // pointer for the field in the matrix
+        int field = 0;
+        // outer for loop goes along the row
+        for (int byteIndexRow = 0; byteIndexRow < (Constants.NUMBER_OF_BUSSES * Constants.NUMBER_SYSTEMADRESSES_PER_BUS); byteIndexRow++) {
+
+            // updates the bus if the byteIndexRow is in the next higher bus
+            Bus tempBusRow;
+            currentBusRow = ((tempBusRow = getNextHigherBusByteMatrix(byteIndexRow)) != null) ? tempBusRow : currentBusRow;
+
+            //inner for loop goes along the column
+            for (int byteIndexColumn = 0; byteIndexColumn < byteIndexRow + 1; byteIndexColumn++) {
+                // only check conditions if a ByteRuleWrapper is in the matrix (= a rule is defined)
+
+                // updates the bus if the byteIndexColumn is in the next higher bus
+                Bus tempBusColumn;
+                currentBusColumn = ((tempBusColumn = getNextHigherBusByteMatrix(byteIndexColumn)) != null) ? tempBusColumn : currentBusColumn;
+
+
+                // byte needed for checking
+                Integer[] byteValueSmall;
+                Integer[] byteValueBig;
+
+                // determine which has the smaller byteIndex
+                if(byteIndexRow < byteIndexColumn) {
+                    byteValueSmall = ByteUtil.getByteArrayByByte(currentBusRow.getCurrentByte(byteIndexRow));
+                    byteValueBig = ByteUtil.getByteArrayByByte(currentBusColumn.getCurrentByte(byteIndexColumn));
+                } else {
+                    byteValueSmall = ByteUtil.getByteArrayByByte(currentBusColumn.getCurrentByte(byteIndexColumn));
+                    byteValueBig = ByteUtil.getByteArrayByByte(currentBusRow.getCurrentByte(byteIndexRow));
+                }
+
+                ActionSequence actionSequenceByteMatrix = byteMatrix.checkField(byteValueSmall,byteValueBig, field);
+
+                if (actionSequenceByteMatrix != null) {
+                    // ActionSequence for point exists = a rule has been defined
+                    result.add(actionSequenceByteMatrix);
+                }
+
+                field++; // go to the next field
+
+            } // inner for-loop
+        } // outer for-loop
+
+        return result;
+    }
+
+    /**
      * checks if for the given changes a rule is defined in the matrix. If so it returns the triggered ActionSequences
      * in a list. The List is empty if no ActionSequences have been triggered.
      *
@@ -145,6 +223,8 @@ public class Matrix {
 
         List<ActionSequence> result = new ArrayList<>();
 
+        boolean checkedByteMatrix = false;
+
         // iterates over "bits" of lastChanged
         for (int i = 0; i < 8; i++) {
             // only check the bits that have been changed
@@ -154,8 +234,18 @@ public class Matrix {
                 // if lastChanges[i] == 1 => true, else (lastChanges[i] == 0) => false
                 boolean bitValue = ((lastChanges[i] == 1) ? true : false);
 
+                System.out.println("LAST CHANGES: " + Arrays.toString(lastChanges));
+                System.out.println("INDEX OF LAST CHANGES: " + i);
                 // rmx - 1 because rmx sends busRMX1 as 1
-                result.addAll(traverseMatrixAndCheck(busId - 1, systemadress, i, bitValue));
+                if(checkedByteMatrix == false) {
+                    // only once check the byteMatrix for the given byte
+                    System.out.println("ICH BIN IM DURCHLAUF MIT DER BYTEMATRIX");
+                    result.addAll(traverseBitAndByteMatrixAndCheck(busId - 1, systemadress, i, bitValue));
+                    checkedByteMatrix = true;
+                } else {
+                    result.addAll(traverseBitMatrixAndCheck(busId - 1, systemadress, i, bitValue));
+                }
+
             }
 
         }
@@ -166,12 +256,29 @@ public class Matrix {
     /**
      * traverses the matrix, checks if any conditions are true and returns the commulated actionsequences
      *
+     * logic of ByteMatrix traversal
+     * - the traversal happens simultaneously to the traversal of the BitMatrix
+     * - through traversal the state of each byte is recorded
+     * - after one byte is recorded fully check of exisiting rule containing the currentByte and  last recorded Byte
+     * - simultaneously we move in the ByteMatrix one field to the right (recording is done in the row loop) or
+     *      one field down (recorded is done in the column loop)
+     * - since the check of a byte happens after fully recording each bit (which means they have been traversed in the
+     *      BitMatrix) we have to check the last recording outside of the loops, since the loops only traverse to bits
+     *      inside the bitMatrix
+     *
      * @param busId                 includes bus id of RMX bus -1
      * @param systemadress          index of the systemadrese in which bit that has changed
      * @param systemadress_bitIndex index of the bit that has changed
      * @param bitValue              value to which the bit has changed
      */
-    private List<ActionSequence> traverseMatrixAndCheck(int busId, int systemadress, int systemadress_bitIndex, boolean bitValue) {
+    private List<ActionSequence> traverseBitAndByteMatrixAndCheck(int busId, int systemadress, int systemadress_bitIndex, boolean bitValue) {
+
+        // currentByte Value of the given systemadress of the given bus
+        Integer[] currentByte = ByteUtil.getByteArrayByByte(busDepot.getBus(busId+1).getCurrentByte(systemadress));
+
+        // init recordedByte
+        // always includes the last 8 traversed bit values
+        Integer[] recordByte = new Integer[8];
 
         List<ActionSequence> result = new ArrayList<>();
 
@@ -180,42 +287,98 @@ public class Matrix {
          */
         System.out.println("------------- row ---------------");
 
+        /*
+        Bit Matrix
+         */
         int bitIndexChangedBit = MatrixUtil.calcBitIndex(busId, systemadress, systemadress_bitIndex);
-
         // get index of first field to check
-        int field = MatrixUtil.calcGauss(bitIndexChangedBit);
+        int fieldBitMatrix = MatrixUtil.calcGauss(bitIndexChangedBit);
+
+        /*
+        Byte Matrix
+         */
+        //start row bit index of the byte matrix
+        int byteIndexChangedBit = bitIndexChangedBit/8;
+        //get index of first field in byte matrix
+        int fieldByteMatrix = MatrixUtil.calcGauss(byteIndexChangedBit);
+
+        //counter of who many fields i moved in the matrix
+        int counter = 0;
 
         Bus currentBusColumn = null;
 
+        // indicates if the for loop is in its first iteration
+        boolean firstTime = true;
+
+        //TODO zustand aufnaheme für jeweils zwei bytes, das aktuelle und das davor
+
+        System.out.println("BITINDEXchangedbit: " + bitIndexChangedBit);
         // loop through entire row to the right
         for (int bitIndexColumn = 0; bitIndexColumn <= bitIndexChangedBit; bitIndexColumn++) {
 
+            System.out.println("Counter: " + counter);
+
             // updates the bus if the bitIndexColumn is in the next higher bus
             Bus tempBusColumn;
-            currentBusColumn = ((tempBusColumn = updateBus(bitIndexColumn)) != null) ? tempBusColumn : currentBusColumn;
+            currentBusColumn = ((tempBusColumn = getNextHigherBusBitMatrix(bitIndexColumn)) != null) ? tempBusColumn : currentBusColumn;
 
-            System.out.println("ROW-FIELD" + field);
+            // get BitValue of bitIndexColumn (needs to be recorded for the byteMatrix)
+            int systemadress_bitIndexColumn = MatrixUtil.getSystemadressByBitIndex(bitIndexColumn);
+            boolean bitValueColumn = currentBusColumn.isBitSet(systemadress_bitIndexColumn, (bitIndexColumn % 8));
 
-            if (matrix[field] != null) {
+            if (matrix[fieldBitMatrix] != null) {
                 // an ActionSequenceWrapper is in the field
 
                 // get Variables needed for check
                 int systemadress_bitIndexRow = systemadress;
-                int systemadress_bitIndexColumn = MatrixUtil.getSystemadressByBitIndex(bitIndexColumn);
                 boolean bitValueRow = bitValue;
-                boolean bitValueColumn = currentBusColumn.isBitSet(systemadress_bitIndexColumn, (bitIndexColumn % 8));
 
                 // returns the actionSequence by the current state (00, 10, 01 or 11)
-                ActionSequence actionSequence = getActionSequenceByState(systemadress_bitIndexRow, bitValueRow, systemadress_bitIndexColumn, bitValueColumn, field);
+                ActionSequence actionSequenceBitMatrix = getActionSequenceByState(systemadress_bitIndexRow, bitValueRow, systemadress_bitIndexColumn, bitValueColumn, fieldBitMatrix);
 
-                if (actionSequence != null) {
+                if (actionSequenceBitMatrix != null) {
                     // ActionSequence for point exists = a rule has been defined
-                    result.add(actionSequence);
+                    result.add(actionSequenceBitMatrix);
                 }
 
             }
 
-            field++; // move to the right in the row
+            fieldBitMatrix++; // move to the right in the row
+
+            /*
+        Byte Matrix
+         */
+            // we enterted the next byte, we are at the first index of the next byte
+            // dont go in in the first iteration since no bits have been recorded
+            if(counter % 8 == 0 && firstTime == false) {
+
+                System.out.println("recorded:" + Arrays.toString(recordByte));
+                System.out.println("current:" + Arrays.toString(currentByte));
+
+                System.out.println("FELD BYTE MATRIX " + fieldByteMatrix);
+
+                // check field of the ByteMatrix for rule including the states of the recordByte and currentByte
+                ActionSequence actionSequenceByteMatrix = byteMatrix.checkField(recordByte, currentByte, fieldByteMatrix);
+                System.out.println("ACTIONSEQUENZ: " + actionSequenceByteMatrix);
+
+                if (actionSequenceByteMatrix != null) {
+                    // ActionSequence for point exists = a rule has been defined
+                    result.add(actionSequenceByteMatrix);
+                }
+
+
+                //move in the byte matrix one field to the right
+                fieldByteMatrix++;
+            }
+
+            // record bitValue for the ByteMatrix
+            recordByte[counter%8] = (bitValueColumn) ? 1 : 0; // if true -> 1, false -> 0
+
+            //because i moved one field to the right
+            counter++;
+
+            // after the first iteration = false
+            firstTime = false;
         }
 
         /*
@@ -228,19 +391,178 @@ public class Matrix {
 
         // bitIndexRow starts at the bitIndex
         int bitIndexRow = bitIndexChangedBit + 1; // start column traversal one row below
+        fieldBitMatrix = MatrixUtil.calcGauss(bitIndexRow) + bitIndexChangedBit; // move one field down
 
-        field = MatrixUtil.calcGauss(bitIndexRow) + bitIndexChangedBit; // move one field down
+        /*
+        Byte Matrix
+         */
+        // bitIndexRow starts at the bitIndex
+        int byteIndexRow = byteIndexChangedBit + 1; // start column traversal one row below
+
+        // need to save the lastField of the ByteMatrix before update since I have to check the last recorded byte in the end
+        // with the field of the ByteMatrix it corresponds to
+        int lastFieldByteMatrix = fieldByteMatrix;
 
         // loop until field is outside of the triangular matrix
-        while (field < arraySize) {
+        while (fieldBitMatrix < arraySize) {
+
+            System.out.println("COUNTER: " + counter);
 
             // updates the bus if the bitIndexRow is in the next higher bus
             Bus tempBusRow;
-            currentBusRow = ((tempBusRow = updateBus(bitIndexRow)) != null) ? tempBusRow : currentBusRow;
+            currentBusRow = ((tempBusRow = getNextHigherBusBitMatrix(bitIndexRow)) != null) ? tempBusRow : currentBusRow;
 
-            System.out.println("COLUMN-FIELD " + field);
+            // get BitValue of bitIndexRow (needs to be recorded for the byteMatrix)
+            int systemadress_bitIndexRow = MatrixUtil.getSystemadressByBitIndex(bitIndexRow);
+            boolean bitValueRow = currentBusRow.isBitSet(systemadress_bitIndexRow, (bitIndexRow % 8));
 
-            if ((matrix[field] != null)) {
+            if ((matrix[fieldBitMatrix] != null)) {
+                // an ActionSequenceWrapper is in the field
+
+                // get Variables needed for check
+                int systemadress_bitIndexColumn = systemadress;
+                boolean bitValueColumn = bitValue;
+
+                // returns the actionSequence by the current state (00, 10, 01 or 11)
+                ActionSequence actionSequence = getActionSequenceByState(systemadress_bitIndexRow, bitValueRow, systemadress_bitIndexColumn, bitValueColumn, fieldBitMatrix);
+
+                if (actionSequence != null) {
+                    // ActionSequence for point exists = a rule has been defined
+                    result.add(actionSequence);
+                }
+            }
+
+            bitIndexRow++; // move bitindex one field down
+            fieldBitMatrix = MatrixUtil.calcGauss(bitIndexRow) + bitIndexChangedBit; // move one field down
+
+                /*
+                Byte Matrix
+              */
+            // we enterted the next byte, we are at the first index of the next byte
+            if(counter % 8 == 0) {
+
+                System.out.println("ICH PRÜFE FELD BYTE MATRIX " + fieldByteMatrix);
+                System.out.println(Arrays.toString(recordByte));
+                System.out.println(Arrays.toString(currentByte));
+                ActionSequence actionSequenceByteMatrix = byteMatrix.checkField(currentByte, recordByte, fieldByteMatrix);
+                System.out.println("ACTIONSEQUENZ: " + actionSequenceByteMatrix);
+
+                if (actionSequenceByteMatrix != null) {
+                    // ActionSequence for point exists = a rule has been defined
+                    result.add(actionSequenceByteMatrix);
+                }
+
+                //move in the byte matrix one field down
+                byteIndexRow++;
+                lastFieldByteMatrix = fieldByteMatrix;
+                fieldByteMatrix = MatrixUtil.calcGauss(byteIndexRow) + byteIndexChangedBit;
+            }
+
+            // record bitValue for the ByteMatrix
+            recordByte[counter%8] = (bitValueRow) ? 1 : 0; // if true -> 1, false -> 0
+
+            //because i moved one field to the right
+            counter++;
+
+        } // while
+
+        // check last field of byteMatrix
+        System.out.println("ICH PRÜFE FELD BYTE MATRIX " + fieldByteMatrix);
+        System.out.println(Arrays.toString(recordByte));
+        System.out.println(Arrays.toString(currentByte));
+        ActionSequence actionSequenceByteMatrix = byteMatrix.checkField(currentByte, recordByte, lastFieldByteMatrix);
+        System.out.println("ACTIONSEQUENZ: " + actionSequenceByteMatrix);
+
+        if (actionSequenceByteMatrix != null) {
+            // ActionSequence for point exists = a rule has been defined
+            result.add(actionSequenceByteMatrix);
+        }
+
+        // return ActionSequences of true conditions
+        return result;
+    }
+
+    /**
+     * traverses the matrix, checks if any conditions are true and returns the commulated actionsequences
+     *
+     * @param busId                 includes bus id of RMX bus -1
+     * @param systemadress          index of the systemadrese in which bit that has changed
+     * @param systemadress_bitIndex index of the bit that has changed
+     * @param bitValue              value to which the bit has changed
+     */
+    private List<ActionSequence> traverseBitMatrixAndCheck(int busId, int systemadress, int systemadress_bitIndex, boolean bitValue) {
+
+        List<ActionSequence> result = new ArrayList<>();
+
+        /*
+            ROW TRAVERSAL --------------------------------------------------------------------------
+         */
+        System.out.println("------------- row ---------------");
+
+        /*
+        Bit Matrix
+         */
+        int bitIndexChangedBit = MatrixUtil.calcBitIndex(busId, systemadress, systemadress_bitIndex);
+        // get index of first field to check
+        int fieldBitMatrix = MatrixUtil.calcGauss(bitIndexChangedBit);
+
+
+        Bus currentBusColumn = null;
+
+        // loop through entire row to the right
+        for (int bitIndexColumn = 0; bitIndexColumn <= bitIndexChangedBit; bitIndexColumn++) {
+
+            // updates the bus if the bitIndexColumn is in the next higher bus
+            Bus tempBusColumn;
+            currentBusColumn = ((tempBusColumn = getNextHigherBusBitMatrix(bitIndexColumn)) != null) ? tempBusColumn : currentBusColumn;
+
+            System.out.println("ROW-FIELD" + fieldBitMatrix);
+
+            if (matrix[fieldBitMatrix] != null) {
+                // an ActionSequenceWrapper is in the field
+
+                // get Variables needed for check
+                int systemadress_bitIndexRow = systemadress;
+                int systemadress_bitIndexColumn = MatrixUtil.getSystemadressByBitIndex(bitIndexColumn);
+                boolean bitValueRow = bitValue;
+                boolean bitValueColumn = currentBusColumn.isBitSet(systemadress_bitIndexColumn, (bitIndexColumn % 8));
+
+                // returns the actionSequence by the current state (00, 10, 01 or 11)
+                ActionSequence actionSequence = getActionSequenceByState(systemadress_bitIndexRow, bitValueRow, systemadress_bitIndexColumn, bitValueColumn, fieldBitMatrix);
+
+                if (actionSequence != null) {
+                    // ActionSequence for point exists = a rule has been defined
+                    result.add(actionSequence);
+                }
+
+            }
+
+            fieldBitMatrix++; // move to the right in the row
+
+        }
+
+        /*
+            COLUMN TRAVERSAL --------------------------------------------------------------------------
+         */
+        System.out.println("------------- column ---------------");
+
+        // bus of the row (initially given bus by the method)
+        Bus currentBusRow = busDepot.getBus(busId + 1); // +1 da in busdepot nach der Busid (nach RMX) gespeichert sind
+
+        // bitIndexRow starts at the bitIndex
+        int bitIndexRow = bitIndexChangedBit + 1; // start column traversal one row below
+        fieldBitMatrix = MatrixUtil.calcGauss(bitIndexRow) + bitIndexChangedBit; // move one field down
+
+        // loop until field is outside of the triangular matrix
+        while (fieldBitMatrix < arraySize) {
+
+            // updates the bus if the bitIndexRow is in the next higher bus
+            Bus tempBusRow;
+            currentBusRow = ((tempBusRow = getNextHigherBusBitMatrix(bitIndexRow)) != null) ? tempBusRow : currentBusRow;
+
+            System.out.println("COLUMN-FIELD " + fieldBitMatrix);
+
+            if ((matrix[fieldBitMatrix] != null)) {
                 // an ActionSequenceWrapper is in the field
 
                 // get Variables needed for check
@@ -250,7 +572,7 @@ public class Matrix {
                 boolean bitValueColumn = bitValue;
 
                 // returns the actionSequence by the current state (00, 10, 01 or 11)
-                ActionSequence actionSequence = getActionSequenceByState(systemadress_bitIndexRow, bitValueRow, systemadress_bitIndexColumn, bitValueColumn, field);
+                ActionSequence actionSequence = getActionSequenceByState(systemadress_bitIndexRow, bitValueRow, systemadress_bitIndexColumn, bitValueColumn, fieldBitMatrix);
 
                 if (actionSequence != null) {
                     // ActionSequence for point exists = a rule has been defined
@@ -259,7 +581,8 @@ public class Matrix {
             }
 
             bitIndexRow++; // move bitindex one field down
-            field = MatrixUtil.calcGauss(bitIndexRow) + bitIndexChangedBit; // move one field down
+            fieldBitMatrix = MatrixUtil.calcGauss(bitIndexRow) + bitIndexChangedBit; // move one field down
+
         }
 
         // return ActionSequences of true conditions
@@ -328,13 +651,32 @@ public class Matrix {
      * @param bitIndex bitIndex to check
      * @return the bus of the given bitindex, null if bitIndex isnt exactly at a "changing point"
      */
-    public Bus updateBus(int bitIndex) {
+    public Bus getNextHigherBusBitMatrix(int bitIndex) {
 
         Bus bus = null;
 
         if (bitIndex % Constants.NUMBER_BITS_PER_BUS == 0) {
             // get current bus => + 1 since RMX starts counting at 1
             bus = busDepot.getBus(((bitIndex / Constants.NUMBER_BITS_PER_BUS) + 1));
+        }
+
+        return bus;
+    }
+
+    /**
+     * Updates the given bus to the next higher bus if the byteIndex surpasses the last byte of the last bus.
+     * Change happens exactly at the start of the new bus, for other byteIndexes this method returns null
+     *
+     * @param byteIndex byteIndex to check
+     * @return the bus of the given byteindex, null if bitIndex isnt exactly at a "changing point"
+     */
+    public Bus getNextHigherBusByteMatrix(int byteIndex) {
+
+        Bus bus = null;
+
+        if (byteIndex % Constants.NUMBER_SYSTEMADRESSES_PER_BUS == 0) {
+            // get current bus => + 1 since RMX starts counting at 1
+            bus = busDepot.getBus(((byteIndex / Constants.NUMBER_SYSTEMADRESSES_PER_BUS) + 1));
         }
 
         return bus;
