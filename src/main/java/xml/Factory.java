@@ -1,8 +1,10 @@
 package xml;
 
+import Utilities.ByteUtil;
 import action.*;
 import byteMatrix.ByteMatrix;
 import byteMatrix.ByteRule;
+import byteMatrix.Condition;
 import matrix.BitMatrix;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,15 +30,29 @@ public class Factory {
 
 	/**
 	 * adds a byte rule to the factory
-	 * @param conditionOneAdress [Bus, Systemadress] Integer Array
-	 * @param conditionOneValue [0,1, ..., 7] Integer Array of length 8 representing the byte
-	 * @param conditionTwoAdress [Bus, Systemadress] Integer Array
-	 * @param conditionTwoValue [0,1, ..., 7] Integer Array of length 8 representing the byte
+	 * @param conditionOne [Bus, Systemadress, Equal, NotEqual, Bigger, Smaller] Integer Array
 	 * @param actions Arraylist containg the action Integer Arrays
 	 */
-	protected static void addByteRule(Integer[] conditionOneAdress, Integer[] conditionOneValue, Integer[] conditionTwoAdress, Integer[] conditionTwoValue, ArrayList actions) {
+	protected static void addByteRule(Integer[] conditionOne, Integer[] conditionTwo, ArrayList actions) {
 		ActionSequence actionSequence = createActionSequence(actions);
-		byteRules.add(new ByteRule(conditionOneAdress, conditionOneValue, conditionTwoAdress, conditionTwoValue, actionSequence));
+		Condition conditionOneObj = createCondition(conditionOne);
+		Condition conditionTwoObj = createCondition(conditionTwo);
+
+		byteRules.add(new ByteRule(conditionOneObj, conditionTwoObj, actionSequence));
+	}
+
+	private static Condition createCondition(Integer[] conditionArray) {
+		Condition cond = new Condition(Arrays.copyOfRange(conditionArray, 0, 2));
+		if(conditionArray[2] != null) {
+			cond.setEqual(conditionArray[2].byteValue());
+		} else if(conditionArray[3] != null) {
+			cond.setNotEqual(conditionArray[3].byteValue());
+		} else if(conditionArray[4] != null) {
+			cond.setBigger(conditionArray[4].byteValue());
+		} else if(conditionArray[5] != null) {
+			cond.setSmaller(conditionArray[5].byteValue());
+		}
+		return cond;
 	}
 
 	/**
