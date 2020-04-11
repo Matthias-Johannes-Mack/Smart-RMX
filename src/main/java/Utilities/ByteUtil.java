@@ -61,4 +61,16 @@ public class ByteUtil {
 
 		return result;
     }
+
+	public static byte getByteByByteArray(Integer[] byteArray) {
+
+		StringBuilder sb = new StringBuilder();
+
+		for(int i = 7; i >= 0; --i){
+			sb.append(byteArray[i]);
+		}
+
+		return (byte) Integer.parseInt(sb.toString(), 2);
+
+	}
 }

@@ -178,16 +178,16 @@ public class BitMatrix {
 
 
                 // byte needed for checking
-                Integer[] byteValueSmall;
-                Integer[] byteValueBig;
+                byte byteValueSmall;
+                byte byteValueBig;
 
                 // determine which has the smaller byteIndex
                 if(byteIndexRow < byteIndexColumn) {
-                    byteValueSmall = ByteUtil.getByteArrayByByte(currentBusRow.getCurrentByte(byteIndexRow));
-                    byteValueBig = ByteUtil.getByteArrayByByte(currentBusColumn.getCurrentByte(byteIndexColumn));
+                    byteValueSmall = currentBusRow.getCurrentByte(byteIndexRow);
+                    byteValueBig = currentBusColumn.getCurrentByte(byteIndexColumn);
                 } else {
-                    byteValueSmall = ByteUtil.getByteArrayByByte(currentBusColumn.getCurrentByte(byteIndexColumn));
-                    byteValueBig = ByteUtil.getByteArrayByByte(currentBusRow.getCurrentByte(byteIndexRow));
+                    byteValueSmall = currentBusColumn.getCurrentByte(byteIndexColumn);
+                    byteValueBig = currentBusRow.getCurrentByte(byteIndexRow);
                 }
 
                 ActionSequence actionSequenceByteMatrix = byteMatrix.checkField(byteValueSmall,byteValueBig, field);
@@ -274,7 +274,7 @@ public class BitMatrix {
     private List<ActionSequence> traverseBitAndByteMatrixAndCheck(int busId, int systemadress, int systemadress_bitIndex, boolean bitValue) {
 
         // currentByte Value of the given systemadress of the given bus
-        Integer[] currentByte = ByteUtil.getByteArrayByByte(busDepot.getBus(busId+1).getCurrentByte(systemadress));
+        byte currentByte = busDepot.getBus(busId+1).getCurrentByte(systemadress);
 
         // init recordedByte
         // always includes the last 8 traversed bit values
@@ -353,12 +353,12 @@ public class BitMatrix {
             if(counter % 8 == 0 && firstTime == false) {
 
                 System.out.println("recorded:" + Arrays.toString(recordByte));
-                System.out.println("current:" + Arrays.toString(currentByte));
+                System.out.println("current:" + currentByte);
 
                 System.out.println("FELD BYTE MATRIX " + fieldByteMatrix);
 
                 // check field of the ByteMatrix for rule including the states of the recordByte and currentByte
-                ActionSequence actionSequenceByteMatrix = byteMatrix.checkField(recordByte, currentByte, fieldByteMatrix);
+                ActionSequence actionSequenceByteMatrix = byteMatrix.checkField(ByteUtil.getByteByByteArray(recordByte), currentByte, fieldByteMatrix);
                 System.out.println("ACTIONSEQUENZ: " + actionSequenceByteMatrix);
 
                 if (actionSequenceByteMatrix != null) {
@@ -443,8 +443,8 @@ public class BitMatrix {
 
                 System.out.println("ICH PRÜFE FELD BYTE MATRIX " + fieldByteMatrix);
                 System.out.println(Arrays.toString(recordByte));
-                System.out.println(Arrays.toString(currentByte));
-                ActionSequence actionSequenceByteMatrix = byteMatrix.checkField(currentByte, recordByte, fieldByteMatrix);
+                System.out.println(currentByte);
+                ActionSequence actionSequenceByteMatrix = byteMatrix.checkField(currentByte, ByteUtil.getByteByByteArray(recordByte), fieldByteMatrix);
                 System.out.println("ACTIONSEQUENZ: " + actionSequenceByteMatrix);
 
                 if (actionSequenceByteMatrix != null) {
@@ -469,8 +469,8 @@ public class BitMatrix {
         // check last field of byteMatrix
         System.out.println("ICH PRÜFE FELD BYTE MATRIX " + fieldByteMatrix);
         System.out.println(Arrays.toString(recordByte));
-        System.out.println(Arrays.toString(currentByte));
-        ActionSequence actionSequenceByteMatrix = byteMatrix.checkField(currentByte, recordByte, lastFieldByteMatrix);
+        System.out.println(currentByte);
+        ActionSequence actionSequenceByteMatrix = byteMatrix.checkField(currentByte, ByteUtil.getByteByByteArray(recordByte), lastFieldByteMatrix);
         System.out.println("ACTIONSEQUENZ: " + actionSequenceByteMatrix);
 
         if (actionSequenceByteMatrix != null) {

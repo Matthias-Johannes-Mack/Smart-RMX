@@ -4,6 +4,7 @@ import action.ActionSequence;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -13,23 +14,9 @@ import java.util.Objects;
  */
 public class ByteRule {
 
-	/**
-	 * Integer Array for first Conditions [Bus, SystemAddress]
-	 */
-	private Integer[] conditionOneAdress;
-	/**
-	 * Integer Array for first Conditions [Bytevalue]
-	 */
-	private Integer[] conditionOneValue;
+	Condition conditionOne;
 
-	/**
-	 * Integer Array for second Conditions [Bus, SystemAddress, Bytevalue]
-	 */
-	private Integer[] conditionTwoAdress;
-	/**
-	 * Integer Array for second Conditions [Bytevalue]
-	 */
-	private Integer[] conditionTwoValue;
+	Condition conditionTwo;
 
 	/**
 	 * actionSequence that is triggered if the Rule is true
@@ -37,47 +24,29 @@ public class ByteRule {
 	private ActionSequence actionSequence;
 
 	/**
+	 *
 	 * Constructor
 	 *
 	 * internally saves the condition with the smaller bus and systemadress as conditionOne and the bigger one as
 	 * conditionTwo
-	 * 
-	 * @param conditionOneAdress
-	 * @param conditionOneValue
-	 * @param conditionTwoAdress
-	 * @param conditionTwoValue
+	 *
+	 * @param conditinOne
+	 * @param conditionTwo
 	 * @param actionSequence
 	 */
-	public ByteRule(Integer[] conditionOneAdress, Integer[] conditionOneValue, Integer[] conditionTwoAdress,
-			Integer[] conditionTwoValue, ActionSequence actionSequence) {
+	public ByteRule(Condition conditionOne, Condition conditionTwo, ActionSequence actionSequence) {
 
-		if (conditionOneAdress[0] < conditionTwoAdress[0]) {
-			// ConditionOne is smaller
-			this.conditionOneAdress = conditionOneAdress;
-			this.conditionOneValue = conditionOneValue;
-			this.conditionTwoAdress = conditionTwoAdress;
-			this.conditionTwoValue = conditionTwoValue;
-		} else if (conditionOneAdress[0] > conditionTwoAdress[0]) {
-			// ConditionTwo is smaller
-			this.conditionOneAdress = conditionTwoAdress;
-			this.conditionOneValue = conditionTwoValue;
-			this.conditionTwoAdress = conditionOneAdress;
-			this.conditionTwoValue = conditionOneValue;
+		int compareResult = conditionOne.compareTo(conditionTwo);
+
+
+		if(compareResult <= 0) {
+			// condition one is smaller or they are equal
+			this.conditionOne = conditionOne;
+			this.conditionTwo = conditionTwo;
 		} else {
-			// both conditions are in the same bus
-			if (conditionOneAdress[1] < conditionTwoAdress[1]) {
-				// ConditoinOne is smaller
-				this.conditionOneAdress = conditionOneAdress;
-				this.conditionOneValue = conditionOneValue;
-				this.conditionTwoAdress = conditionTwoAdress;
-				this.conditionTwoValue = conditionTwoValue;
-			} else if (conditionOneAdress[1] >= conditionTwoAdress[1]) {
-				// conditionTwo is smaller or they are equal
-				this.conditionOneAdress = conditionTwoAdress;
-				this.conditionOneValue = conditionTwoValue;
-				this.conditionTwoAdress = conditionOneAdress;
-				this.conditionTwoValue = conditionOneValue;
-			}
+			// condition two is smaller
+			this.conditionOne = conditionTwo;
+			this.conditionTwo = conditionOne;
 		}
 
 		this.actionSequence = actionSequence;
@@ -89,53 +58,33 @@ public class ByteRule {
 	 * @param conditionTwoValue
 	 * @return
 	 */
-	public boolean check(Integer[] conditionOneValue, Integer[] conditionTwoValue){
-		return (Arrays.equals(this.conditionOneValue, conditionOneValue) &&
-				Arrays.equals(this.conditionTwoValue, conditionTwoValue));
+	public boolean check(byte conditionOneValue, byte conditionTwoValue){
+		return conditionOne.checkCondition(conditionOneValue) && conditionTwo.checkCondition(conditionTwoValue);
 	}
 
 	public ActionSequence getActionSequence() {
 		return actionSequence;
 	}
 
-	/**
-	 * @return the conditionOneAdress
-	 */
-	public Integer[] getConditionOneAdress() {
-		return conditionOneAdress;
-	}
-
-	/**
-	 * @return the conditionOneValue
-	 */
-	public Integer[] getConditionOneValue() {
-		return conditionOneValue;
-	}
-
-	/**
-	 * @return the conditionTwoAdress
-	 */
-	public Integer[] getConditionTwoAdress() {
-		return conditionTwoAdress;
-	}
-
-	/**
-	 * @return the conditionTwoValue
-	 */
-	public Integer[] getConditionTwoValue() {
-		return conditionTwoValue;
-	}
-
 	// to make sure there is only one rule for each byte state and combination
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+
 		ByteRule byteRule = (ByteRule) o;
-		return Arrays.equals(conditionOneAdress, byteRule.conditionOneAdress) &&
-				Arrays.equals(conditionOneValue, byteRule.conditionOneValue) &&
-				Arrays.equals(conditionTwoAdress, byteRule.conditionTwoAdress) &&
-				Arrays.equals(conditionTwoValue, byteRule.conditionTwoValue) &&
-				Objects.equals(actionSequence, byteRule.actionSequence);
+		return conditionOne.equals(byteRule.conditionOne) && conditionTwo.equals(byteRule.conditionTwo);
+	}
+
+	public Condition getConditionOne() {
+		return conditionOne;
+	}
+
+	public Condition getConditionTwo() {
+		return conditionTwo;
 	}
 }
