@@ -118,6 +118,8 @@ public class XML_read {
                     for (Node conditionNodeChild : iterable(ruleNodeChild.getChildNodes())) {
                         if (conditionNodeChild.getNodeName().equals("#text")) continue;
 
+                        System.out.println("ICH WAR LESEN");
+
                         if (conditionCount == 1) {
                             processConditionChildNodes(conditionOne, conditionNodeChild);
                         } else if (conditionCount == 2) {
@@ -175,6 +177,8 @@ public class XML_read {
             } else {
                 //byte rule
                 System.out.println("ACTION IN XML READ " + Arrays.toString(actions.get(0)));
+                System.out.println("ConditionONe in XML READ: " + Arrays.toString(conditionOne));
+                System.out.println("ConditionONe in XML READ: " + Arrays.toString(conditionTwo));
                 Factory.addByteRule(conditionOne, conditionTwo, actions);
             }
 
@@ -217,6 +221,7 @@ public class XML_read {
                 byteRule = true;
                 break;
             case "Smaller":
+                System.out.println("SMALLER REIN");
                 targetArray[5] = Integer.parseInt(node.getTextContent());
                 byteRule = true;
                 break;

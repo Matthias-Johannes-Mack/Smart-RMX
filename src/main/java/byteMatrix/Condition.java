@@ -28,6 +28,8 @@ public class Condition implements Comparable<Condition> {
         // only iterates through existing condtionTypes in the Map
         loop: for (ConditionType conditionType : conditionTypeValue.keySet()) {
 
+            System.out.println("KEYSET IN CHECK OF CONDITION: " + Arrays.toString(conditionTypeValue.keySet().toArray()));
+
             System.err.println("IN SWITCH " + conditionType.toString() + " " + currentByteValue);
 
             switch (conditionType) {

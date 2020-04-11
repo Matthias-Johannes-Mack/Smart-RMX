@@ -38,20 +38,37 @@ public class Factory {
 		Condition conditionOneObj = createCondition(conditionOne);
 		Condition conditionTwoObj = createCondition(conditionTwo);
 
+		System.out.println("ConditionONe in addByteRule: " + Arrays.toString(conditionOne));
+		System.out.println("ConditionONe in addByteRule: " + Arrays.toString(conditionTwo));
+
 		byteRules.add(new ByteRule(conditionOneObj, conditionTwoObj, actionSequence));
 	}
 
 	private static Condition createCondition(Integer[] conditionArray) {
+		System.out.println("ConditionArray in createCondition: " + Arrays.toString(conditionArray));
+
 		Condition cond = new Condition(Arrays.copyOfRange(conditionArray, 0, 2));
+
 		if(conditionArray[2] != null) {
-			cond.setEqual(conditionArray[2].byteValue());
-		} else if(conditionArray[3] != null) {
-			cond.setNotEqual(conditionArray[3].byteValue());
-		} else if(conditionArray[4] != null) {
-			cond.setBigger(conditionArray[4].byteValue());
-		} else if(conditionArray[5] != null) {
-			cond.setSmaller(conditionArray[5].byteValue());
+			cond.setEqual(conditionArray[2]);
+			System.out.println("EQUAL");
 		}
+
+		if(conditionArray[3] != null) {
+			cond.setNotEqual(conditionArray[3]);
+			System.out.println("NOTEQUAL");
+		}
+
+		if(conditionArray[4] != null) {
+			cond.setBigger(conditionArray[4]);
+			System.out.println("BIGGER");
+		}
+
+		if(conditionArray[5] != null) {
+			cond.setSmaller(conditionArray[5]);
+			System.out.println("SMALLER");
+		}
+
 		return cond;
 	}
 

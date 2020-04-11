@@ -61,11 +61,7 @@ public class ByteRule {
 	public boolean check(int conditionOneValue, int conditionTwoValue){
 		System.out.println("Value one " + conditionOneValue + "Value two " + conditionTwoValue);
 
-		boolean conditionOneResult = conditionOne.checkCondition(conditionOneValue);
-		boolean conditionTwoResult = conditionTwo.checkCondition(conditionTwoValue);
-
-
-		return (conditionOneResult && conditionTwoResult);
+		return (conditionOne.checkCondition(conditionOneValue) && conditionTwo.checkCondition(conditionTwoValue));
 	}
 
 	public ActionSequence getActionSequence() {
