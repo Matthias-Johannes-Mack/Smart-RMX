@@ -16,4 +16,8 @@ public class XML_Constants {
     public static final String Condition = "Condition";
     public static final String Rule = "Rule";
     public static final String Wait = "Wait";
+    public static final String Equal = "Equal";
+    public static final String NotEqual = "NotEqual";
+    public static final String Bigger = "Bigger";
+    public static final String Smaller = "Smaller";
 }

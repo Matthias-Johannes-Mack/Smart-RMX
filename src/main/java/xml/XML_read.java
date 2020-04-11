@@ -3,8 +3,11 @@ package xml;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.xml.XMLConstants;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 
 /**
  * Class that reads a XML-File into a buffer
@@ -163,11 +166,12 @@ public class XML_read {
             //  Iterating over one rule block done, add conditions and actions to new rule
             if (!byteRule) {
                 // need to shorten Integer Array to length 4, since this is required for bit Rule
-                Integer[] conditionOneAdress = Arrays.copyOfRange(conditionOne, 0, XML_ActionType.BITMESSAGE.ARRAY_LENGTH);
-                Integer[] conditionTwoAdress = Arrays.copyOfRange(conditionTwo, 0, XML_ActionType.BITMESSAGE.ARRAY_LENGTH);
+                //TODO conditionType Array also for the ArrayLength
+                Integer[] conditionOneAdress = Arrays.copyOfRange(conditionOne, 0, 3);
+                Integer[] conditionTwoAdress = Arrays.copyOfRange(conditionTwo, 0, 3);
                 Factory.addBitRule(conditionOneAdress, conditionTwoAdress, actions);
             } else {
-                //byte rule
+                // the rule is a byte rule
                 Factory.addByteRule(conditionOne, conditionTwo, actions);
             }
 
@@ -187,30 +191,29 @@ public class XML_read {
             case XML_Constants.Bus:
                 targetArray[0] = Integer.parseInt(node.getTextContent());
                 break;
-            case "SystemAddress":
+            case XML_Constants.SystemAddress:
                 targetArray[1] = Integer.parseInt(node.getTextContent());
                 break;
-            case "Bit":
+            case XML_Constants.Bit:
                 targetArray[2] = Integer.parseInt(node.getTextContent());
                 byteRule = false;
                 break;
-            case "BitValue":
+            case XML_Constants.BitValue:
                 targetArray[3] = Integer.parseInt(node.getTextContent());
                 break;
-            case "Equal":
+            case XML_Constants.Equal:
                 targetArray[2] = Integer.parseInt(node.getTextContent());
                 byteRule = true;
                 break;
-            case "NotEqual":
+            case XML_Constants.NotEqual:
                 targetArray[3] = Integer.parseInt(node.getTextContent());
                 byteRule = true;
                 break;
-            case "Bigger":
+            case XML_Constants.Bigger:
                 targetArray[4] = Integer.parseInt(node.getTextContent());
                 byteRule = true;
                 break;
-            case "Smaller":
-                System.out.println("SMALLER REIN");
+            case XML_Constants.Smaller:
                 targetArray[5] = Integer.parseInt(node.getTextContent());
                 byteRule = true;
                 break;
