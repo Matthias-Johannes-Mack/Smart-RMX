@@ -242,8 +242,12 @@ public class XML_read {
                 targetArray[2] = Integer.parseInt(node.getTextContent());
                 break;
             case XML_Constants.BitValue:
-                targetArray[3] = Integer.parseInt(node.getTextContent());
-                actionType = XML_ActionType.BITMESSAGE;
+                if(node.getTextContent() == XML_Constants.Toggle) {
+                    actionType = XML_ActionType.BITTOGGLE;
+                } else {
+                    targetArray[3] = Integer.parseInt(node.getTextContent());
+                    actionType = XML_ActionType.BITMESSAGE;
+                }
                 break;
             case XML_Constants.ByteValue:
                 targetArray[2] = Integer.parseInt(node.getTextContent());
