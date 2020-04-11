@@ -1,6 +1,5 @@
 package xml;
 
-import Utilities.ByteUtil;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -42,6 +41,7 @@ public class XML_read {
 
     // Singleton-Pattern END ________________________________________________
 
+    private static XML_ActionType actionType;
 
     /**
      * xml document that is read in
@@ -68,7 +68,6 @@ public class XML_read {
     //Todo boolean if its a Byte rule
     private boolean byteRule = false;
 
-    private boolean byteAction = false;
 
     /**
      * reads in the rules from the file and saves them to the Factory Class.
@@ -103,7 +102,7 @@ public class XML_read {
             // contains the second condition
             Integer[] conditionTwo = new Integer[6];
             // List containing all the actions for one rule als an integer Array
-            ArrayList<Integer[]> actions = new ArrayList<>();
+            ArrayList<XML_ActionWrapper> actions = new ArrayList<>();
 
             // condition counter to know which condition Array to save to
             int conditionCount = 0;
@@ -136,32 +135,34 @@ public class XML_read {
 
                         //Message Action
                         if (actionsNodeChild.getNodeName().equals("Action")) {
-                            Integer[] action = new Integer[4];
+                            int[] actionArray = new int[4];
 
                             //check every child node of message action
                             for (Node actionNodeChild : iterable(actionsNodeChild.getChildNodes())) {
                                 if (actionNodeChild.getNodeName().equals("#text")) continue;
 
-                                processActionChildNodes(action, actionNodeChild);
+                                processActionChildNodes(actionArray, actionNodeChild);
 
 
 
                             }
 
                             // if this is a byteAction the array is only 3 long
-                            if(byteAction) {
-                                action = Arrays.copyOfRange(action, 0, 3);
+                            if(actionType == XML_ActionType.BYTEMESSAGE) {
+
+                            } else if (actionType == XML_ActionType.INCREMENT || actionType == XML_ActionType.DECREMENT) {
+
                             }
 
-                            actions.add(action);
+                            actions.add(new XML_ActionWrapper(actionArray, actionType));
                         }
 
                         //Wait Action
                         if (actionsNodeChild.getNodeName().equals("Wait")) {
                             //add a IntegerArray containing only the wait time
-                            Integer[] wait = new Integer[1];
+                            int[] wait = new int[1];
                             wait[0] = Integer.parseInt(actionsNodeChild.getTextContent());
-                            actions.add(wait);
+                            actions.add(new XML_ActionWrapper(wait, XML_ActionType.WAIT));
                         }
                     }
                 }
@@ -171,14 +172,11 @@ public class XML_read {
             //  Iterating over one rule block done, add conditions and actions to new rule
             if (!byteRule) {
                 // need to shorten Integer Array to length 4, since this is required for bit Rule
-                Integer[] conditionOneAdress = Arrays.copyOfRange(conditionOne, 0, 4);
-                Integer[] conditionTwoAdress = Arrays.copyOfRange(conditionTwo, 0, 4);
+                Integer[] conditionOneAdress = Arrays.copyOfRange(conditionOne, 0, XML_ActionType.BITMESSAGE.ARRAY_LENGTH);
+                Integer[] conditionTwoAdress = Arrays.copyOfRange(conditionTwo, 0, XML_ActionType.BITMESSAGE.ARRAY_LENGTH);
                 Factory.addBitRule(conditionOneAdress, conditionTwoAdress, actions);
             } else {
                 //byte rule
-                System.out.println("ACTION IN XML READ " + Arrays.toString(actions.get(0)));
-                System.out.println("ConditionONe in XML READ: " + Arrays.toString(conditionOne));
-                System.out.println("ConditionONe in XML READ: " + Arrays.toString(conditionTwo));
                 Factory.addByteRule(conditionOne, conditionTwo, actions);
             }
 
@@ -237,25 +235,34 @@ public class XML_read {
      *
      * @param node        node whose content should be written to the array
      */
-    private Integer[] processActionChildNodes(Integer[]targetArray, Node node) {
+    private int[] processActionChildNodes(int[]targetArray, Node node) {
 
         switch (node.getNodeName()) {
-            case "Bus":
+            case XmlConstants.Bus:
                 targetArray[0] = Integer.parseInt(node.getTextContent());
                 break;
-            case "SystemAddress":
+            case XmlConstants.SystemAddress:
                 targetArray[1] = Integer.parseInt(node.getTextContent());
                 break;
-            case "Bit":
+            case XmlConstants.Bit:
                 targetArray[2] = Integer.parseInt(node.getTextContent());
-                byteAction = false;
                 break;
-            case "BitValue":
+            case XmlConstants.BitValue:
                 targetArray[3] = Integer.parseInt(node.getTextContent());
+                actionType = XML_ActionType.BITMESSAGE;
                 break;
-            case "ByteValue":
+            case XmlConstants.ByteValue:
                 targetArray[2] = Integer.parseInt(node.getTextContent());
-                byteAction = true;
+                actionType = XML_ActionType.BYTEMESSAGE;
+                break;
+            case XmlConstants.Increment:
+                targetArray[2] = Integer.parseInt(node.getTextContent());
+                actionType = XML_ActionType.INCREMENT;
+                break;
+            case XmlConstants.Decrement:
+                // decrement holds negative values
+                targetArray[2] = Integer.parseInt(node.getTextContent()) * -1;
+                actionType = XML_ActionType.DECREMENT;
                 break;
         }
 
@@ -271,9 +278,9 @@ public class XML_read {
             System.out.println("----Rule----");
             System.out.println("Condition1: " + Arrays.toString(bitRule.getConditionOne()));
             System.out.println("Condition2:" + Arrays.toString(bitRule.getConditionOne()));
-            for (Integer[] action : bitRule.getActions()) {
-                System.out.println("Action: " + Arrays.toString(action));
-            }
+//            for (Integer[] action : bitRule.getActions()) {
+//                System.out.println("Action: " + Arrays.toString(action));
+//            }
         }
     }
 
