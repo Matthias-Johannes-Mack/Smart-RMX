@@ -2,8 +2,6 @@ package byteMatrix;
 
 import Utilities.Constants;
 import action.ActionSequence;
-import action.ActionSequenceWrapper;
-import bus.BusDepot;
 import matrix.MatrixUtil;
 
 public class ByteMatrix {
@@ -50,7 +48,7 @@ public class ByteMatrix {
     private ByteRuleWrapper[] matrix;
 
 
-    public ActionSequence checkField(byte byteValueSmall, byte byteValueBig, int fieldByteMatrix) {
+    public ActionSequence checkField(int byteValueSmall, int byteValueBig, int fieldByteMatrix) {
 
         ActionSequence result = null;
 

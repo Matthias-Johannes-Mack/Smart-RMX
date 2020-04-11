@@ -58,8 +58,14 @@ public class ByteRule {
 	 * @param conditionTwoValue
 	 * @return
 	 */
-	public boolean check(byte conditionOneValue, byte conditionTwoValue){
-		return conditionOne.checkCondition(conditionOneValue) && conditionTwo.checkCondition(conditionTwoValue);
+	public boolean check(int conditionOneValue, int conditionTwoValue){
+		System.out.println("Value one " + conditionOneValue + "Value two " + conditionTwoValue);
+
+		boolean conditionOneResult = conditionOne.checkCondition(conditionOneValue);
+		boolean conditionTwoResult = conditionTwo.checkCondition(conditionTwoValue);
+
+
+		return (conditionOneResult && conditionTwoResult);
 	}
 
 	public ActionSequence getActionSequence() {

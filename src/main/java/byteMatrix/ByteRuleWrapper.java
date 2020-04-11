@@ -42,7 +42,7 @@ public class ByteRuleWrapper {
 	 * @param byteValueBig
 	 * @return the ActionSequence if a Rule has been defined with the given values, null otherwise
 	 */
-	public ActionSequence getActionSequenceByState(byte byteValueSmall, byte byteValueBig) {
+	public ActionSequence getActionSequenceByState(int byteValueSmall, int byteValueBig) {
 
 		ActionSequence result = null;
 

@@ -1,5 +1,6 @@
 package connection;
 
+import Utilities.ByteUtil;
 import Utilities.Constants;
 
 import java.io.DataOutputStream;
@@ -17,7 +18,7 @@ public class Sender {
 	 * operations / methods on the List should be declared synchronized to ensure
 	 * maximum security regarding thread safety
 	 */
-	private static List<byte[]> messageQueue = Collections.synchronizedList(new ArrayList<>());
+	private static List<int[]> messageQueue = Collections.synchronizedList(new ArrayList<>());
 	// Thread to send messages
 	private static SenderThread senderThread;
 	// output stream
@@ -47,7 +48,7 @@ public class Sender {
 	 * @param index   index to insert message
 	 * @param message message to insert
 	 */
-	private synchronized static void addMessageAtIndex(int index, byte[] message) {
+	private synchronized static void addMessageAtIndex(int index, int[] message) {
 		messageQueue.add(index, message);
 	}
 
@@ -56,7 +57,7 @@ public class Sender {
 	 *
 	 * @param message message to add
 	 */
-	public synchronized static void addMessageQueue(byte[] message) {
+	public synchronized static void addMessageQueue(int[] message) {
 		messageQueue.add(message);
 	}
 
@@ -66,10 +67,10 @@ public class Sender {
 	 * @param bytes message to be send
 	 * @throws IOException if error within DataOutputStream
 	 */
-	private static void sendMessage(byte[] bytes) throws IOException {
+	private static void sendMessage(int[] bytes) throws IOException {
 		outStream = new DataOutputStream(SocketConnector.getSocket().getOutputStream());
 		// write the message
-		outStream.write(bytes);
+		outStream.write(ByteUtil.convertIntArrayToByteArray(bytes));
 	}
 
 	/**
@@ -87,7 +88,7 @@ public class Sender {
 	 * @return first message in Message queue
 	 * @throws ArrayIndexOutOfBoundsException if messageQueue is empty
 	 */
-	private synchronized static byte[] getFirstMessage() throws ArrayIndexOutOfBoundsException {
+	private synchronized static int[] getFirstMessage() throws ArrayIndexOutOfBoundsException {
 		return messageQueue.remove(0);
 	}
 
@@ -120,7 +121,7 @@ public class Sender {
 				 */
 				if (!isMessageQueueEmpty() && SocketConnector.nextRequestAllowed.get()) {
 					try {
-						byte[] message = getFirstMessage();
+						int[] message = getFirstMessage();
 						sendMessage(message);
 						// prevent sending of new message until server acknowledges last message
 						SocketConnector.nextRequestAllowed.set(false);

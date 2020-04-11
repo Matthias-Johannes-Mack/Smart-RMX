@@ -178,8 +178,8 @@ public class BitMatrix {
 
 
                 // byte needed for checking
-                byte byteValueSmall;
-                byte byteValueBig;
+                int byteValueSmall;
+                int byteValueBig;
 
                 // determine which has the smaller byteIndex
                 if(byteIndexRow < byteIndexColumn) {
@@ -219,7 +219,7 @@ public class BitMatrix {
      * @param lastChanges the changes of the given systemadress
      * @return List of ActionSequences that have been triggered, the list is empty if no ActionSequences have been triggered
      */
-    public List<ActionSequence> check(byte busId, byte systemadress, Integer[] lastChanges) {
+    public List<ActionSequence> check(int busId, int systemadress, Integer[] lastChanges) {
 
         List<ActionSequence> result = new ArrayList<>();
 
@@ -274,7 +274,7 @@ public class BitMatrix {
     private List<ActionSequence> traverseBitAndByteMatrixAndCheck(int busId, int systemadress, int systemadress_bitIndex, boolean bitValue) {
 
         // currentByte Value of the given systemadress of the given bus
-        byte currentByte = busDepot.getBus(busId+1).getCurrentByte(systemadress);
+        int currentByte = busDepot.getBus(busId+1).getCurrentByte(systemadress);
 
         // init recordedByte
         // always includes the last 8 traversed bit values
@@ -442,8 +442,8 @@ public class BitMatrix {
             if(counter % 8 == 0) {
 
                 System.out.println("ICH PRÜFE FELD BYTE MATRIX " + fieldByteMatrix);
-                System.out.println(Arrays.toString(recordByte));
-                System.out.println(currentByte);
+                System.out.println("recordedByte " + Arrays.toString(recordByte));
+                System.out.println("currentByte " + currentByte);
                 ActionSequence actionSequenceByteMatrix = byteMatrix.checkField(currentByte, ByteUtil.getByteByByteArray(recordByte), fieldByteMatrix);
                 System.out.println("ACTIONSEQUENZ: " + actionSequenceByteMatrix);
 

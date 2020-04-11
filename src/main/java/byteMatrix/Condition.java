@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 public class Condition implements Comparable<Condition> {
 
-    HashMap<ConditionType, Byte> conditionTypeValue;
+    HashMap<ConditionType, Integer> conditionTypeValue;
 
     /**
      * Integer Array for first Conditions [Bus, SystemAddress]
@@ -14,19 +14,21 @@ public class Condition implements Comparable<Condition> {
     private Integer[] conditionAdress;
 
     public Condition(Integer[] conditionAdress) {
+        conditionTypeValue = new HashMap<>();
         this.conditionAdress = conditionAdress;
     }
 
      /*
         Check
      */
-
-    public boolean checkCondition(byte currentByteValue) {
+    public boolean checkCondition(int currentByteValue) {
 
         boolean result = true;
 
         // only iterates through existing condtionTypes in the Map
         loop: for (ConditionType conditionType : conditionTypeValue.keySet()) {
+
+            System.err.println("IN SWITCH " + conditionType.toString() + " " + currentByteValue);
 
             switch (conditionType) {
                 case EQUAL:
@@ -60,14 +62,17 @@ public class Condition implements Comparable<Condition> {
             }
         }
 
+        System.err.println("RESULT " + result);
+
         return result;
 
     }
 
-    private boolean checkEqual(byte currentByteValue) {
+    private boolean checkEqual(int currentByteValue) {
 
 
-        int compareResult = Byte.valueOf(currentByteValue).compareTo(conditionTypeValue.get(ConditionType.EQUAL));
+        int compareResult = Integer.valueOf(currentByteValue).compareTo(conditionTypeValue.get(ConditionType.EQUAL));
+
 
         if (compareResult == 0) {
             return true;
@@ -77,9 +82,9 @@ public class Condition implements Comparable<Condition> {
 
     }
 
-    private boolean checkNotEqual(byte currentByteValue) {
+    private boolean checkNotEqual(int currentByteValue) {
 
-        int compareResult = Byte.valueOf(currentByteValue).compareTo(conditionTypeValue.get(ConditionType.NOTEQUAL));
+        int compareResult = Integer.valueOf(currentByteValue).compareTo(conditionTypeValue.get(ConditionType.NOTEQUAL));
 
         if (compareResult != 0) {
             return true;
@@ -89,9 +94,9 @@ public class Condition implements Comparable<Condition> {
 
     }
 
-    private boolean checkSmaller(byte currentByteValue) {
+    private boolean checkSmaller(int currentByteValue) {
 
-        int compareResult = Byte.valueOf(currentByteValue).compareTo(conditionTypeValue.get(ConditionType.SMALLER));
+        int compareResult = Integer.valueOf(currentByteValue).compareTo(conditionTypeValue.get(ConditionType.SMALLER));
 
         if (compareResult < 0) {
             return true;
@@ -101,9 +106,9 @@ public class Condition implements Comparable<Condition> {
 
     }
 
-    private boolean checkBigger(byte currentByteValue) {
+    private boolean checkBigger(int currentByteValue) {
 
-        int compareResult = Byte.valueOf(currentByteValue).compareTo(conditionTypeValue.get(ConditionType.BIGGER));
+        int compareResult = Integer.valueOf(currentByteValue).compareTo(conditionTypeValue.get(ConditionType.BIGGER));
 
         if (compareResult > 0) {
             return true;
@@ -149,20 +154,20 @@ public class Condition implements Comparable<Condition> {
     /*
        SETTER
     */
-    public void setEqual(byte conditionEqualValue) {
-        conditionTypeValue.put(ConditionType.BIGGER, conditionEqualValue);
+    public void setEqual(int conditionEqualValue) {
+        conditionTypeValue.put(ConditionType.EQUAL, conditionEqualValue);
     }
 
-    public void setNotEqual(byte conditionNotEqualValue) {
-        conditionTypeValue.put(ConditionType.BIGGER, conditionNotEqualValue);
+    public void setNotEqual(int conditionNotEqualValue) {
+        conditionTypeValue.put(ConditionType.NOTEQUAL, conditionNotEqualValue);
     }
 
-    public void setBigger(byte conditionBiggerValue) {
+    public void setBigger(int conditionBiggerValue) {
         conditionTypeValue.put(ConditionType.BIGGER, conditionBiggerValue);
     }
 
-    public void setSmaller(byte conditionSmallerValue) {
-        conditionTypeValue.put(ConditionType.BIGGER, conditionSmallerValue);
+    public void setSmaller(int conditionSmallerValue) {
+        conditionTypeValue.put(ConditionType.SMALLER, conditionSmallerValue);
     }
 
 
