@@ -59,16 +59,14 @@ class XML_read {
      *
      * @param xmlDoc xml Document
      */
-    public void processXMLDocument(org.w3c.dom.Document xmlDoc) {
+    public void processXMLDocument(org.w3c.dom.Document xmlDoc) throws SAXException {
         if (xmlDoc != null) {
             this.xmlDoc = xmlDoc;
         }
 
-        try {
-            readXML();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+       readXML();
+
     }
 
     //Todo boolean if its a Byte rule
