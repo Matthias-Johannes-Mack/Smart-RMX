@@ -704,6 +704,8 @@ public class BitMatrix {
     public void addAction(Integer[] conditionOne, Integer[] conditionTwo, ActionSequence actionSequence) {
         // format [bus][systemadresse][bit]
 
+        System.err.println("conditionOne in addAction: " + Arrays.toString(conditionOne));
+
         // rmx - 1 because rmx sends busRMX1 as 1
         conditionOne[0] -= conditionOne[0];
         conditionTwo[0] -= conditionTwo[0];

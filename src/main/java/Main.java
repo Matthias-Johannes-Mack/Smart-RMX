@@ -6,7 +6,7 @@ import connection.SocketConnector;
 import schedular.Schedular;
 import xml.Factory;
 import xml.XML_IO;
-import xml.XML_read;
+
 
 /**
  * Class for controlling the whole Tool
@@ -47,9 +47,7 @@ public class Main {
 		// open the file
 		XML_IO xml_io = XML_IO.getXML_IO();
 		xml_io.startXmlReadInForUser();
-		// read the xml
-		XML_read xml_read = XML_read.getXML_read();
-		xml_read.processXMLDocument(xml_io.getXML());
+
 
 		// create the factory, actionDepot and the matrix
 		Factory.createActionsAndMatrix();
