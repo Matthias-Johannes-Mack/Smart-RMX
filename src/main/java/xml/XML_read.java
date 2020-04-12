@@ -2,7 +2,9 @@ package xml;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
+import javax.security.sasl.SaslException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -14,7 +16,7 @@ import java.util.NoSuchElementException;
  *
  * @author Matthias Mack 3316380
  */
-public class XML_read {
+class XML_read {
 
     // Singleton-Pattern START -----------------------------------------
 
@@ -79,7 +81,7 @@ public class XML_read {
      * - Integer Array for each of the two Conditions [Bus, SystemAddress, Bit]
      * - List containing Integer Arrays for each Action [Bus, SystemAddress, Bit, Bitvalue] and Arrays for the Wait operation [time in ms]
      */
-    private void readXML() {
+    private void readXML() throws SAXException {
         /**
          contains NodeLists containing all of the child elements of a Rule Node. Each index is for a different Rule node
          */
@@ -107,6 +109,7 @@ public class XML_read {
             Integer[] conditionTwo = new Integer[6];
             // List containing all the actions for one rule als an integer Array
             ArrayList<XML_ActionWrapper> actions = new ArrayList<>();
+
 
             // condition counter to know which condition Array to save to
             int conditionCount = 0;
@@ -209,6 +212,24 @@ public class XML_read {
                 Factory.addBitRule(conditionOneAdress, conditionTwoAdress, actions);
             } else {
                 // the rule is a byte rule
+
+                //TODO refactor
+                boolean conditionsOneValueSet = false;
+                boolean conditionsTwoValueSet = false;
+
+                for(int i = 2; i <=5; i++) {
+                    if(conditionOne[i] != null) {
+                        conditionsOneValueSet = true;
+                    }
+                    if(conditionTwo[i] != null) {
+                        conditionsTwoValueSet = true;
+                    }
+                }
+
+                if(!conditionsOneValueSet || !conditionsTwoValueSet) {
+                    throw new SAXException("ByteCondition contains no value");
+                }
+
                 Factory.addByteRule(conditionOne, conditionTwo, actions);
             }
 

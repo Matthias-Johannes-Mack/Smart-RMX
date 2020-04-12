@@ -123,6 +123,7 @@ public class XML_IO {
     /**
      * reads in and parses the xml file via parseXMLDocument() and saves it to xmlDoc
      * If parseXMLDocument() throws an exception the method will open opens error handling in console via errorHandlerConsole()
+     * gets the instance f XML_read to process the input
      *
      * @param filePath file path of the xml document to be read in and parsed
      */
@@ -130,6 +131,9 @@ public class XML_IO {
         try {
             xmlDoc = xml_parser.parseXMLDocument(filePath);
             xmlDocumentSuccessfullyParsed = true;
+            // read the xml
+            XML_read xml_read = XML_read.getXML_read();
+            xml_read.processXMLDocument(this.getXML());
         } catch (SAXException e) {
             System.err.println(e.getMessage());
             System.out.println("XML laden fehlgeschlagen! Die Datei entspricht nicht dem Smart RMX Datei Schema!");
