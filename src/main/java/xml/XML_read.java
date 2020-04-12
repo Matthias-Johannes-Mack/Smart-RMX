@@ -172,7 +172,7 @@ public class XML_read {
                         if (actionsNodeChild.getNodeName().equals("#text")) continue;
 
                         //Message Action
-                        if (actionsNodeChild.getNodeName().equals(XML_Constants.Action)) {
+                        if (actionsNodeChild.getNodeName().equals(XML_Constants.BitAction) || actionsNodeChild.getNodeName().equals(XML_Constants.ByteAction)) {
                             int[] actionArray = new int[4];
 
                             //check every child node of message action
