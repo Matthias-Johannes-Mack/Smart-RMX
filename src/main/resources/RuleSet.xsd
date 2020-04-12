@@ -56,7 +56,7 @@
             <xs:element name="Bus" type="tBus"/>
             <xs:element name="SystemAddress" type="tSystemAddress"/>
             <!--
-            TODO does not validate that user does not include any of those -> must be checked in read and if it is the case throw a SAS exception
+            Does not validate that user does not include any of those -> must be checked in read and if it is the case throw a SAS exception
             -->
             <xs:element name="Equal" type="tByteValue" minOccurs="0"/>
             <xs:element name="NotEqual" type="tByteValue" minOccurs="0"/>

@@ -63,10 +63,7 @@ class XML_read {
         if (xmlDoc != null) {
             this.xmlDoc = xmlDoc;
         }
-
-
        readXML();
-
     }
 
     //Todo boolean if its a Byte rule
@@ -211,10 +208,14 @@ class XML_read {
             } else {
                 // the rule is a byte rule
 
+                /*
+                 the xsd schema cannot specify if the conditions of the byte conditions are correct
+                 it could happen that none of Equal, NotEqual, Bigger, Smaller is selected which cant be checked in
+                 the xsd and must be checked here
+                 */
                 //TODO refactor
                 boolean conditionsOneValueSet = false;
                 boolean conditionsTwoValueSet = false;
-
                 for(int i = 2; i <=5; i++) {
                     if(conditionOne[i] != null) {
                         conditionsOneValueSet = true;
@@ -223,7 +224,6 @@ class XML_read {
                         conditionsTwoValueSet = true;
                     }
                 }
-
                 if(!conditionsOneValueSet || !conditionsTwoValueSet) {
                     throw new SAXException("ByteCondition contains no value");
                 }
