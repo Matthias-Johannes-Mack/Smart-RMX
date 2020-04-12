@@ -114,20 +114,56 @@ public class XML_read {
             for (Node ruleNodeChild : iterable(nodeList)) {
                 if (ruleNodeChild.getNodeName().equals("#text")) continue;
 
-                //Condition
-                if (ruleNodeChild.getNodeName().equals(XML_Constants.Condition)) {
-                    conditionCount++;
-                    //check every child node of condition
-                    for (Node conditionNodeChild : iterable(ruleNodeChild.getChildNodes())) {
-                        if (conditionNodeChild.getNodeName().equals("#text")) continue;
 
-                        if (conditionCount == 1) {
-                            processConditionChildNodes(conditionOne, conditionNodeChild);
-                        } else if (conditionCount == 2) {
-                            processConditionChildNodes(conditionTwo, conditionNodeChild);
-                        }
+                //Condition
+                if (ruleNodeChild.getNodeName().equals(XML_Constants.BitConditions)) {
+                    //check every child node of BitConditions
+                    for (Node bitConditionNodeChild : iterable(ruleNodeChild.getChildNodes())) {
+                        if (bitConditionNodeChild.getNodeName().equals("#text")) continue;
+                        //TODO anpassen für bitcondition
+                        //Condition
+                        if (bitConditionNodeChild.getNodeName().equals(XML_Constants.Condition)) {
+                            conditionCount++;
+                            //check every child node of condition
+                            for (Node conditionNodeChild : iterable(bitConditionNodeChild.getChildNodes())) {
+                                if (conditionNodeChild.getNodeName().equals("#text")) continue;
+
+                                if (conditionCount == 1) {
+                                    processConditionChildNodes(conditionOne, conditionNodeChild);
+                                } else if (conditionCount == 2) {
+                                    processConditionChildNodes(conditionTwo, conditionNodeChild);
+                                }
+                            }
+                        } // end of if equals Condition
+
                     }
-                } // end of if equals Condition
+                } // end of if equals BitConditions
+
+                //Condition
+                if (ruleNodeChild.getNodeName().equals(XML_Constants.ByteConditions)) {
+                    //check every child node of BitConditions
+                    for (Node byteConditionNodeChild : iterable(ruleNodeChild.getChildNodes())) {
+                        if (byteConditionNodeChild.getNodeName().equals("#text")) continue;
+                        //TODO anpassen für bitcondition
+                        //Condition
+                        if (ruleNodeChild.getNodeName().equals(XML_Constants.Condition)) {
+                            conditionCount++;
+                            //check every child node of condition
+                            for (Node conditionNodeChild : iterable(ruleNodeChild.getChildNodes())) {
+                                if (conditionNodeChild.getNodeName().equals("#text")) continue;
+
+                                if (conditionCount == 1) {
+                                    processConditionChildNodes(conditionOne, conditionNodeChild);
+                                } else if (conditionCount == 2) {
+                                    processConditionChildNodes(conditionTwo, conditionNodeChild);
+                                }
+                            }
+                        } // end of if equals Condition
+
+                    }
+                } // end of if equals BitConditions
+
+
 
                 // the read XML tag is a "Actions"
                 if (ruleNodeChild.getNodeName().equals(XML_Constants.Actions)) {
