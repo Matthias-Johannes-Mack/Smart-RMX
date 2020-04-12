@@ -146,10 +146,10 @@ public class XML_read {
                         if (byteConditionNodeChild.getNodeName().equals("#text")) continue;
                         //TODO anpassen für bitcondition
                         //Condition
-                        if (ruleNodeChild.getNodeName().equals(XML_Constants.Condition)) {
+                        if (byteConditionNodeChild.getNodeName().equals(XML_Constants.Condition)) {
                             conditionCount++;
                             //check every child node of condition
-                            for (Node conditionNodeChild : iterable(ruleNodeChild.getChildNodes())) {
+                            for (Node conditionNodeChild : iterable(byteConditionNodeChild.getChildNodes())) {
                                 if (conditionNodeChild.getNodeName().equals("#text")) continue;
 
                                 if (conditionCount == 1) {
@@ -199,12 +199,13 @@ public class XML_read {
 
             }
 
+            System.err.println("byterule in XML_READ: " + byteRule);
             //  Iterating over one rule block done, add conditions and actions to new rule
             if (!byteRule) {
                 // need to shorten Integer Array to length 4, since this is required for bit Rule
                 //TODO conditionType Array also for the ArrayLength
-                Integer[] conditionOneAdress = Arrays.copyOfRange(conditionOne, 0, 3);
-                Integer[] conditionTwoAdress = Arrays.copyOfRange(conditionTwo, 0, 3);
+                Integer[] conditionOneAdress = Arrays.copyOfRange(conditionOne, 0, 4);
+                Integer[] conditionTwoAdress = Arrays.copyOfRange(conditionTwo, 0, 4);
                 Factory.addBitRule(conditionOneAdress, conditionTwoAdress, actions);
             } else {
                 // the rule is a byte rule
@@ -254,6 +255,8 @@ public class XML_read {
                 byteRule = true;
                 break;
         }
+
+        System.err.println("bytrule in processConditionChildNodes: " + byteRule);
     }
 
     /**
