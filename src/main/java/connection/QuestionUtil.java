@@ -14,10 +14,8 @@ public class QuestionUtil {
 	 * @param questionType - String with the type of question inside
 	 */
 	protected static void retry(String questionType) {
-		// retry the connection, if possible
-		System.out.println("Erneut verbinden y/n?");
 		// shows the form for the user Input
-		int userInput = JOptionPane.showConfirmDialog(null, "Erneut versuchen?", "Einverständnis",
+		int userInput = JOptionPane.showConfirmDialog(null, "Erneut verbinden?", "Einverständnis",
 				JOptionPane.YES_NO_OPTION);
 
 		// reset the idle time
