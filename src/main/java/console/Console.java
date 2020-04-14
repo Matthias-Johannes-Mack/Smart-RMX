@@ -1,13 +1,21 @@
 package console;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.*;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
 
 import Utilities.Constants;
+import connection.SocketConnector;
 import console.Console;
+import main.Main;
+import schedular.Schedular;
+import xml.Factory;
+import xml.XML_IO;
+import xml.XML_read;
 
 /**
  * Class that represents a console for the Output!
@@ -24,6 +32,10 @@ public class Console extends OutputStream {
 	 */
 	private byte[] byteArr;
 
+	private static String state;
+
+	private static boolean keyPressed;
+
 	/**
 	 * Constructor with init Textarea
 	 * 
@@ -31,6 +43,8 @@ public class Console extends OutputStream {
 	 */
 	public Console(JTextArea jtxtarea) {
 		this(jtxtarea, 1500);
+		this.state = "";
+		this.keyPressed = false;
 	}
 
 	public Console(JTextArea jtxtarea, int maxLines) {
@@ -50,9 +64,10 @@ public class Console extends OutputStream {
 		// create the frame
 		JFrame jFrame = new JFrame("Smart-RMX");
 		jFrame.add(new JLabel("Smart-RMX Console"), BorderLayout.NORTH);
-		
+
 		JTextArea jTextArea = new JTextArea();
 		Console console = new Console(jTextArea, 60);
+
 		// the stream for the console -> redirect everything
 		PrintStream printStream = new PrintStream(console);
 		System.setOut(printStream);
@@ -69,6 +84,46 @@ public class Console extends OutputStream {
 		jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		// bigger font size 12 pt
 		jTextArea.setFont(jTextArea.getFont().deriveFont(14f));
+		// key listener for the y/n questions
+
+		KeyListener keyListener = new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+				if (e.getKeyChar() == 'y') {
+					setKeyPressed(true);
+					System.out.println(isKeyPressed());
+					
+				} else if (e.getKeyChar() == 'n') {
+					System.exit(0);
+				}
+
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		};
+		jTextArea.addKeyListener(keyListener);
+
+	}
+
+	// waits for keys and then reacts
+	public static synchronized Boolean listenToKeys() {
+
+		// wait for some input
+		while (!isKeyPressed()) {
+		}
+		System.out.println(isKeyPressed());
+		return true;
 	}
 
 	/**
@@ -107,7 +162,7 @@ public class Console extends OutputStream {
 			return new String(byteArr, startPoint, arrLength, "UTF-8");
 		} catch (UnsupportedEncodingException thr) {
 			return new String(byteArr, startPoint, arrLength);
-		} // all JVMs are required to support UTF-8
+		}
 	}
 
 	/**
@@ -115,6 +170,34 @@ public class Console extends OutputStream {
 	 */
 	public synchronized void close() {
 		append = null;
+	}
+
+	/**
+	 * @return the keyPressed
+	 */
+	public static boolean isKeyPressed() {
+		return keyPressed;
+	}
+
+	/**
+	 * @param keyPressed the keyPressed to set
+	 */
+	public static void setKeyPressed(boolean keyPressed) {
+		Console.keyPressed = keyPressed;
+	}
+
+	/**
+	 * @return the state
+	 */
+	public static String getState() {
+		return state;
+	}
+
+	/**
+	 * @param state the state to set
+	 */
+	public static void setState(String state) {
+		Console.state = state;
 	}
 
 	/**
