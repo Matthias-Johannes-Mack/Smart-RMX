@@ -5,18 +5,14 @@ package Utilities;
  */
 public final class Constants {
 
+
 	/**
 	 * *private Constructor to prevent instantiation
 	 */
 	private Constants() {
 	}
-
 	// Main
 	public static final String OPERATING_SYSTEM = System.getProperty("os.name");
-	// Console
-	// put out an empty row
-	public static final String EOF = "\n";
-	public static final String EOF_SYS = System.getProperty("line.separator", EOF);
 	// Connection
 	public static byte RMX_VERSION = 0x01;
 	public static final int RMX_HEAD = 0x7c;
@@ -26,8 +22,7 @@ public final class Constants {
 
 	// Bus
 	public static final int NUMBER_SYSTEMADRESSES_PER_BUS = 112;
-	public final static int NUMBER_BITS_PER_BUS = NUMBER_SYSTEMADRESSES_PER_BUS * 8; // each systemadress has 8 bits (1
-																						// byte)
-	public final static int NUMBER_OF_BUSSES = 1; // TODO wenn mehrere Busse -> variable erhöhen (für checkall)
+	public final static int NUMBER_BITS_PER_BUS = NUMBER_SYSTEMADRESSES_PER_BUS*8; // each systemadress has 8 bits (1 byte)
+	public final static int NUMBER_OF_BUSSES = 1; //TODO wenn mehrere Busse -> variable erhöhen (für checkall)
 
 }
