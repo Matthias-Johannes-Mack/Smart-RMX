@@ -3,6 +3,7 @@ import java.io.IOException;
 
 import Utilities.Constants;
 import connection.SocketConnector;
+import console.Console;
 import schedular.Schedular;
 import xml.Factory;
 import xml.XML_IO;
@@ -20,7 +21,7 @@ public class Main {
 	 * @param args - Arguments
 	 */
 	public static void main(String[] args) {
-		// check the operating system
+//		// check the operating system
 //		if (Constants.OPERATING_SYSTEM.contains("Windows")) {
 //			if (args.length == 0) {
 //				try {
@@ -36,7 +37,6 @@ public class Main {
 //			}
 //		} else if (Constants.OPERATING_SYSTEM.contains("Linux")) {
 //		}
-
 		command();
 	}
 
@@ -44,6 +44,13 @@ public class Main {
 	 * Method with commands
 	 */
 	private static void command() {
+		// run the console
+		Console.runConsole();
+		System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+		System.out.println("--------------------------------------------------------------------------------------------");
+		System.out.println("------------------------------------------Smart-RMX-----------------------------------");
+		System.out.println("--------------------------------------------------------------------------------------------");
+		System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 		// open the file
 		XML_IO xml_io = XML_IO.getXML_IO();
 		xml_io.startXmlReadInForUser();
