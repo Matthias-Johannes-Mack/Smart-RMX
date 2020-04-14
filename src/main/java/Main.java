@@ -29,15 +29,7 @@ public class Main {
 	private static void command() {
 		// run the console
 		Console.runConsole();
-		System.out.println(
-				"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-		System.out.println(
-				"--------------------------------------------------------------------------------------------");
-		System.out.println("------------------------------------------Smart-RMX-----------------------------------");
-		System.out.println(
-				"--------------------------------------------------------------------------------------------");
-		System.out.println(
-				"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+		head();
 		// open the file
 		XML_IO xml_io = XML_IO.getXML_IO();
 		xml_io.startXmlReadInForUser();
@@ -47,5 +39,21 @@ public class Main {
 		// schedular MUSS vor Receiver Thread gestartet sein
 		Schedular.getSchedular().startScheduling();
 		SocketConnector.Connect();
+	}
+
+	/**
+	 * Method for the head
+	 * 
+	 */
+	private static void head() {
+		System.out.println(
+				"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+		System.out.println(
+				"--------------------------------------------------------------------------------------------");
+		System.out.println("------------------------------------------Smart-RMX-----------------------------------");
+		System.out.println(
+				"--------------------------------------------------------------------------------------------");
+		System.out.println(
+				"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 	}
 }

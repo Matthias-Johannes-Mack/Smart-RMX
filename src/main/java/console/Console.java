@@ -68,6 +68,8 @@ public class Console extends OutputStream {
 
 		// add the frame
 		jFrame.add(new JScrollPane(jTextArea));
+		// read only
+		jTextArea.setEditable(false);
 		jFrame.pack();
 		// visibility
 		jFrame.setVisible(true);
