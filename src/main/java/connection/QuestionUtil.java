@@ -1,6 +1,6 @@
 package connection;
 
-import java.util.Scanner;
+import javax.swing.JOptionPane;
 
 /**
  * Question dialog for the SocketConnector and the ServerReload
@@ -16,37 +16,37 @@ public class QuestionUtil {
 	protected static void retry(String questionType) {
 		// retry the connection, if possible
 		System.out.println("Erneut verbinden y/n?");
-		// create scanner
-		Scanner in = new Scanner(System.in);
-		String retryStr = in.nextLine().toLowerCase();
+		// shows the form for the user Input
+		int userInput = JOptionPane.showConfirmDialog(null, "Erneut versuchen?", "Einverständnis",
+				JOptionPane.YES_NO_OPTION);
+
 		// reset the idle time
 		ServerReload.setLastServerResponse(System.currentTimeMillis());
-		if (retryStr != null) {
-			switch (retryStr) {
-				case "y":
-					// if it is a connection recall then connect else reconnect
-					if (questionType.equals("Connect")) {
-						SocketConnector.Connect();
-					} else {
-						ServerReload.Reload();
-					}
-					break;
-				// exit the programm
-				case "n":
-					System.exit(0);
-					break;
-				// if the string is false retry
-				default:
-					System.out.println("Falschen Wert eingegeben!");
-					// if it is a connection recall then connect else reconnect
-					if (questionType.equals("Connect")) {
-						SocketConnector.Connect();
-					} else {
-						ServerReload.Reload();
-					}
-					break;
-			}
-		}
 
+		switch (userInput) {
+		case 0:
+			// if it is a connection recall then connect else reconnect
+			if (questionType.equals("Connect")) {
+				SocketConnector.Connect();
+			} else {
+				ServerReload.Reload();
+			}
+			break;
+		// exit the programm
+		case 1:
+			System.exit(0);
+			break;
+		// if the string is false retry
+		default:
+			System.out.println("Falschen Wert eingegeben!");
+			// if it is a connection recall then connect else reconnect
+			if (questionType.equals("Connect")) {
+				SocketConnector.Connect();
+			} else {
+				ServerReload.Reload();
+			}
+			break;
+		}
 	}
+
 }
