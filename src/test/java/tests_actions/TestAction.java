@@ -8,7 +8,7 @@ import java.util.List;
 import org.junit.Test;
 
 import action.Action;
-import action.ActionMessage;
+import action.ActionMessageBit;
 import action.ActionWait;
 
 /**
@@ -22,18 +22,18 @@ public class TestAction {
 		int[] message1 = new int[] { 1, 1, 1 };
 		int[] message2 = new int[] { 1, 1, 2 };
 
-		ActionMessage actionMessage1 = new ActionMessage(message1);
-		ActionMessage actionMessage2 = new ActionMessage(message2);
-		ActionMessage actionMessage3 = new ActionMessage(message2);
+		ActionMessageBit actionMessageBit1 = new ActionMessageBit(message1);
+		ActionMessageBit actionMessageBit2 = new ActionMessageBit(message2);
+		ActionMessageBit actionMessageBit3 = new ActionMessageBit(message2);
 
 		ActionWait actionWait1 = new ActionWait(1000);
 		ActionWait actionWait2 = new ActionWait(2000);
 		ActionWait actionWait3 = new ActionWait(2000);
 
 		List<Action> actionList = new ArrayList<>();
-		actionList.add(actionMessage1);
-		actionList.add(actionMessage2);
-		actionList.add(actionMessage3);
+		actionList.add(actionMessageBit1);
+		actionList.add(actionMessageBit2);
+		actionList.add(actionMessageBit3);
 		actionList.add(actionWait1);
 		actionList.add(actionWait2);
 		// actionList.add(actionWait3); not added to the list
@@ -44,14 +44,14 @@ public class TestAction {
 		assertFalse(actionWait1.equals(actionWait2)); // false
 		assertTrue(actionWait2.equals(actionWait3)); // true
 
-		assertFalse(actionMessage1.equals(actionMessage2)); // false
-		assertTrue(actionMessage2.equals(actionMessage3)); // true
+		assertFalse(actionMessageBit1.equals(actionMessageBit2)); // false
+		assertTrue(actionMessageBit2.equals(actionMessageBit3)); // true
 
-		assertFalse(actionMessage1.equals(actionWait1)); // false
-		assertFalse(actionWait1.equals(actionMessage1)); // false
+		assertFalse(actionMessageBit1.equals(actionWait1)); // false
+		assertFalse(actionWait1.equals(actionMessageBit1)); // false
 
 		assertTrue(actionList.contains(actionWait3)); // true da ja zeit (2000) schon drin
-		assertTrue(actionList.contains(actionMessage1)); // true
+		assertTrue(actionList.contains(actionMessageBit1)); // true
 	}
 
 }

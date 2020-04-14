@@ -20,7 +20,7 @@ public class Bus {
 	/**
 	 * array that contains the byte value of each systemadress
 	 */
-	private volatile byte[] systemadressen;
+	private volatile int[] systemadressen;
 
 	/**
 	 * ArrayList that contains the last Changes of each systemadresse (byte) in comparison to the last state
@@ -33,9 +33,9 @@ public class Bus {
 	 * Constructor for a Bus
 	 * @param busId busid of the Bus to create
 	 */
-	public Bus(byte busId) {
+	public Bus(int busId) {
 		this.busId = busId;
-		systemadressen = new byte[Constants.NUMBER_SYSTEMADRESSES_PER_BUS]; // initial all values are 0
+		systemadressen = new int[Constants.NUMBER_SYSTEMADRESSES_PER_BUS]; // initial all values are 0
 		lastChanges = new ArrayList<>(Constants.NUMBER_SYSTEMADRESSES_PER_BUS);
 		initalizeArrayList(); // sets all values of lastChanges initaial at -1 (no changes)
 	}
@@ -57,10 +57,11 @@ public class Bus {
 	 * @param byteValue to update the systemadress to
 	 *
 	 */
-	public void updateBusAdress(byte systemadress, byte byteValue) {
+	public void updateBusAdress(int systemadress, int byteValue) {
 
-		BitSet currentBitSet = BitSet.valueOf(new byte[] { systemadressen[systemadress] });
-		BitSet valueBitSet = BitSet.valueOf(new byte[] { byteValue });
+
+		BitSet currentBitSet = BitSet.valueOf(new long[]{systemadressen[systemadress]});
+		BitSet valueBitSet = BitSet.valueOf(new long[]{ byteValue });
 
 		Integer[] changes = new Integer[8];
 
@@ -96,7 +97,7 @@ public class Bus {
 	 * @param systemadress systemadress to get the changes for
 	 * @return Integer[] size 8 that represents the last Changes of the given systemadress
 	 */
-	public Integer[] getChanges(byte systemadress) {
+	public Integer[] getChanges(int systemadress) {
 		return lastChanges.get(systemadress);
 	}
 
@@ -117,7 +118,7 @@ public class Bus {
 	 * @param systemadresse the systemadress to get current value for
 	 * @return byte value of the given systemadress
 	 */
-	public byte getCurrentByte(int systemadresse) {
+	public int getCurrentByte(int systemadresse) {
 		return systemadressen[systemadresse];
 	}
 

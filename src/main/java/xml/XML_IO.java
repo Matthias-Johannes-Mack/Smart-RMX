@@ -151,7 +151,7 @@ public class XML_IO {
 	 */
 	private void errorHandlerConsole() {
 		// shows the form for the user Input
-		int userInput = JOptionPane.showConfirmDialog(null, "Erneut versuchen?", "Einverständnis",
+		int userInput = JOptionPane.showConfirmDialog(null, "Erneut versuchen?", "Einverstï¿½ndnis",
 				JOptionPane.YES_NO_OPTION);
 		if (userInput == 0) {
 			// restart at read in file
@@ -161,32 +161,29 @@ public class XML_IO {
 		}
 	}
 
-	/**
-	 * opens file dialog for the user to select the filepath of the file to be read
-	 *
-	 * @return filepath
-	 */
-	private String openFileDialog() {
-		try {
-			// Create a filechooser
-			final JFileChooser fc = new JFileChooser();
-			// sets the name of the file dialog
-			fc.setDialogTitle("Bitte XML-Datei wÃ¤hlen");
-			// set the filter
-			fc.setAcceptAllFileFilterUsed(false);
-			// set the thing to xml
-			FileNameExtensionFilter filter = new FileNameExtensionFilter(".xml", "xml");
-			fc.addChoosableFileFilter(filter);
-			// if the file is choosed, return the name
-			int returnVal = fc.showOpenDialog(null);
-			// get the path
-			if (returnVal == 0) {
-				return fc.getSelectedFile().getAbsolutePath();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+    /**
+     * reads in and parses the xml file via parseXMLDocument() and saves it to xmlDoc
+     * If parseXMLDocument() throws an exception the method will open opens error handling in console via errorHandlerConsole()
+     * gets the instance f XML_read to process the input
+     *
+     * @param filePath file path of the xml document to be read in and parsed
+     */
+    private void readInXmlFile(String filePath) {
+        try {
+            xmlDoc = xml_parser.parseXMLDocument(filePath);
+            xmlDocumentSuccessfullyParsed = true;
+            // read the xml
+            XML_read xml_read = XML_read.getXML_read();
+            xml_read.processXMLDocument(this.getXML());
+        } catch (SAXException e) {
+            System.err.println(e.getMessage());
+            System.out.println("XML laden fehlgeschlagen! Die Datei entspricht nicht dem Smart RMX Datei Schema!");
+            errorHandlerConsole();
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            System.out.println("XML laden fehlgeschlagen!");
+            errorHandlerConsole();
+        }
+    }
 
 }

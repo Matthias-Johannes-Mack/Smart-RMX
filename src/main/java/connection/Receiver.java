@@ -63,7 +63,7 @@ class Receiver {
 				try {
 					// while there is a message loop
 					while (inputStr.available() > 0) {
-						byte[] msg = receive();
+						int[] msg = receive();
 						// write all messages to console
 						OutputUtil.writeMsgToConsole(msg);
 						// switch the opt codes
@@ -87,7 +87,7 @@ class Receiver {
 	 *
 	 * @return byte[] - message
 	 */
-	private static byte[] receive() throws IOException {
+	private static int[] receive() throws IOException {
 
 		int msgLength;
 
@@ -101,11 +101,11 @@ class Receiver {
 		}
 
 		// initialize message array (ignores Headbyte and Messagelength => -2)
-		byte[] message = new byte[msgLength - 2];
+		int[] message = new int[msgLength - 2];
 
 		// receive actual message
 		for (int i = 0; i < message.length; i++) {
-			message[i] = (byte) inputStr.read();
+			message[i] =  inputStr.read();
 		}
 
 		return message;
@@ -125,7 +125,7 @@ class Receiver {
 	 *
 	 * @param message a message to process without HEAD and COUNT
 	 */
-	public static void processMessage(byte[] message) {
+	public static void processMessage(int[] message) {
 
 		int opcode = -1;
 
@@ -192,7 +192,7 @@ class Receiver {
 	 *
 	 * @param message a message to process
 	 */
-	private static void process0x01(byte[] message) {
+	private static void process0x01(int[] message) {
 
 		switch (message[1]) {
 			case 1: // 0x01 - unknown OPCODE
@@ -221,11 +221,11 @@ class Receiver {
 	 *
 	 * @param message a message to process
 	 */
-	private static void process0x04(byte[] message) {
+	private static void process0x04(int[] message) {
 
 		if (Schedular.INIT_SUCESSFULL.get() == false) {
 			// check initialization
-			byte status = message[1];
+			int status = message[1];
 
 			// checks if bit 5 und 6 is set in Status => initialisation sucessfull
 			if (ByteUtil.bitIsSet(status, 5) && ByteUtil.bitIsSet(status, 6)) {
@@ -244,7 +244,7 @@ class Receiver {
 	 *
 	 * @param message a message to process
 	 */
-	private static void process0x06(byte[] message) {
+	private static void process0x06(int[] message) {
 
 		if (Schedular.INIT_SUCESSFULL.get()) { // true -- init successfull
 
@@ -263,14 +263,14 @@ class Receiver {
 	/**
 	 * @param message
 	 */
-	private static void process0x08(byte[] message) {
+	private static void process0x08(int[] message) {
 
 	}
 
 	/**
 	 * @param message
 	 */
-	private static void process0x20(byte[] message) {
+	private static void process0x20(int[] message) {
 
 	}
 
@@ -280,7 +280,7 @@ class Receiver {
 	 *
 	 * @param message a message to process
 	 */
-	private static void process0x24(byte[] message) {
+	private static void process0x24(int[] message) {
 
 	}
 
@@ -290,7 +290,7 @@ class Receiver {
 	 *
 	 * @param message a message to process
 	 */
-	private static void process0x28(byte[] message) {
+	private static void process0x28(int[] message) {
 
 	}
 

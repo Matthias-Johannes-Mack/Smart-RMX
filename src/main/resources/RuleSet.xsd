@@ -8,96 +8,19 @@
           <xs:complexType>
             <xs:sequence>
 
-              <xs:element name="Condition" minOccurs="2" maxOccurs="2">
-                <xs:complexType>
-                  <xs:sequence minOccurs="1" maxOccurs="1">
-                    <xs:element name="Bus">
-                      <xs:simpleType>
-                        <xs:restriction base = "xs:integer">
-                          <xs:minInclusive value = "1"/>
-                          <xs:maxInclusive value = "1"/>
-                        </xs:restriction>
-                      </xs:simpleType>
-                    </xs:element>
-                    <xs:element name="SystemAddress">
-                      <xs:simpleType>
-                        <xs:restriction base = "xs:integer">
-                          <xs:minInclusive value = "0"/>
-                          <xs:maxInclusive value = "111"/>
-                        </xs:restriction>
-                      </xs:simpleType>
-                    </xs:element>
-                    <xs:element name="Bit">
-                      <xs:simpleType>
-                        <xs:restriction base = "xs:integer">
-                          <xs:minInclusive value = "0"/>
-                          <xs:maxInclusive value = "7"/>
-                        </xs:restriction>
-                      </xs:simpleType>
-                    </xs:element>
-                    <xs:element name="BitValue">
-                      <xs:simpleType>
-                        <xs:restriction base = "xs:integer">
-                          <xs:minInclusive value = "0"/>
-                          <xs:maxInclusive value = "1"/>
-                        </xs:restriction>
-                      </xs:simpleType>
-                    </xs:element>
-                  </xs:sequence>
-                </xs:complexType>
-              </xs:element>
+              <xs:choice>
+                <xs:element name="BitConditions" type="tBitConditions"></xs:element>
+                <xs:element name="ByteConditions" type="tByteConditions"></xs:element>
+              </xs:choice>
 
               <xs:element name="Actions" minOccurs="1" maxOccurs="1">
                 <xs:complexType>
                   <xs:sequence minOccurs="1" maxOccurs="unbounded">
-
-                    <xs:element name="Wait" minOccurs="0" maxOccurs="1">
-                      <xs:simpleType>
-                        <xs:restriction base = "xs:long">
-                          <xs:minInclusive value = "0"/>
-                        </xs:restriction>
-                      </xs:simpleType>
-                    </xs:element>
-
-                    <xs:element name="Action" minOccurs="1" maxOccurs="unbounded">
-                      <xs:complexType>
-                        <xs:sequence minOccurs="1" maxOccurs="unbounded">
-                          <xs:element name="Bus">
-                            <xs:simpleType>
-                              <xs:restriction base = "xs:integer">
-                                <xs:minInclusive value = "0"/>
-                                <xs:maxInclusive value = "3"/>
-                              </xs:restriction>
-                            </xs:simpleType>
-                          </xs:element>
-                          <xs:element name="SystemAddress">
-                            <xs:simpleType>
-                              <xs:restriction base = "xs:integer">
-                                <xs:minInclusive value = "0"/>
-                                <xs:maxInclusive value = "111"/>
-                              </xs:restriction>
-                            </xs:simpleType>
-                          </xs:element>
-                          <xs:element name="Bit">
-                            <xs:simpleType>
-                              <xs:restriction base = "xs:integer">
-                                <xs:minInclusive value = "0"/>
-                                <xs:maxInclusive value = "7"/>
-                              </xs:restriction>
-                            </xs:simpleType>
-                          </xs:element>
-                          <xs:element name="BitValue">
-                            <xs:simpleType>
-                              <xs:restriction base = "xs:integer">
-                                <xs:minInclusive value = "0"/>
-                                <xs:maxInclusive value = "1"/>
-                              </xs:restriction>
-                            </xs:simpleType>
-                          </xs:element>
-                        </xs:sequence>
-                      </xs:complexType>
-                    </xs:element>
-
+                    <xs:element name="Wait" type="tWait" minOccurs="0" maxOccurs="1"/>
+                    <xs:choice minOccurs="1" maxOccurs="unbounded">
+                      <xs:element name="BitAction" type="tBitAction"/>
+                      <xs:element name="ByteAction" type="tByteAction"/>
+                    </xs:choice>
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>
@@ -108,4 +31,113 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+
+  <!-- Type Definitons -->
+  <xs:complexType name="tBitConditions">
+    <xs:sequence>
+      <xs:element name="Condition" minOccurs="2" maxOccurs="2">
+        <xs:complexType>
+          <xs:sequence minOccurs="1" maxOccurs="1">
+            <xs:element name="Bus" type="tBus"/>
+            <xs:element name="SystemAddress" type="tSystemAddress"/>
+            <xs:element name="Bit" type="tBit"/>
+            <xs:element name="BitValue" type="tBitValueCondition"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="tByteConditions">
+    <xs:sequence>
+      <xs:element name="Condition" minOccurs="2" maxOccurs="2">
+        <xs:complexType>
+          <xs:sequence minOccurs="1" maxOccurs="1">
+            <xs:element name="Bus" type="tBus"/>
+            <xs:element name="SystemAddress" type="tSystemAddress"/>
+            <!--
+            Does not validate that user does not include any of those -> must be checked in read and if it is the case throw a SAS exception
+            -->
+            <xs:element name="Equal" type="tByteValue" minOccurs="0"/>
+            <xs:element name="NotEqual" type="tByteValue" minOccurs="0"/>
+            <xs:element name="Bigger" type="tByteValue" minOccurs="0"/>
+            <xs:element name="Smaller" type="tByteValue" minOccurs="0"/>
+
+
+
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="tBitAction">
+    <xs:sequence>
+      <xs:element name="Bus" type="tBus"/>
+      <xs:element name="SystemAddress" type="tSystemAddress"/>
+      <xs:element name="Bit" type="tBit"/>
+      <xs:element name="BitValue" type="tBitValueAction"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="tByteAction">
+    <xs:sequence>
+      <xs:element name="Bus" type="tBus"/>
+      <xs:element name="SystemAddress" type="tSystemAddress"/>
+      <xs:choice>
+        <xs:element name="ByteValue" type="tByteValue"/>
+        <xs:element name="Increment" type="tByteValue"/>
+        <xs:element name="Decrement" type="tByteValue"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="tByteValue">
+      <xs:restriction base = "xs:integer">
+        <xs:minInclusive value = "0"/>
+        <xs:maxInclusive value = "255"/>
+      </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="tBus">
+    <xs:restriction base = "xs:integer">
+      <xs:minInclusive value = "1"/>
+      <xs:maxInclusive value = "1"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="tSystemAddress">
+    <xs:restriction base = "xs:integer">
+      <xs:minInclusive value = "0"/>
+      <xs:maxInclusive value = "111"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="tBit">
+    <xs:restriction base = "xs:integer">
+      <xs:minInclusive value = "0"/>
+      <xs:maxInclusive value = "7"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="tBitValueCondition">
+    <xs:restriction base = "xs:integer">
+      <xs:minInclusive value = "0"/>
+      <xs:maxInclusive value = "1"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="tWait">
+    <xs:restriction base = "xs:long">
+      <xs:minInclusive value = "0"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="tBitValueAction">
+    <xs:restriction base = "xs:string">
+      <xs:pattern value="toggle|0|1"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+
 </xs:schema>

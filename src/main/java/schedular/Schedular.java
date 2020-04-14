@@ -1,6 +1,6 @@
 package schedular;
 
-import action.ActionWait;
+import action.*;
 import bus.BusDepot;
 import Utilities.Constants;
 import connection.Sender;
@@ -12,9 +12,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import Utilities.ByteUtil;
-import action.Action;
-import action.ActionMessage;
-import action.ActionSequence;
+import org.apache.commons.math3.exception.OutOfRangeException;
 
 public class Schedular {
 
@@ -72,14 +70,14 @@ public class Schedular {
      * this queue has a higher priority than the RMXMessageQueue, so fake messages are checked at first
      * BlockingQueue to ensure thread safety.
      */
-    private BlockingQueue<byte[]> fakeMessageQueue;
+    private BlockingQueue<int[]> fakeMessageQueue;
 
     /**
      * Queue of fake messages (OPCODE 0x06)
      * this queue stores incoming messages by the Receiver that need to be processed by the schedular.
      * BlockingQueue to ensure thread safety.
      */
-    private BlockingQueue<byte[]> rmxMessageQueue;
+    private BlockingQueue<int[]> rmxMessageQueue;
 
 
     /**
@@ -140,7 +138,7 @@ public class Schedular {
      *
      * @param message a message to add
      */
-    public void addMessageToFakeQueue(byte[] message) {
+    public void addMessageToFakeQueue(int[] message) {
         fakeMessageQueue.add(message);
     }
 
@@ -150,7 +148,7 @@ public class Schedular {
      *
      * @param message a message to add
      */
-    public void addMessageToRmxQueue(byte[] message) {
+    public void addMessageToRmxQueue(int[] message) {
         rmxMessageQueue.add(message);
     }
 
@@ -191,7 +189,7 @@ public class Schedular {
             while (WORK) {
 
                 Integer[] changes = new Integer[8];
-                byte[] message;
+                int[] message;
 
                 while (fakeMessageQueue.isEmpty() && rmxMessageQueue.isEmpty()) {
                     // wait until one queue isnt emtpty
@@ -263,31 +261,31 @@ public class Schedular {
     private void scheduleActionSequence(ActionSequence actionSequence, int startIndex) {
 
         // for each Action starting from the startIndex
-        for (int i = startIndex; i < actionSequence.getActionCount(); i++) {
+        loop: for (int i = startIndex; i < actionSequence.getActionCount(); i++) {
 
             // get the action at the given index
             Action action = actionSequence.getAction(i);
 
-            if (action instanceof ActionMessage) {
+            if (action instanceof ActionMessageBit) {
                 // the action is a ActionMessage
-                ActionMessage actionMessage = (ActionMessage) action;
-                System.out.println("------ACTION " + Arrays.toString(actionMessage.getActionMesssage()));
+                ActionMessageBit actionMessageBit = (ActionMessageBit) action;
+                System.out.println("------ACTION " + Arrays.toString(actionMessageBit.getActionMessageBit()));
 
                 // actionArr with the action message
-                int[] actionArr = actionMessage.getActionMesssage();
+                int[] actionArr = actionMessageBit.getActionMessageBit();
 
                 // need to check if bus exists otherwise the connection will be killed by the RMX-PC-Zentrale
                 if (busDepot.busExists(actionArr[0])) {
 
                     // message for updating the server
-                    byte[] message = buildRmxMessage(actionMessage.getActionMesssage());
+                    int[] message = buildRmxMessageBit(actionMessageBit.getActionMessageBit());
 
                     // fake message so the changed bits by the action are getting checked in the matrix
-                    byte[] fakeMessage = buildFakeMessage(actionMessage.getActionMesssage());
+                    int[] fakeMessage = buildFakeMessageBit(actionMessageBit.getActionMessageBit());
 
                     // update bus
                     // format <0x99><RMX><ADRRMX><VALUE>
-                    busDepot.updateBus(message[1], message[2],message[3]);
+                    busDepot.updateBus(fakeMessage[1], fakeMessage[2], fakeMessage[3]);
 
                     // add (real) message to the sender for sending to the RMX-PC-Zentrale
                     Sender.addMessageQueue(message);
@@ -299,7 +297,7 @@ public class Schedular {
                     // the has not been initialized
                     System.out.println("-> Adress bus " + actionArr[0] + " from rule does not exist!");
                 }
-            } else {
+            } else if (action instanceof ActionWait) {
                 // the Action is a ActionWait
 
                 // if the ActionWait is last action in the ActionSequence no need to start a new Thread, just skip it
@@ -317,8 +315,111 @@ public class Schedular {
 
                     break; // know the new thread continious to process the actionSequence starting from the startIndex, i can go on to the next ActionSequence
                 }
-            }
+            } else if (action instanceof ActionMessageByte) {
+                // the action is a ActionMessageByte
+                ActionMessageByte actionMessageByte = (ActionMessageByte) action;
+                System.out.println("------ACTION-Byte " + Arrays.toString(actionMessageByte.getActionMessageByte()));
 
+                // actionArr with the action message
+                int[] actionArr = actionMessageByte.getActionMessageByte();
+
+                // need to check if bus exists otherwise the connection will be killed by the RMX-PC-Zentrale
+                if (busDepot.busExists(actionArr[0])) {
+
+                    // message for updating the server
+                    int[] message = buildRmxMessageByte(actionMessageByte.getActionMessageByte());
+
+                    // fake message so the changed bits by the action are getting checked in the matrix
+                    int[] fakeMessage = buildFakeMessageByte(actionMessageByte.getActionMessageByte());
+
+                    // update bus
+                    // format <0x99><RMX><ADRRMX><VALUE>
+                    busDepot.updateBus(fakeMessage[1], fakeMessage[2], fakeMessage[3]);
+
+                    // add (real) message to the sender for sending to the RMX-PC-Zentrale
+                    Sender.addMessageQueue(message);
+
+                    // add fake message to the fakeMessageQueue so the changes are checked
+                    addMessageToFakeQueue(fakeMessage);
+
+                } else {
+                    // the has not been initialized
+                    System.out.println("-> Adress bus " + actionArr[0] + " from rule does not exist!");
+                }
+            } else if (action instanceof ActionMessageByteIncDecRement) {
+                // the action is a ActionMessageByteIncrement
+                ActionMessageByteIncDecRement actionMessageByteIncDecRement = (ActionMessageByteIncDecRement) action;
+                System.out.println("Schedular------ACTION-Byte--INCREMENT " + actionMessageByteIncDecRement.getActionMessageByteIncDecRement());
+
+                // actionArr with the action message
+                int[] actionArr = actionMessageByteIncDecRement.getActionMessageByteIncDecRement();
+
+                System.err.println("Schedular actionArr ActionMessageByteIncDec: " + Arrays.toString(actionArr));
+
+                // need to check if bus exists otherwise the connection will be killed by the RMX-PC-Zentrale
+                if (busDepot.busExists(actionArr[0])) {
+
+                    int[] message = null;
+                    int[] fakeMessage = null;
+                    try {
+                        // message for updating the server
+                        message = buildRmxMessageByteInDecRement(actionArr);
+
+                        // fake message so the changed bits by the action are getting checked in the matrix
+                        fakeMessage = buildFakeMessageByteIncDecRement(actionArr);
+                    } catch(OutOfRangeException e) {
+                        System.err.println("Catch OutofRangeException");
+                        e.printStackTrace();
+                        break loop;
+                    }
+
+
+                    // update bus
+                    // format <0x99><RMX><ADRRMX><VALUE>
+                    busDepot.updateBus(fakeMessage[1], fakeMessage[2], fakeMessage[3]);
+
+                    // add (real) message to the sender for sending to the RMX-PC-Zentrale
+                    Sender.addMessageQueue(message);
+
+                    // add fake message to the fakeMessageQueue so the changes are checked
+                    addMessageToFakeQueue(fakeMessage);
+
+                } else {
+                    // the has not been initialized
+                    System.out.println("-> Adress bus " + actionArr[0] + " from rule does not exist!");
+                }
+            }  else if (action instanceof ActionMessageBitToggle) {
+                // the action is a ActionMessageBitToggle
+                ActionMessageBitToggle actionMessageBitToggle = (ActionMessageBitToggle) action;
+                System.out.println("------ACTION-Byte " + Arrays.toString(actionMessageBitToggle.getActionMessageBitToggle()));
+
+                // actionArr with the action message
+                int[] actionArr = actionMessageBitToggle.getActionMessageBitToggle();
+
+                // need to check if bus exists otherwise the connection will be killed by the RMX-PC-Zentrale
+                if (busDepot.busExists(actionArr[0])) {
+
+                    // message for updating the server
+                    int[] message = buildRmxMessageBitToggle(actionMessageBitToggle.getActionMessageBitToggle());
+
+                    // fake message so the changed bits by the action are getting checked in the matrix
+                    int[] fakeMessage = buildFakeMessageBitToggle(actionMessageBitToggle.getActionMessageBitToggle());
+
+                    // update bus
+                    // format <0x99><RMX><ADRRMX><VALUE>
+                    busDepot.updateBus(fakeMessage[1], fakeMessage[2], fakeMessage[3]);
+
+                    // add (real) message to the sender for sending to the RMX-PC-Zentrale
+                    Sender.addMessageQueue(message);
+
+                    // add fake message to the fakeMessageQueue so the changes are checked
+                    addMessageToFakeQueue(fakeMessage);
+
+                } else {
+                    // the has not been initialized
+                    System.out.println("-> Adress bus " + actionArr[0] + " from rule does not exist!");
+                }
+            }
         }
     }
 
@@ -333,17 +434,17 @@ public class Schedular {
      * @param intArr array containing the busId, systemadress, bitIndex, bitvalue of the given Action
      * @return a fake Message in RMXnet Syntax
      */
-    private byte[] buildFakeMessage(int[] intArr) {
-        byte[] message = new byte[4];
+    private int[] buildFakeMessageBit(int[] intArr) {
+        int[] message = new int[4];
         // OPCODE
-        message[0] = (byte) 153; //0x99
+        message[0] = 153; //0x99
         // bus <rmx>
-        message[1] = (byte) intArr[0];
+        message[1] = intArr[0];
         // systemadress <addrRMX>
-        message[2] = (byte) intArr[1];
+        message[2] = intArr[1];
         // value
-        Byte currentbyte = busDepot.getBus(intArr[0]).getCurrentByte(intArr[1]);
-        message[3] = (byte) ByteUtil.setBitAtPos(currentbyte, intArr[2], intArr[3]);
+        int currentbyte = busDepot.getBus(intArr[0]).getCurrentByte(intArr[1]);
+        message[3] = ByteUtil.setBitAtPos(currentbyte, intArr[2], intArr[3]);
 
         return message;
     }
@@ -357,8 +458,8 @@ public class Schedular {
      * @param intArr array containing the busId, systemadress, bitIndex, bitValue of the given Action
      * @return a Message in RMXnet Syntax
      */
-    private byte[] buildRmxMessage(int[] intArr) {
-        byte[] message = new byte[6];
+    private int[] buildRmxMessageBit(int[] intArr) {
+        int[] message = new int[6];
         // RMX-Headbyte
         message[0] = Constants.RMX_HEAD;
         // COUNT
@@ -366,12 +467,193 @@ public class Schedular {
         // OPCODE
         message[2] = 5;
         // bus <rmx>
-        message[3] = (byte) intArr[0];
+        message[3] = intArr[0];
         // systemadress <addrRMX>
-        message[4] = (byte) intArr[1];
+        message[4] = intArr[1];
         // value
-        Byte currentbyte = busDepot.getBus(intArr[0]).getCurrentByte(intArr[1]);
-        message[5] = (byte) ByteUtil.setBitAtPos(currentbyte, intArr[2], intArr[3]);
+        int currentbyte = busDepot.getBus(intArr[0]).getCurrentByte(intArr[1]);
+        message[5] = ByteUtil.setBitAtPos(currentbyte, intArr[2], intArr[3]);
+
+        return message;
+    }
+
+    /**
+     * Method that converts the int Array of an ActionMessageBitToggle to a FakeMessage (OPCODE 0x99)
+     * Necessary because change needs to be checked, but status has already been updateed
+     *
+     * Format:
+     *  OPCODE [busId](1-4) [systemAdress](0-111) [bitIndex](0-7)
+     * <0x99>  <RMX><ADRRMX><VALUE>
+     *
+     *
+     * @param intArr array containing the busId, systemadress, bit to toggle
+     * @return a fake Message in RMXnet Syntax
+     */
+    private int[] buildFakeMessageBitToggle(int[] intArr) {
+        int[] message = new int[4];
+        // OPCODE
+        message[0] = 153; //0x99
+        // bus <rmx>
+        message[1] = intArr[0];
+        // systemadress <addrRMX>
+        message[2] = intArr[1];
+        // value
+        int currentbyte = busDepot.getBus(intArr[0]).getCurrentByte(intArr[1]);
+        message[3] = ByteUtil.toggleBitAtPos(currentbyte, intArr[2]);
+
+        return message;
+    }
+
+    /**
+     * Method that converts the int Array of the ActionMessage to a RMXnet Message
+     *
+     * OPCODE [busId](1-4) [systemAdress](0-111) [bitIndex](0-7)
+     * <0x06>  <RMX><ADRRMX><VALUE>
+     *
+     * @param intArr array containing the busId, systemadress, bitIndex of the given Action
+     * @return a Message in RMXnet Syntax
+     */
+    private int[] buildRmxMessageBitToggle(int[] intArr) {
+        int[] message = new int[6];
+        // RMX-Headbyte
+        message[0] = Constants.RMX_HEAD;
+        // COUNT
+        message[1] = 6;
+        // OPCODE
+        message[2] = 5;
+        // bus <rmx>
+        message[3] = intArr[0];
+        // systemadress <addrRMX>
+        message[4] = intArr[1];
+        // value
+        int currentbyte = busDepot.getBus(intArr[0]).getCurrentByte(intArr[1]);
+        message[5] = ByteUtil.toggleBitAtPos(currentbyte, intArr[2]);
+
+        return message;
+    }
+
+    /**
+     * Method that converts the int Array of an ActionMessageByte to a FakeMessage (OPCODE 0x99)
+     * Necessary because change needs to be checked, but status has already been updateed
+     *
+     * Format:
+     *  OPCODE [busId][systemAdress][byteValue]
+     * <0x99>  <RMX><ADRRMX><VALUE>
+     *
+     * @param intArr array containing the busId, systemadress, byteValue of the given Action
+     * @return a fake Message in RMXnet Syntax
+     */
+    private int[] buildFakeMessageByte(int[] intArr) {
+
+        int[] message = new int[4];
+        // OPCODE
+        message[0] = 153; //0x99
+        // bus <rmx>
+        message[1] = intArr[0];
+        // systemadress <addrRMX>
+        message[2] = intArr[1];
+        // value
+        message[3]= intArr[2];
+
+        return message;
+    }
+
+    /**
+     * Method that converts the int Array of the ActionMessageByte to a RMXnet Message
+     *
+     * OPCODE  [busId][systemAdress][byteValue
+     * <0x06>  <RMX><ADRRMX><VALUE>
+     *
+     * @param intArr array containing the busId, systemadress, byteValue
+     * @return a Message in RMXnet Syntax
+     */
+    private int[] buildRmxMessageByte(int[] intArr) {
+        int[] message = new int[6];
+        // RMX-Headbyte
+        message[0] = Constants.RMX_HEAD;
+        // COUNT
+        message[1] = 6;
+        // OPCODE
+        message[2] = 5;
+        // bus <rmx>
+        message[3] = intArr[0];
+        // systemadress <addrRMX>
+        message[4] = intArr[1];
+        // value
+        message[5] = intArr[2];
+
+        return message;
+    }
+
+
+    /**
+     * Method that converts the int Array of an ActionMessageIncDec to a FakeMessage (OPCODE 0x99)
+     * Necessary because change needs to be checked, but status has already been updateed
+     *
+     * Format:
+     *  OPCODE [busId][systemAdress][incDecRementValue]
+     * <0x99>  <RMX><ADRRMX><VALUE>
+     *
+     * @param  incrementValue array containing the busId, systemadress, incDecRementValue of the given Action
+     * @return a fake Message in RMXnet Syntax
+     * @throws OutOfRangeException if the incremented or decremented value is out of bounds (not in 0 <= x <= 255)
+     */
+    private int[] buildFakeMessageByteIncDecRement(int[] incrementValue) throws OutOfRangeException {
+
+        int[] message = new int[4];
+        // OPCODE
+        message[0] = 153; //0x99
+        // bus <rmx>
+        message[1] = incrementValue[0];
+        // systemadress <addrRMX>
+        message[2] = incrementValue[1];
+        // value
+        int currentbyte = busDepot.getBus(incrementValue[0]).getCurrentByte(incrementValue[1]);
+
+        int newByteValue = currentbyte + incrementValue[2];
+        if(newByteValue > 255 || newByteValue < 0) {
+            throw new OutOfRangeException(newByteValue, 0, 255);
+        }
+        message[3] = newByteValue;
+
+        return message;
+    }
+
+    /**
+     * Method that converts the int Array of the ActionMessageIncDec to a RMXnet Message
+     *
+     * OPCODE  [busId][systemAdress][byteValue
+     * <0x06>  <RMX><ADRRMX><VALUE>
+     *
+     * @param  incrementValue array containing the busId, systemadress, incDecRementValue of the given Action
+     * @return a fake Message in RMXnet Syntax
+     * @throws OutOfRangeException if the incremented or decremented value is out of bounds (not in 0 <= x <= 255)
+     */
+    private int[] buildRmxMessageByteInDecRement(int[] incrementValue) {
+        int[] message = new int[6];
+        // RMX-Headbyte
+        message[0] = Constants.RMX_HEAD;
+        // COUNT
+        message[1] = 6;
+        // OPCODE
+        message[2] = 5;
+        // bus <rmx>
+        message[3] = incrementValue[0];
+        // systemadress <addrRMX>
+        message[4] = incrementValue[1];
+        // value
+        int currentbyte = busDepot.getBus(incrementValue[0]).getCurrentByte(incrementValue[1]);
+
+        System.out.println("Schedular buildRMXMessageByteIncDec - currentbyte: " + currentbyte);
+
+        int newByteValue = currentbyte + incrementValue[2];
+        if(newByteValue > 255 || newByteValue < 0) {
+            throw new OutOfRangeException(newByteValue, 0, 255);
+        }
+
+        System.out.println("Schedular buildRMXMessageByteIncDec - newByteValue: " + newByteValue);
+
+        message[5] = newByteValue;
 
         return message;
     }
