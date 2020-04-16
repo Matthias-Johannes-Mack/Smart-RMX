@@ -9,6 +9,7 @@ import java.util.List;
 import javax.swing.*;
 
 import Utilities.Constants;
+import connection.SocketConnector;
 
 /**
  * Class that represents a console for the Output!
@@ -56,7 +57,9 @@ public class Console extends OutputStream {
 	public static void runConsole() {
 		// create the frame
 		JFrame jFrame = new JFrame("Smart-RMX");
-		jFrame.add(new JLabel("Smart-RMX Console"), BorderLayout.NORTH);
+		jFrame.add(new JLabel(
+				"Smart-RMX Console | Server: " + SocketConnector.getIp() + " | Port: " + SocketConnector.getPort()),
+				BorderLayout.NORTH);
 
 		JTextArea jTextArea = new JTextArea();
 		Console console = new Console(jTextArea, 60);
