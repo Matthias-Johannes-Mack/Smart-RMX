@@ -10,7 +10,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-
+/**
+ * class that represents the schedular responsible for processing incoming changes that need to be checked in
+ * the matrix and processing the resulting triggered ActionSequences
+ *
+ */
 public class Schedular {
 
 
