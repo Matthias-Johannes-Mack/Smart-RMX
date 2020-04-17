@@ -1,43 +1,99 @@
 package matrix;
 
+import action.actionSequence.ActionSequence;
+import action.actionSequence.ActionSequenceWrapper;
+import bus.Bus;
+import bus.BusDepot;
 import utilities.Constants;
 
 public class MatrixUtil {
 
+    /*-----------------------------------------------------------------------------------------------
+      HELPER METHODS FOR CHECKING
+      - getActionSequenceByState
+      - updateBus
+     ----------------------------------------------------------------------------------------------*/
+
     /**
-     * calculates the bitIndex of the given bus, systemadress and bit for bit matrix
-     * Formula: (busId * Number_Systemadresses_per_bus) + (systemadress * 8) + bitIndexSystemadress
+     * Returns (if existend) the ActionSequence of the given field in the matrix specified by the bitIndex of the Row
+     * and Column and der corresponding bit values
+     * <p>
+     * possible combinations of states (row, column): (0,0) - (1,0) - (1,0) - (1,1)
      *
-     * @param busId
-     * @param systemadress
-     * @param bitIndexSystemadress
-     * @return the bitIndex of the given bit at the given systemadress in the given bus
+     * @param systemadress_bitIndexRow    systemadress of the bitIndex of the row
+     * @param bitValueRow                 bitValue of the bit specified by the bitindex of the row
+     * @param systemadress_bitIndexColumn systemadress of the bitIndex of the column
+     * @param bitValueColumn              bitValue of the bit specified by the bitindex of the column
+     * @param bitMatrixField              the field to check in the matrix
+     * @return the actionSequence of the given state, returns null if no rule has been defined for the given state
      */
-    public static int calcBitIndex(int busId, int systemadress, int bitIndexSystemadress) {
-        return (busId * Constants.NUMBER_SYSTEMADRESSES_PER_BUS) + (systemadress * 8) + bitIndexSystemadress;
+    public static ActionSequence getActionSequenceByState(int systemadress_bitIndexRow, boolean bitValueRow, int systemadress_bitIndexColumn,
+                                                   boolean bitValueColumn, ActionSequenceWrapper bitMatrixField) {
+
+        ActionSequence actionSequence;
+
+        // the other bit is currently set
+        if (bitValueColumn) {
+            // both conditions are true => get ActionSequence of point in matrix
+
+            if (bitValueRow) {
+                // bit value of row index =  1, bit value of column index is 1
+                actionSequence = bitMatrixField.getActionSequence1And1();
+            } else {
+                // bit value of row index = 0, bit value of column index is 1
+                actionSequence = bitMatrixField.getActionSequence0And1();
+            }
+        } else {
+            // the other bit is not set
+            if (bitValueRow) {
+                // bit value of row index =  1, bit value of column index is 0
+                actionSequence = bitMatrixField.getActionSequence1And0();
+            } else {
+                // bit value of row index =  0, bit value of column index is 0
+                actionSequence = bitMatrixField.getActionSequence0And0();
+            }
+
+        }
+
+        return actionSequence;
+
     }
 
     /**
-     * calculates the byteIndex of given bus and systemadress for byte matrix
-     * @param busId
-     * @param systemadress
-     * @return the byteIndex of the given byte at the given systemadress and bus
-     */
-    public static int calcByteIndex(int busId, int systemadress) {
-        return (busId * Constants.NUMBER_SYSTEMADRESSES_PER_BUS) + systemadress;
-    }
-
-    /**
-     * calculates the gaussian sum formula (sum of the first n following numbers)
+     * Updates the given bus to the next higher bus if the bitIndex surpasses the last bit of the last bus.
+     * Change happens exactly at the start of the new bus, for other bitindexes this method returns null
      *
-     * @param n
-     * @return sum of the first n following numbers
+     * @param bitIndex bitIndex to check
+     * @return the bus of the given bitindex, null if bitIndex isnt exactly at a "changing point"
      */
-    public static int calcGauss(int n) {
-        return (((n * n) + n) / 2);
+    public static Bus getNextHigherBusBitMatrix(int bitIndex) {
+
+        Bus bus = null;
+
+        if (bitIndex % Constants.NUMBER_BITS_PER_BUS == 0) {
+            // get current bus => + 1 since RMX starts counting at 1
+            bus = BusDepot.getBusDepot().getBus(((bitIndex / Constants.NUMBER_BITS_PER_BUS) + 1));
+        }
+
+        return bus;
     }
 
-    public static int getSystemadressByBitIndex(int bitIndex) {
-        return ((bitIndex % Constants.NUMBER_BITS_PER_BUS) / 8); // cuts decimal places
+    /**
+     * Updates the given bus to the next higher bus if the byteIndex surpasses the last byte of the last bus.
+     * Change happens exactly at the start of the new bus, for other byteIndexes this method returns null
+     *
+     * @param byteIndex byteIndex to check
+     * @return the bus of the given byteindex, null if bitIndex isnt exactly at a "changing point"
+     */
+    public static Bus getNextHigherBusByteMatrix(int byteIndex) {
+
+        Bus bus = null;
+
+        if (byteIndex % Constants.NUMBER_SYSTEMADRESSES_PER_BUS == 0) {
+            // get current bus => + 1 since RMX starts counting at 1
+            bus = BusDepot.getBusDepot().getBus(((byteIndex / Constants.NUMBER_SYSTEMADRESSES_PER_BUS) + 1));
+        }
+
+        return bus;
     }
 }

@@ -1,8 +1,8 @@
 package matrix.byteMatrix;
 
+import action.actionSequence.ActionSequenceWrapper;
 import utilities.Constants;
-import action.actionSequence.ActionSequence;
-import matrix.MatrixUtil;
+import matrix.MatrixCalcUtil;
 
 public class ByteMatrix {
 
@@ -28,7 +28,7 @@ public class ByteMatrix {
     public static synchronized ByteMatrix getMatrix() {
         if (instance == null) {
             instance = new ByteMatrix();
-            instance.matrix = new ByteRuleWrapper[arraySize];
+            instance.byteMatrixArray = new ByteRuleWrapper[arraySize];
         }
 
         return instance;
@@ -40,24 +40,19 @@ public class ByteMatrix {
      * The ByteMatrix is represented as triangular matrix
      * number of fields of an triangular matrix (symmetrical) with n elements: (( n (n + 1)) / 2)
      */
-    private static int arraySize = MatrixUtil.calcGauss(Constants.NUMBER_SYSTEMADRESSES_PER_BUS); // = 6.328
+    private static int arraySize = MatrixCalcUtil.calcGauss(Constants.NUMBER_SYSTEMADRESSES_PER_BUS); // = 6.328
 
     /**
      * array holding all ActionSequenceWrapper of the matrix
      */
-    private ByteRuleWrapper[] matrix;
+    private ByteRuleWrapper[] byteMatrixArray;
 
 
-    public ActionSequence checkField(int byteValueSmall, int byteValueBig, int fieldByteMatrix) {
 
-        ActionSequence result = null;
-
-        if(matrix[fieldByteMatrix] != null) {
-            result = matrix[fieldByteMatrix].getActionSequenceByState(byteValueSmall, byteValueBig);
-        }
-
-        return result;
+    public ByteRuleWrapper getByteMatrixField(int fieldIndex) {
+        return byteMatrixArray[fieldIndex];
     }
+
 
     public void addByteRule(ByteRule rule) {
         //[Bus][Systemadress] smaller index of the two conditions
@@ -72,21 +67,21 @@ public class ByteMatrix {
         conditionTwoAdress[0] -= conditionTwoAdress[0];
 
         // calculate bitIndex of both conditions
-        int byteIndexConditionOne = MatrixUtil.calcByteIndex( conditionOneAdress[0],  conditionOneAdress[1]);
-        int byteIndexConditionTwo = MatrixUtil.calcByteIndex( conditionTwoAdress[0],  conditionTwoAdress[1]);
+        int byteIndexConditionOne = MatrixCalcUtil.calcByteIndex( conditionOneAdress[0],  conditionOneAdress[1]);
+        int byteIndexConditionTwo = MatrixCalcUtil.calcByteIndex( conditionTwoAdress[0],  conditionTwoAdress[1]);
 
         // calculation of the pointindex = gaussian value of bigger + bitIndex of smaller
         int pointIndex;
 
         //check to determine which bit index of the two conditions is bigger
-        //check nomrally not needed since due to implementation of byte rule condition one is always smaller
+        //check normally not needed since due to implementation of byte rule condition one is always smaller
         if (byteIndexConditionOne >= byteIndexConditionTwo) {
             // bit index condition one is bigger
-            pointIndex = MatrixUtil.calcGauss(byteIndexConditionOne) + byteIndexConditionTwo;
+            pointIndex = MatrixCalcUtil.calcGauss(byteIndexConditionOne) + byteIndexConditionTwo;
             addByteRuleToMatrix(rule , pointIndex);
         } else {
             // bit index condition one is bigger
-            pointIndex = MatrixUtil.calcGauss(byteIndexConditionTwo) + byteIndexConditionOne;
+            pointIndex = MatrixCalcUtil.calcGauss(byteIndexConditionTwo) + byteIndexConditionOne;
             addByteRuleToMatrix(rule , pointIndex);
 
         }
@@ -94,12 +89,12 @@ public class ByteMatrix {
 
     private void addByteRuleToMatrix(ByteRule rule ,int pointIndex){
         // if no action seq wrapper exists at point add new
-        if (matrix[pointIndex] == null) {
+        if (byteMatrixArray[pointIndex] == null) {
             System.out.println("ICH FÜGE EINEN WRAPPER HINZU ZUR BYTE MATRIX " + pointIndex);
-            matrix[pointIndex] = new ByteRuleWrapper();
+            byteMatrixArray[pointIndex] = new ByteRuleWrapper();
         }
 
         // set action sequence in the right Action wrapper aat the pointIndex
-        matrix[pointIndex].addByteRule(rule);
+        byteMatrixArray[pointIndex].addByteRule(rule);
     }
 }

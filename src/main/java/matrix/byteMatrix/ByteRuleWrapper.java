@@ -31,10 +31,6 @@ public class ByteRuleWrapper {
 		}
 	}
 
-
-	//TODO später in implementiertung drauf achten in row schleife bin ich immer größer, in column schleife bin ich
-	// immer kleiner
-
 	/**
 	 * Checks if the ByteRuleWrapper has a ActionSequence for the given byteValues
 	 *

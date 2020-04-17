@@ -152,7 +152,8 @@ public class Factory {
 			switch (action.getType()) {
 				case WAIT:
 					// create wait action and save it to action depot with id
-					ActionWait waitAction = new ActionWait(action.getActionArray()[0]);
+					long waitTime = action.getActionArray()[0];
+					ActionWait waitAction = new ActionWait(waitTime);
 					// only add action to actionDepot if it doesnt exists already
 					actionSeq.addAction(actionDepot.addAction(waitAction));
 					break;
