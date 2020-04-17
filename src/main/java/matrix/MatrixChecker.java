@@ -503,8 +503,6 @@ public class MatrixChecker {
             Bus tempBusColumn;
             currentBusColumn = ((tempBusColumn = MatrixUtil.getNextHigherBusBitMatrix(bitIndexColumn)) != null) ? tempBusColumn : currentBusColumn;
 
-            System.out.println("ROW-FIELD" + fieldIndexBitMatrix);
-
             if (bitMatrix.getBitMatrixField(fieldIndexBitMatrix) != null) {
                 // an ActionSequenceWrapper is in the field
 
