@@ -191,4 +191,8 @@ public class Condition implements Comparable<Condition> {
     public Integer[] getConditionAdress() {
         return conditionAdress;
     }
+
+    public HashMap<ConditionType, Integer> getConditionTypeValue() {
+        return conditionTypeValue;
+    }
 }
