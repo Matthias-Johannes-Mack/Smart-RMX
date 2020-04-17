@@ -31,10 +31,9 @@ public class Main {
 		Console.runConsole();
 		head();
 		// open the file
-		XML_IO xml_io = XML_IO.getXML_IO();
-		xml_io.startXmlReadInForUser();
+		XML_IO.getXML_IO().startXmlReadInForUser();
 		// create the factory, actionDepot and the matrix
-		Factory.createActionsAndMatrix();
+		Factory.getFactory().createActionsAndMatrix();
 		// create the connection
 		// schedular MUSS vor Receiver Thread gestartet sein
 		Schedular.getSchedular().startScheduling();

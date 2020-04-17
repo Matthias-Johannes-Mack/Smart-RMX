@@ -12,27 +12,57 @@ import java.util.Arrays;
  * Factory class for creating the actions matrix and filling the matrix
  */
 public class Factory {
+	// Singleton-Pattern START -----------------------------------------
+
+	/**
+	 * Singleton instance of Factory
+	 */
+	private static Factory instance = null;
+
+	/**
+	 * private constructor to prevent instantiation
+	 */
+	private Factory() {
+
+	}
+
+	/**
+	 * Returns singleton Factory instance
+	 *
+	 * @return Factory Singleton instance
+	 */
+	public static synchronized Factory getFactory() {
+		if (instance == null) {
+			instance = new Factory();
+		}
+
+		return instance;
+	}
+
+	// Singleton-Pattern END ________________________________________________
+
+
 	/**
 	 * bit rules that have been read in from the xml, will be set by XML_read class
  	 */
-	static private ArrayList<BitRule> bitRules = new ArrayList<>();
+	private ArrayList<BitRule> bitRules = new ArrayList<>();
 
 	/**
 	 * action depot instance
 	 */
-	static private ActionDepot actionDepot = ActionDepot.getActionDepot();
+	private ActionDepot actionDepot = ActionDepot.getActionDepot();
 
 	/**
 	 * byte rules that have been read in from the xml, will be set by XML_read class
 	 */
-	static private ArrayList<ByteRule> byteRules = new ArrayList<>();
+	private ArrayList<ByteRule> byteRules = new ArrayList<>();
 
 	/**
 	 * adds a byte rule to the factory
 	 * @param conditionOne [Bus, Systemadress, Equal, NotEqual, Bigger, Smaller] Integer Array
 	 * @param actions Arraylist containg the action Integer Arrays
 	 */
-	protected static void addByteRule(Integer[] conditionOne, Integer[] conditionTwo, ArrayList actions) {
+	protected void addByteRule(Integer[] conditionOne, Integer[] conditionTwo, ArrayList actions) {
 		ActionSequence actionSequence = createActionSequence(actions);
 		Condition conditionOneObj = createCondition(conditionOne);
 		Condition conditionTwoObj = createCondition(conditionTwo);
@@ -48,7 +78,7 @@ public class Factory {
 	 * @param conditionArray [Bus, Systemadress, Equals, NotEquals, Bigger, Smaller]
 	 * @return Condition Object
 	 */
-	private static Condition createCondition(Integer[] conditionArray) {
+	private Condition createCondition(Integer[] conditionArray) {
 		System.out.println("ConditionArray in createCondition: " + Arrays.toString(conditionArray));
 
 		//only need the bus and Systemadress for the constructor
@@ -83,7 +113,7 @@ public class Factory {
 	 * @param conditionsTwo [Bus, SystemAddress, Bit]
 	 * @param actions ArrayList<XML_ActionWrapper>
 	 */
-	protected static void addBitRule(Integer[] conditionsOne, Integer[] conditionsTwo, ArrayList actions) {
+	protected void addBitRule(Integer[] conditionsOne, Integer[] conditionsTwo, ArrayList actions) {
 		bitRules.add(new BitRule(conditionsOne, conditionsTwo, actions));
 	}
 
@@ -92,14 +122,14 @@ public class Factory {
 	 * 
 	 * @return ArrayList containing the rules
 	 */
-	protected static ArrayList<BitRule> getBitRules() {
+	protected ArrayList<BitRule> getBitRules() {
 		return bitRules;
 	}
 
 	/**
 	 * creates Action and saves it to the action depot
 	 */
-	public static void createActionsAndMatrix() {
+	public void createActionsAndMatrix() {
 		//adds rules to byte matrix
 		for (BitRule bitRule : bitRules) {
 			ActionSequence actionSeq = createActionSequence(bitRule.getActions());
@@ -119,7 +149,7 @@ public class Factory {
 	 * @param actions List of XML_ActionWrappers to be converted into an action sequence
 	 * @return action sequence containing the action elements to be added to the matrix
 	 */
-	private static ActionSequence createActionSequence(ArrayList<XML_ActionWrapper> actions) {
+	private ActionSequence createActionSequence(ArrayList<XML_ActionWrapper> actions) {
 		ActionSequence actionSeq = new ActionSequence();
 
 		for (XML_ActionWrapper action : actions) {
@@ -155,19 +185,5 @@ public class Factory {
 
 		}
 		return actionSeq;
-	}
-
-	/**
-	 * method, that convert a IntegerArray in intArray
-	 * 
-	 * @param integerArr
-	 * @return
-	 */
-	private static int[] parseIntegerToIntArr(Integer[] integerArr) {
-		int[] intArr = new int[integerArr.length];
-		for (int i = 0; i < integerArr.length; i++) {
-			intArr[i] = integerArr[i].intValue();
-		}
-		return intArr;
 	}
 }

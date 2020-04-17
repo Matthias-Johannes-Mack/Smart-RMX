@@ -31,9 +31,9 @@ class XML_read {
     }
 
     /**
-     * Returns singleton Matrix instance
+     * Returns singleton XML_read instance
      *
-     * @return Matrix Singleton instance
+     * @return XML_read Singleton instance
      */
     public static synchronized XML_read getXML_read() {
         if (instance == null) {
@@ -51,11 +51,11 @@ class XML_read {
     private static XML_ActionType actionType;
 
     /**
-     the xsd schema cannot specify if the conditions of the byte conditions are correct
-     it could happen that none of Equal, NotEqual, Bigger, Smaller is selected which cant be checked in
-     Boolean
-     Array containing information if one of the above is set for a byteCondition
-     [ConditionOneByteValueSet, ConditionTwoByteValueSet]
+     * the xsd schema cannot specify if the conditions of the byte conditions are correct
+     * it could happen that none of Equal, NotEqual, Bigger, Smaller is selected which cant be checked in
+     * Boolean
+     * Array containing information if one of the above is set for a byteCondition
+     * [ConditionOneByteValueSet, ConditionTwoByteValueSet]
      */
     private boolean[] byteConditionValueSet = new boolean[2];
 
@@ -64,6 +64,12 @@ class XML_read {
      */
     private org.w3c.dom.Document xmlDoc;
 
+    /**
+     * instance of Factory
+     */
+    private Factory factory;
+
+    // END OF ATTRIBUTES -------------------------------------------------------
 
     /**
      * constructor
@@ -75,11 +81,13 @@ class XML_read {
         if (xmlDoc != null) {
             this.xmlDoc = xmlDoc;
         }
-       readXML();
+        factory = Factory.getFactory();
+        readXML();
     }
 
     /**
      * reads in the rules from the file and saves them to the Factory Classs
+     *
      * @throws SAXException throws exception if byte Rule does not contain any of these in XML Document: Equal, NotEqual, Bigger, Smaller
      */
     private void readXML() throws SAXException {
@@ -185,7 +193,7 @@ class XML_read {
 
             //  Iterating over one rule block done, add conditions and actions to new rule
             if (conditionType == XML_ConditionTypes.BIT_CONDITION) {
-                Factory.addBitRule(conditionOne, conditionTwo, actions);
+                factory.addBitRule(conditionOne, conditionTwo, actions);
             }
             if (conditionType == XML_ConditionTypes.BYTE_CONDITION) {
                 /*
@@ -194,11 +202,11 @@ class XML_read {
                  the xsd and must be checked here
                  throws an Exception if none of the values is set in the xml file
                  */
-                if(!byteConditionValueSet[0] || !byteConditionValueSet[1]) {
+                if (!byteConditionValueSet[0] || !byteConditionValueSet[1]) {
                     throw new SAXException("ByteCondition contains no value");
                 }
 
-                Factory.addByteRule(conditionOne, conditionTwo, actions);
+                factory.addByteRule(conditionOne, conditionTwo, actions);
             }
 
         }
@@ -207,8 +215,9 @@ class XML_read {
     /**
      * helper method for readXML
      * iterates over the child nodes of a bit or byte condition and processes them using processConditionChildNodes
-     * @param conditionOne Integer Array for saving first condition
-     * @param conditionTwo Integer Array for saving sedond condition
+     *
+     * @param conditionOne           Integer Array for saving first condition
+     * @param conditionTwo           Integer Array for saving second condition
      * @param bitOrByteConditionNode child node of the rule (byte or bit condition node) whoms children should be processed
      */
     private void iterateOverConditionChildNodes(Integer[] conditionOne, Integer[] conditionTwo, Node bitOrByteConditionNode) {
@@ -239,12 +248,11 @@ class XML_read {
      * helper method for iterateOverConditionChildNodes
      * processes the Bus, SystemAddress and Bit node of the Action and Condition nodes and puts them in the given array
      *
-     * @param targetArray array to which the node values should be written
-     *      for a bit condition: [Bus][Systemaddress][Bit][BitValue]
-     *      for a byte condition [Bus, Systemadress, Equals, NotEquals, Bigger, Smaller]
-     * @param node        node whose content should be written to the array
-     * @param conditionIndex   index of the condition in byteConditionValueSet
-     *
+     * @param targetArray    array to which the node values should be written
+     *                       for a bit condition: [Bus][Systemaddress][Bit][BitValue]
+     *                       for a byte condition [Bus, Systemadress, Equals, NotEquals, Bigger, Smaller]
+     * @param node           node whose content should be written to the array
+     * @param conditionIndex index of the condition in byteConditionValueSet
      */
     private void processConditionChildNodes(Integer[] targetArray, Node node, int conditionIndex) {
 
@@ -285,7 +293,7 @@ class XML_read {
      * helper method for readXML
      * processes the child nodes of a action node and saves them in thr target array, array length of target array is the max length of the different array types
      * and will be shortened accordingly int the XML_Action Wrapper
-     *
+     * <p>
      * int Array for ActionMessageBit: [Bus][SystemAdrress][Bit][BitValue]
      * int Array for ActionMessageByte: [Bus][SystemAdrress][ByteValue]
      * int Array for waitAction: [Wait time in ms]
@@ -294,9 +302,9 @@ class XML_read {
      * int Array for Bit Toggle [Bus][SystemAddress][Bit]
      *
      * @param targetArray target array to whom should be written
-     * @param node  node whose content should be written to the array
+     * @param node        node whose content should be written to the array
      */
-    private void processActionChildNodes(int[]targetArray, Node node) {
+    private void processActionChildNodes(int[] targetArray, Node node) {
 
         switch (node.getNodeName()) {
             case XML_Constants.Bus:
@@ -309,7 +317,7 @@ class XML_read {
                 targetArray[2] = Integer.parseInt(node.getTextContent());
                 break;
             case XML_Constants.BitValue:
-                if(node.getTextContent().equals(XML_Constants.Toggle)) {
+                if (node.getTextContent().equals(XML_Constants.Toggle)) {
                     actionType = XML_ActionType.BITTOGGLE;
                 } else {
                     targetArray[3] = Integer.parseInt(node.getTextContent());
@@ -331,7 +339,6 @@ class XML_read {
                 break;
         }
     }
-
 
 
     /**
