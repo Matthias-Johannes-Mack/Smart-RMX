@@ -116,7 +116,7 @@ public class SchedularUtil {
 
         if (!BusDepot.getBusDepot().busExists(actionArray[0])) {
             // bus with the given id doesnt exist
-            System.err.println("Bus with id " + actionArray[0] + " from rule does not exist!");
+            System.out.println("Bus with id " + actionArray[0] + " from rule does not exist!");
             return;
         }
         // bus exists
@@ -134,7 +134,7 @@ public class SchedularUtil {
         } catch (OutOfRangeException e) {
             // is thrown if the new byteValue in the calculation of an ActionMessageIncDecRement
             // is Out of Range of a Byte not(0 <= newByteValue <= 255)
-            System.out.println("Increment / Decrement is out of Range of an Byte: Low: " + e.getLo() + " High: " + e.getHi());
+            System.out.println("Increment / Decrement is out of Range of an Byte: " + e.getMessage());
             return;
         }
 
