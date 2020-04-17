@@ -1,10 +1,8 @@
 package connection;
 
-import java.util.Scanner;
-
 import javax.swing.JOptionPane;
 
-import Utilities.Constants;
+import utilities.Constants;
 
 /**
  * Question dialog for the SocketConnector and the ServerReload

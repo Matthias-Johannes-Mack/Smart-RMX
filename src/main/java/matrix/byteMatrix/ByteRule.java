@@ -1,11 +1,6 @@
-package byteMatrix;
+package matrix.byteMatrix;
 
-import action.ActionSequence;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Objects;
+import action.actionSequence.ActionSequence;
 
 /**
  * Class for a byte Rule
@@ -14,9 +9,9 @@ import java.util.Objects;
  */
 public class ByteRule {
 
-	Condition conditionOne;
+	ByteCondition byteConditionOne;
 
-	Condition conditionTwo;
+	ByteCondition byteConditionTwo;
 
 	/**
 	 * actionSequence that is triggered if the Rule is true
@@ -31,22 +26,22 @@ public class ByteRule {
 	 * conditionTwo
 	 *
 	 * @param conditinOne
-	 * @param conditionTwo
+	 * @param byteConditionTwo
 	 * @param actionSequence
 	 */
-	public ByteRule(Condition conditionOne, Condition conditionTwo, ActionSequence actionSequence) {
+	public ByteRule(ByteCondition byteConditionOne, ByteCondition byteConditionTwo, ActionSequence actionSequence) {
 
-		int compareResult = conditionOne.compareTo(conditionTwo);
+		int compareResult = byteConditionOne.compareTo(byteConditionTwo);
 
 
 		if(compareResult <= 0) {
 			// condition one is smaller or they are equal
-			this.conditionOne = conditionOne;
-			this.conditionTwo = conditionTwo;
+			this.byteConditionOne = byteConditionOne;
+			this.byteConditionTwo = byteConditionTwo;
 		} else {
 			// condition two is smaller
-			this.conditionOne = conditionTwo;
-			this.conditionTwo = conditionOne;
+			this.byteConditionOne = byteConditionTwo;
+			this.byteConditionTwo = byteConditionOne;
 		}
 
 		this.actionSequence = actionSequence;
@@ -61,7 +56,7 @@ public class ByteRule {
 	public boolean check(int conditionOneValue, int conditionTwoValue){
 		System.out.println("Value one " + conditionOneValue + "Value two " + conditionTwoValue);
 
-		return (conditionOne.checkCondition(conditionOneValue) && conditionTwo.checkCondition(conditionTwoValue));
+		return (byteConditionOne.checkCondition(conditionOneValue) && byteConditionTwo.checkCondition(conditionTwoValue));
 	}
 
 	public ActionSequence getActionSequence() {
@@ -79,14 +74,14 @@ public class ByteRule {
 		}
 
 		ByteRule byteRule = (ByteRule) o;
-		return conditionOne.equals(byteRule.conditionOne) && conditionTwo.equals(byteRule.conditionTwo);
+		return byteConditionOne.equals(byteRule.byteConditionOne) && byteConditionTwo.equals(byteRule.byteConditionTwo);
 	}
 
-	public Condition getConditionOne() {
-		return conditionOne;
+	public ByteCondition getByteConditionOne() {
+		return byteConditionOne;
 	}
 
-	public Condition getConditionTwo() {
-		return conditionTwo;
+	public ByteCondition getByteConditionTwo() {
+		return byteConditionTwo;
 	}
 }

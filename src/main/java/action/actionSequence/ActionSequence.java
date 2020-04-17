@@ -1,4 +1,6 @@
-package action;
+package action.actionSequence;
+
+import action.actions.Action;
 
 import java.util.ArrayList;
 import java.util.List;

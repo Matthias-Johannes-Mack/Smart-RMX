@@ -9,11 +9,11 @@ import java.util.Random;
 import matrix.MatrixUtil;
 import org.junit.Test;
 
-import action.Action;
-import action.ActionSequence;
-import action.ActionWait;
+import action.actions.Action;
+import action.actionSequence.ActionSequence;
+import action.actions.ActionWait;
 import bus.BusDepot;
-import matrix.BitMatrix;
+import matrix.bitMatrix.BitMatrix;
 
 /**
  * Class that tests the matrix

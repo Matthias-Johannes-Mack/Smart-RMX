@@ -1,11 +1,13 @@
-package action;
+package action.actions.actionMessages;
+
+import action.actions.Action;
 
 import java.util.Arrays;
 
 /**
  * class that represents an action that will send a message to the RMX PC Zentrale that changes the status of a whole byte
  */
-public class ActionMessageByte extends Action{
+public class ActionMessageByte extends Action {
 
     /**
      * Integer Array that contains the info of the actionMessageByte

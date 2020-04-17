@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import Utilities.ByteUtil;
+import utilities.ByteUtil;
 
 /**
  * Class for util tests

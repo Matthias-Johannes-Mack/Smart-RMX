@@ -1,6 +1,6 @@
-package schedular;
+package schedular.utilities;
 
-import action.ActionSequence;
+import action.actionSequence.ActionSequence;
 
 /**
  * runnable that is executed after a specified waitTime of an ActionWait

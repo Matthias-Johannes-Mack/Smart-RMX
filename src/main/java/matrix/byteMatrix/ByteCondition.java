@@ -1,19 +1,19 @@
-package byteMatrix;
+package matrix.byteMatrix;
 
 
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class Condition implements Comparable<Condition> {
+public class ByteCondition implements Comparable<ByteCondition> {
 
-    HashMap<ConditionType, Integer> conditionTypeValue;
+    HashMap<ByteConditionType, Integer> conditionTypeValue;
 
     /**
      * Integer Array for first Conditions [Bus, SystemAddress]
      */
     private Integer[] conditionAdress;
 
-    public Condition(Integer[] conditionAdress) {
+    public ByteCondition(Integer[] conditionAdress) {
         conditionTypeValue = new HashMap<>();
         this.conditionAdress = conditionAdress;
     }
@@ -26,7 +26,7 @@ public class Condition implements Comparable<Condition> {
         boolean result = true;
 
         // only iterates through existing condtionTypes in the Map
-        loop: for (ConditionType conditionType : conditionTypeValue.keySet()) {
+        loop: for (ByteConditionType conditionType : conditionTypeValue.keySet()) {
 
             System.out.println("KEYSET IN CHECK OF CONDITION: " + Arrays.toString(conditionTypeValue.keySet().toArray()));
 
@@ -73,7 +73,7 @@ public class Condition implements Comparable<Condition> {
     private boolean checkEqual(int currentByteValue) {
 
 
-        int compareResult = Integer.valueOf(currentByteValue).compareTo(conditionTypeValue.get(ConditionType.EQUAL));
+        int compareResult = Integer.valueOf(currentByteValue).compareTo(conditionTypeValue.get(ByteConditionType.EQUAL));
 
 
         if (compareResult == 0) {
@@ -86,7 +86,7 @@ public class Condition implements Comparable<Condition> {
 
     private boolean checkNotEqual(int currentByteValue) {
 
-        int compareResult = Integer.valueOf(currentByteValue).compareTo(conditionTypeValue.get(ConditionType.NOTEQUAL));
+        int compareResult = Integer.valueOf(currentByteValue).compareTo(conditionTypeValue.get(ByteConditionType.NOTEQUAL));
 
         if (compareResult != 0) {
             return true;
@@ -98,7 +98,7 @@ public class Condition implements Comparable<Condition> {
 
     private boolean checkSmaller(int currentByteValue) {
 
-        int compareResult = Integer.valueOf(currentByteValue).compareTo(conditionTypeValue.get(ConditionType.SMALLER));
+        int compareResult = Integer.valueOf(currentByteValue).compareTo(conditionTypeValue.get(ByteConditionType.SMALLER));
 
         if (compareResult < 0) {
             return true;
@@ -110,7 +110,7 @@ public class Condition implements Comparable<Condition> {
 
     private boolean checkBigger(int currentByteValue) {
 
-        int compareResult = Integer.valueOf(currentByteValue).compareTo(conditionTypeValue.get(ConditionType.BIGGER));
+        int compareResult = Integer.valueOf(currentByteValue).compareTo(conditionTypeValue.get(ByteConditionType.BIGGER));
 
         if (compareResult > 0) {
             return true;
@@ -121,6 +121,25 @@ public class Condition implements Comparable<Condition> {
     }
 
 
+    /*
+       SETTER
+    */
+    public void setEqual(int conditionEqualValue) {
+        conditionTypeValue.put(ByteConditionType.EQUAL, conditionEqualValue);
+    }
+
+    public void setNotEqual(int conditionNotEqualValue) {
+        conditionTypeValue.put(ByteConditionType.NOTEQUAL, conditionNotEqualValue);
+    }
+
+    public void setBigger(int conditionBiggerValue) {
+        conditionTypeValue.put(ByteConditionType.BIGGER, conditionBiggerValue);
+    }
+
+    public void setSmaller(int conditionSmallerValue) {
+        conditionTypeValue.put(ByteConditionType.SMALLER, conditionSmallerValue);
+    }
+
     /**
      * o1.compareTo( o2 ) < 0 o1 < o2
      * o1.compareTo( o2 ) ==     o1 == o2
@@ -130,7 +149,7 @@ public class Condition implements Comparable<Condition> {
      * @return
      */
     @Override
-    public int compareTo(Condition o) {
+    public int compareTo(ByteCondition o) {
 
         if (this.conditionAdress[0] < o.conditionAdress[0]) {
             // this is smaller
@@ -153,25 +172,6 @@ public class Condition implements Comparable<Condition> {
         return 0;
     }
 
-    /*
-       SETTER
-    */
-    public void setEqual(int conditionEqualValue) {
-        conditionTypeValue.put(ConditionType.EQUAL, conditionEqualValue);
-    }
-
-    public void setNotEqual(int conditionNotEqualValue) {
-        conditionTypeValue.put(ConditionType.NOTEQUAL, conditionNotEqualValue);
-    }
-
-    public void setBigger(int conditionBiggerValue) {
-        conditionTypeValue.put(ConditionType.BIGGER, conditionBiggerValue);
-    }
-
-    public void setSmaller(int conditionSmallerValue) {
-        conditionTypeValue.put(ConditionType.SMALLER, conditionSmallerValue);
-    }
-
 
     @Override
     public boolean equals(Object o) {
@@ -183,16 +183,16 @@ public class Condition implements Comparable<Condition> {
             return false;
         }
 
-        Condition condition = (Condition) o;
-        return conditionTypeValue.equals(condition.conditionTypeValue) &&
-                Arrays.equals(conditionAdress, condition.conditionAdress);
+        ByteCondition byteCondition = (ByteCondition) o;
+        return conditionTypeValue.equals(byteCondition.conditionTypeValue) &&
+                Arrays.equals(conditionAdress, byteCondition.conditionAdress);
     }
 
     public Integer[] getConditionAdress() {
         return conditionAdress;
     }
 
-    public HashMap<ConditionType, Integer> getConditionTypeValue() {
+    public HashMap<ByteConditionType, Integer> getConditionTypeValue() {
         return conditionTypeValue;
     }
 }

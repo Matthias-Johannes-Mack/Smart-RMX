@@ -1,6 +1,6 @@
 package xml;
 
-import byteMatrix.Condition;
+import matrix.byteMatrix.ByteCondition;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,21 +12,21 @@ class RulePrintUtil {
 
     /**
      * prints out a byte rule
-     * @param conditionOneObj conditionOne Object
-     * @param conditionTwoObj conditionT&wo Object
+     * @param byteConditionOneObj conditionOne Object
+     * @param byteConditionTwoObj conditionT&wo Object
      * @param actions ArrayList<XML_ActionWrapper>
      */
-    protected static void printByteRule(Condition conditionOneObj, Condition conditionTwoObj, ArrayList<XML_ActionWrapper> actions) {
+    protected static void printByteRule(ByteCondition byteConditionOneObj, ByteCondition byteConditionTwoObj, ArrayList<XML_ActionWrapper> actions) {
         System.out.println("----RULE----");
         System.out.println("--Byte Condition--");
 
         System.out.println("-Condition 1-");
-        System.out.println("Address: " + Arrays.toString(conditionOneObj.getConditionAdress()));
-        conditionOneObj.getConditionTypeValue().forEach((key,value) -> System.out.println(key + ": " + value));
+        System.out.println("Address: " + Arrays.toString(byteConditionOneObj.getConditionAdress()));
+        byteConditionOneObj.getConditionTypeValue().forEach((key, value) -> System.out.println(key + ": " + value));
 
         System.out.println("-Condition 2-");
-        System.out.println("Address: " + Arrays.toString(conditionTwoObj.getConditionAdress()));
-        conditionTwoObj.getConditionTypeValue().forEach((key,value) -> System.out.println(key + ": " + value));
+        System.out.println("Address: " + Arrays.toString(byteConditionTwoObj.getConditionAdress()));
+        byteConditionTwoObj.getConditionTypeValue().forEach((key, value) -> System.out.println(key + ": " + value));
         System.out.println("--End Byte Condition--");
 
         printAction(actions);

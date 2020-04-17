@@ -1,4 +1,6 @@
-package action;
+package action.actions.actionMessages;
+
+import action.actions.Action;
 
 import java.util.Arrays;
 

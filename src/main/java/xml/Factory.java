@@ -1,10 +1,16 @@
 package xml;
 
 import action.*;
-import byteMatrix.ByteMatrix;
-import byteMatrix.ByteRule;
-import byteMatrix.Condition;
-import matrix.BitMatrix;
+import action.actions.*;
+import action.actionSequence.ActionSequence;
+import action.actions.actionMessages.ActionMessageBit;
+import action.actions.actionMessages.ActionMessageBitToggle;
+import action.actions.actionMessages.ActionMessageByte;
+import action.actions.actionMessages.ActionMessageByteIncDecRement;
+import matrix.byteMatrix.ByteCondition;
+import matrix.byteMatrix.ByteMatrix;
+import matrix.byteMatrix.ByteRule;
+import matrix.bitMatrix.BitMatrix;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -66,11 +72,11 @@ public class Factory {
 	 */
 	protected void addByteRule(Integer[] conditionOne, Integer[] conditionTwo, ArrayList<XML_ActionWrapper> actions) {
 		ActionSequence actionSequence = createActionSequence(actions);
-		Condition conditionOneObj = createCondition(conditionOne);
-		Condition conditionTwoObj = createCondition(conditionTwo);
+		ByteCondition byteConditionOneObj = createCondition(conditionOne);
+		ByteCondition byteConditionTwoObj = createCondition(conditionTwo);
 
-		RulePrintUtil.printByteRule(conditionOneObj, conditionTwoObj, actions);
-		byteRules.add(new ByteRule(conditionOneObj, conditionTwoObj, actionSequence));
+		RulePrintUtil.printByteRule(byteConditionOneObj, byteConditionTwoObj, actions);
+		byteRules.add(new ByteRule(byteConditionOneObj, byteConditionTwoObj, actionSequence));
 	}
 
 	/**
@@ -106,9 +112,9 @@ public class Factory {
 	 * @param conditionArray [Bus, Systemadress, Equals, NotEquals, Bigger, Smaller]
 	 * @return Condition Object
 	 */
-	private Condition createCondition(Integer[] conditionArray) {
+	private ByteCondition createCondition(Integer[] conditionArray) {
 		//only need the bus and Systemadress for the constructor
-		Condition cond = new Condition(Arrays.copyOfRange(conditionArray, 0, 2));
+		ByteCondition cond = new ByteCondition(Arrays.copyOfRange(conditionArray, 0, 2));
 
 		for(int i = 2; i <= 5; i++) {
 			if(conditionArray[i] != null) {

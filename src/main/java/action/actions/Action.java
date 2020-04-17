@@ -1,4 +1,9 @@
-package action;
+package action.actions;
+
+import action.actions.actionMessages.ActionMessageBit;
+import action.actions.actionMessages.ActionMessageBitToggle;
+import action.actions.actionMessages.ActionMessageByte;
+import action.actions.actionMessages.ActionMessageByteIncDecRement;
 
 /**
  * abstract class as template for an action

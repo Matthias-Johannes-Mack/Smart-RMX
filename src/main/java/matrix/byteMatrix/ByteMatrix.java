@@ -1,7 +1,7 @@
-package byteMatrix;
+package matrix.byteMatrix;
 
-import Utilities.Constants;
-import action.ActionSequence;
+import utilities.Constants;
+import action.actionSequence.ActionSequence;
 import matrix.MatrixUtil;
 
 public class ByteMatrix {
@@ -61,9 +61,9 @@ public class ByteMatrix {
 
     public void addByteRule(ByteRule rule) {
         //[Bus][Systemadress] smaller index of the two conditions
-        Integer[] conditionOneAdress = rule.getConditionOne().getConditionAdress();
+        Integer[] conditionOneAdress = rule.getByteConditionOne().getConditionAdress();
         //[Bus][Systemadress] bigger index of the two conditions
-        Integer[] conditionTwoAdress = rule.getConditionTwo().getConditionAdress();
+        Integer[] conditionTwoAdress = rule.getByteConditionTwo().getConditionAdress();
         //[Bus][Systemadress] bigger index of the two conditions
 
 

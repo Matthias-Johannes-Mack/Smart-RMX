@@ -2,7 +2,7 @@ package xml;
 
 
 import org.xml.sax.SAXException;
-import Utilities.Constants;
+import utilities.Constants;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;

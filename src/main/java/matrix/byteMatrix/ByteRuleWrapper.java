@@ -1,6 +1,6 @@
-package byteMatrix;
+package matrix.byteMatrix;
 
-import action.ActionSequence;
+import action.actionSequence.ActionSequence;
 
 import java.util.ArrayList;
 

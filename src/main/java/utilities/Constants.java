@@ -1,4 +1,4 @@
-package Utilities;
+package utilities;
 
 /**
  * Class containing constants for the Connection Package

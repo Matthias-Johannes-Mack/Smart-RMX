@@ -1,7 +1,7 @@
 package connection;
 
-import Utilities.ByteUtil;
-import Utilities.Constants;
+import utilities.ByteUtil;
+import utilities.Constants;
 import bus.BusDepot;
 import schedular.Schedular;
 

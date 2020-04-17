@@ -1,4 +1,4 @@
-package action;
+package action.actionSequence;
 
 /**
  * Class that holds the ActionSequences for an field in the matrix

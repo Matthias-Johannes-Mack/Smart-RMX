@@ -1,6 +1,6 @@
 package matrix;
 
-import Utilities.Constants;
+import utilities.Constants;
 
 public class MatrixUtil {
 
