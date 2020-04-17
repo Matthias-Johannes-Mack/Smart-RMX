@@ -10,6 +10,7 @@ class XML_ActionWrapper {
      * int Array containing the array for a the specific type of the action
      *
      * int Array for ActionMessageBit: [Bus][Systemadress][Bit][BitValue]
+     * int Array for ActonMessageBitToggle: [Bus][Systemadress][BitIndex]
      * int Array for ActionMessageByte: [Bus][Systemadress][ByteValue]
      * int Array for waitAction: [Wait time in ms]
      * int Array for Byte Increment [bus][systemadress][value]
