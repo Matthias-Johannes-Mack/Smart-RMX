@@ -132,4 +132,19 @@ public class SocketConnector {
 			System.out.println(getConStateStr());
 		}
 	}
+
+	/**
+	 * @return the ip
+	 */
+	public static String getIp() {
+		return ip;
+	}
+
+	/**
+	 * @return the port
+	 */
+	public static int getPort() {
+		return port;
+	}
+	
 }

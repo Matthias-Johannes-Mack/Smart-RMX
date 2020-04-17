@@ -11,7 +11,8 @@ public class XML_Constants {
     public static final String Bit = "Bit";
     public static final String SystemAddress = "SystemAddress";
     public static final String Bus = "Bus";
-    public static final String Action = "Action";
+    public static final String BitAction = "BitAction";
+    public static final String ByteAction = "ByteAction";
     public static final String Actions = "Actions";
     public static final String Condition = "Condition";
     public static final String Rule = "Rule";
@@ -21,4 +22,6 @@ public class XML_Constants {
     public static final String Bigger = "Bigger";
     public static final String Smaller = "Smaller";
     public static final String Toggle = "toggle";
+    public static final String BitConditions = "BitConditions";
+    public static final String ByteConditions = "ByteConditions";
 }

@@ -81,11 +81,11 @@ class XML_Parser {
 		String constant = XMLConstants.W3C_XML_SCHEMA_NS_URI;
 		SchemaFactory schemaFactory = SchemaFactory.newInstance(constant);
 		// StreamSource to load the XSD from the resource method
-		//TODO Schema schema = schemaFactory.newSchema(new StreamSource(ClassLoader.getSystemResourceAsStream("RuleSet.xsd")));
+		Schema schema = schemaFactory.newSchema(new StreamSource(ClassLoader.getSystemResourceAsStream("RuleSet.xsd")));
 
 		// ignore comments and add xsd schema for validation of the xml document
 		documentBuilderFactory.setIgnoringComments(true);
-		//TODO documentBuilderFactory.setSchema(schema);
+		documentBuilderFactory.setSchema(schema);
 
 		DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
 		// custom ErrorHandler for setting validationResult to false if xml document not
