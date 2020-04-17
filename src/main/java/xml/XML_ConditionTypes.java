@@ -4,9 +4,21 @@ package xml;
  * contains the Condition Types that can be found in the XML
  */
 public enum XML_ConditionTypes {
-    BITCONDITION(4), BYTECONDITION(6);
+    /**
+     *[Bus, Systemadddess,Bit, Bitvalue]
+     */
+    BIT_CONDITION(4),
 
-    private XML_ConditionTypes(int arrayLength) {
+    /**
+     *[Bus, Systemaddress, Equals, NotEquals, Bigger, Smaller]
+     */
+    BYTE_CONDITION(6);
+
+    /**
+     * private constructor for the arraylengths
+     * @param arrayLength
+     */
+    XML_ConditionTypes(int arrayLength) {
         this.ARRAY_LENGTH = arrayLength;
     }
 

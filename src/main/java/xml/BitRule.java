@@ -3,7 +3,7 @@ package xml;
 import java.util.ArrayList;
 
 /**
- * Rule object for storing the conditions and actions until the matrix is created
+ * Rule object for storing the bit conditions and actions until the matrix is created
  */
 public class BitRule {
     /**
@@ -15,7 +15,7 @@ public class BitRule {
      */
     private Integer[] conditionTwo;
     /**
-     * List containing Integer Arrays for each Action [Bus, SystemAddress, Bit, Bitvalue] and Arrays for the Wait operation [time in ms]
+     * List containing Integer Arrays for each Actions and Wait Actions
      */
     private ArrayList<XML_ActionWrapper> actions;
 

@@ -14,6 +14,7 @@ class XML_ActionWrapper {
      * int Array for waitAction: [Wait time in ms]
      * int Array for Byte Increment [bus][systemadress][value]
      * int Array for Byte Decrement [bus][systemadress][ - value]
+     *  int Array for Bit Toggle [Bus][Systemadress][Bit]
      */
     private int[] actionArray;
 
@@ -28,6 +29,7 @@ class XML_ActionWrapper {
      * @param type the XML_ActionType
      */
     public XML_ActionWrapper(int[] actionArray, XML_ActionType type) {
+        //shortens the array to the appropriate length for the type
         this.actionArray = Arrays.copyOfRange(actionArray, 0, type.ARRAY_LENGTH);
         this.type = type;
     }
@@ -38,8 +40,9 @@ class XML_ActionWrapper {
      * ActionMessageBit: [Bus][Systemadress][Bit][BitValue]
      * ActionMessageByte: [Bus][Systemadress][ByteValue]
      * waitAction: [Wait time in ms]
-     * Byte Increment [bus][systemadress][value]
-     * Byte Decrement [bus][systemadress][ - value]
+     * Byte Increment: [bus][systemadress][value]
+     * Byte Decrement: [bus][systemadress][ - value]
+     * BitToggle: [Bus][Systemadress][Bit]
      */
     public int[] getActionArray() {
         return actionArray;

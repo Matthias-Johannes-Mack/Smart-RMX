@@ -123,23 +123,23 @@ class XML_read {
                 Conditions
                  */
                 if (ruleNodeChild.getNodeName().equals(XML_Constants.BitConditions)) {
-                    conditionType = XML_ConditionTypes.BITCONDITION;
+                    conditionType = XML_ConditionTypes.BIT_CONDITION;
 
                     //[Bus, Systemadddess,Bit, Bitvalue]
-                    conditionOne = new Integer[XML_ConditionTypes.BITCONDITION.ARRAY_LENGTH];
-                    conditionTwo = new Integer[XML_ConditionTypes.BITCONDITION.ARRAY_LENGTH];
+                    conditionOne = new Integer[XML_ConditionTypes.BIT_CONDITION.ARRAY_LENGTH];
+                    conditionTwo = new Integer[XML_ConditionTypes.BIT_CONDITION.ARRAY_LENGTH];
 
                     //check every child node of BitConditions
                     iterateOverConditionChildNodes(conditionOne, conditionTwo, ruleNodeChild);
                 }
 
                 if (ruleNodeChild.getNodeName().equals(XML_Constants.ByteConditions)) {
-                    conditionType = XML_ConditionTypes.BYTECONDITION;
+                    conditionType = XML_ConditionTypes.BYTE_CONDITION;
 
 
                     //[Bus, Systemaddress, Equals, NotEquals, Bigger, Smaller]
-                    conditionOne = new Integer[XML_ConditionTypes.BYTECONDITION.ARRAY_LENGTH];
-                    conditionTwo = new Integer[XML_ConditionTypes.BYTECONDITION.ARRAY_LENGTH];
+                    conditionOne = new Integer[XML_ConditionTypes.BYTE_CONDITION.ARRAY_LENGTH];
+                    conditionTwo = new Integer[XML_ConditionTypes.BYTE_CONDITION.ARRAY_LENGTH];
 
                     //check every child node of Bytecondition
                     iterateOverConditionChildNodes(conditionOne, conditionTwo, ruleNodeChild);
@@ -184,10 +184,10 @@ class XML_read {
             }
 
             //  Iterating over one rule block done, add conditions and actions to new rule
-            if (conditionType == XML_ConditionTypes.BITCONDITION) {
+            if (conditionType == XML_ConditionTypes.BIT_CONDITION) {
                 Factory.addBitRule(conditionOne, conditionTwo, actions);
             }
-            if (conditionType == XML_ConditionTypes.BYTECONDITION) {
+            if (conditionType == XML_ConditionTypes.BYTE_CONDITION) {
                 /*
                  the xsd schema cannot specify if the conditions of the byte conditions are correct
                  it could happen that none of Equal, NotEqual, Bigger, Smaller is selected which cant be checked in
@@ -283,7 +283,15 @@ class XML_read {
 
     /**
      * helper method for readXML
-     * processes the child nodes of a action node and saves them in thr target array
+     * processes the child nodes of a action node and saves them in thr target array, array length of target array is the max length of the different array types
+     * and will be shortened accordingly int the XML_Action Wrapper
+     *
+     * int Array for ActionMessageBit: [Bus][SystemAdrress][Bit][BitValue]
+     * int Array for ActionMessageByte: [Bus][SystemAdrress][ByteValue]
+     * int Array for waitAction: [Wait time in ms]
+     * int Array for Byte Increment [bus][SystemAdrress][value]
+     * int Array for Byte Decrement [bus][SystemAddress][ - value]
+     * int Array for Bit Toggle [Bus][SystemAddress][Bit]
      *
      * @param targetArray target array to whom should be written
      * @param node  node whose content should be written to the array
