@@ -43,7 +43,7 @@ public abstract class Action {
 
                 return object.equals(o);
             }
-        } else if (obj instanceof ActionMessageBit) {
+        } else if (obj instanceof ActionWait) {
 
             if (this instanceof ActionWait) {
                 // obj is a ActionWait and this is a ActionWait
@@ -53,7 +53,7 @@ public abstract class Action {
                 return object.equals(o);
             }
 
-        } else if (obj instanceof ActionMessageBit) {
+        } else if (obj instanceof ActionMessageByte) {
             if (this instanceof ActionMessageByte) {
                 // obj is a ActionMessageByte and this is a ActionMessageByte
                 ActionMessageByte o = (ActionMessageByte) this; // this

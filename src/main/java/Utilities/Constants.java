@@ -27,9 +27,11 @@ public final class Constants {
 	public static final int[] POSITIVE_HANDSHAKE = new int[] { RMX_HEAD, 0x04, 0x00, 0x00 };
 
 	// Bus
+	public static final int OPCODE_WRITE_TO_BUS_ADRESS_FAKEMESSAGE = 0x99;
+	public static final int OPCODE_WRITE_TO_BUS_ADRESS_RMXMESSAGE = 0x05;
 	public static final int NUMBER_SYSTEMADRESSES_PER_BUS = 112;
 	public final static int NUMBER_BITS_PER_BUS = NUMBER_SYSTEMADRESSES_PER_BUS * 8; // each systemadress has 8 bits (1
 																						// byte)
-	public final static int NUMBER_OF_BUSSES = 1; // TODO wenn mehrere Busse -> variable erhöhen (für checkall)
+	public static final int NUMBER_OF_BUSSES = 1; // TODO wenn mehrere Busse -> variable erhöhen (für checkall)
 
 }
