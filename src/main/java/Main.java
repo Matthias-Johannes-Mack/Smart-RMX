@@ -28,7 +28,7 @@ public class Main {
 	 */
 	private static void command() {
 		// run the console
-		Console.runConsole();
+		Console.getConsole().runConsole();
 		head();
 		// open the file
 		XML_IO xml_io = XML_IO.getXML_IO();

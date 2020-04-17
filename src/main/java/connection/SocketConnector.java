@@ -134,6 +134,7 @@ public class SocketConnector {
 	}
 
 	/**
+	 * Getter for the ip
 	 * @return the ip
 	 */
 	public static String getIp() {
@@ -141,10 +142,10 @@ public class SocketConnector {
 	}
 
 	/**
+	 * Getter for the port
 	 * @return the port
 	 */
 	public static int getPort() {
 		return port;
 	}
-	
 }
