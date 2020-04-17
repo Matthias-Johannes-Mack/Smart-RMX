@@ -51,11 +51,6 @@ class XML_read {
     private static XML_ActionType actionType;
 
     /**
-     * indicates of which type the current read in condition is
-     */
-    private XML_ConditionTypes conditionType;
-
-    /**
      the xsd schema cannot specify if the conditions of the byte conditions are correct
      it could happen that none of Equal, NotEqual, Bigger, Smaller is selected which cant be checked in
      Boolean
@@ -116,6 +111,8 @@ class XML_read {
             // set to default
             byteConditionValueSet[0] = false;
             byteConditionValueSet[1] = false;
+            // indicates of which type the current read in conditions are
+            XML_ConditionTypes conditionType = null;
 
 
             //iterate over every child node of the rule
@@ -126,6 +123,8 @@ class XML_read {
                 Conditions
                  */
                 if (ruleNodeChild.getNodeName().equals(XML_Constants.BitConditions)) {
+                    conditionType = XML_ConditionTypes.BITCONDITION;
+
                     //[Bus, Systemadddess,Bit, Bitvalue]
                     conditionOne = new Integer[XML_ConditionTypes.BITCONDITION.ARRAY_LENGTH];
                     conditionTwo = new Integer[XML_ConditionTypes.BITCONDITION.ARRAY_LENGTH];
@@ -135,6 +134,9 @@ class XML_read {
                 }
 
                 if (ruleNodeChild.getNodeName().equals(XML_Constants.ByteConditions)) {
+                    conditionType = XML_ConditionTypes.BYTECONDITION;
+
+
                     //[Bus, Systemaddress, Equals, NotEquals, Bigger, Smaller]
                     conditionOne = new Integer[XML_ConditionTypes.BYTECONDITION.ARRAY_LENGTH];
                     conditionTwo = new Integer[XML_ConditionTypes.BYTECONDITION.ARRAY_LENGTH];
@@ -154,7 +156,8 @@ class XML_read {
 
                         //Message Action
                         if (actionsNodeChild.getNodeName().equals(XML_Constants.BitAction) || actionsNodeChild.getNodeName().equals(XML_Constants.ByteAction)) {
-                            int[] actionArray = new int[4];
+                            // Array of the max length of the action arrays that holds all the information regardless of action type which will be processed later
+                            int[] actionArray = new int[XML_ActionType.MAX_LENGTH_OF_ACTION_ARRAY];
 
                             //check every child node of message action
                             for (Node actionNodeChild : iterable(actionsNodeChild.getChildNodes())) {
@@ -237,6 +240,8 @@ class XML_read {
      * processes the Bus, SystemAddress and Bit node of the Action and Condition nodes and puts them in the given array
      *
      * @param targetArray array to which the node values should be written
+     *      for a bit condition: [Bus][Systemaddress][Bit][BitValue]
+     *      for a byte condition [Bus, Systemadress, Equals, NotEquals, Bigger, Smaller]
      * @param node        node whose content should be written to the array
      * @param conditionIndex   index of the condition in byteConditionValueSet
      *
@@ -252,30 +257,25 @@ class XML_read {
                 break;
             case XML_Constants.Bit:
                 targetArray[2] = Integer.parseInt(node.getTextContent());
-                conditionType = XML_ConditionTypes.BITCONDITION;
                 break;
             case XML_Constants.BitValue:
                 targetArray[3] = Integer.parseInt(node.getTextContent());
                 break;
             case XML_Constants.Equal:
                 targetArray[2] = Integer.parseInt(node.getTextContent());
-                conditionType = XML_ConditionTypes.BYTECONDITION;
                 // indicates that the byteCondition is containing a correct definition
                 byteConditionValueSet[conditionIndex] = true;
                 break;
             case XML_Constants.NotEqual:
                 targetArray[3] = Integer.parseInt(node.getTextContent());
-                conditionType = XML_ConditionTypes.BYTECONDITION;
                 byteConditionValueSet[conditionIndex] = true;
                 break;
             case XML_Constants.Bigger:
                 targetArray[4] = Integer.parseInt(node.getTextContent());
-                conditionType = XML_ConditionTypes.BYTECONDITION;
                 byteConditionValueSet[conditionIndex] = true;
                 break;
             case XML_Constants.Smaller:
                 targetArray[5] = Integer.parseInt(node.getTextContent());
-                conditionType = XML_ConditionTypes.BYTECONDITION;
                 byteConditionValueSet[conditionIndex] = true;
                 break;
         }
@@ -283,10 +283,7 @@ class XML_read {
 
     /**
      * helper method for readXML
-     * processes the Bus, SystemAddress and Bit node of the Action and Condition nodes and puts them in the given array
-     *
-     * for a bit action message targetArray: [Bus][Systemaddress][Bit][BitValue]
-     * for a byte action message targetArray: [Bus, Systemadress, Equals, NotEquals, Bigger, Smaller]
+     * processes the child nodes of a action node and saves them in thr target array
      *
      * @param targetArray target array to whom should be written
      * @param node  node whose content should be written to the array

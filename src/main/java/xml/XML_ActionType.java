@@ -14,7 +14,9 @@ DECREMENT(3), INCREMENT(3), BYTEMESSAGE(3), BITMESSAGE(4), WAIT(1), BITTOGGLE(3)
      * Indicates how long the parsed Array by the XML-Reader is
      */
     public final int ARRAY_LENGTH;
+    public static final int MAX_LENGTH_OF_ACTION_ARRAY = 4;
 }
+
 
 
 
