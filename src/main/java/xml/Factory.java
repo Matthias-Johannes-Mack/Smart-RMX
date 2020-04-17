@@ -23,7 +23,9 @@ public class Factory {
 	 * private constructor to prevent instantiation
 	 */
 	private Factory() {
-
+		bitRules = new ArrayList<>();
+		actionDepot = ActionDepot.getActionDepot();
+		byteRules = new ArrayList<>();
 	}
 
 	/**
@@ -41,70 +43,34 @@ public class Factory {
 
 	// Singleton-Pattern END ________________________________________________
 
-
 	/**
 	 * bit rules that have been read in from the xml, will be set by XML_read class
  	 */
-	private ArrayList<BitRule> bitRules = new ArrayList<>();
+	private ArrayList<BitRule> bitRules;
 
 	/**
 	 * action depot instance
 	 */
-	private ActionDepot actionDepot = ActionDepot.getActionDepot();
+	private ActionDepot actionDepot;
 
 	/**
 	 * byte rules that have been read in from the xml, will be set by XML_read class
 	 */
-	private ArrayList<ByteRule> byteRules = new ArrayList<>();
+	private ArrayList<ByteRule> byteRules;
 
 	/**
 	 * adds a byte rule to the factory
-	 * @param conditionOne [Bus, Systemadress, Equal, NotEqual, Bigger, Smaller] Integer Array
-	 * @param actions Arraylist containg the action Integer Arrays
+	 * @param conditionOne [Bus, Systemadress, Equal, NotEqual, Bigger, Smaller]
+	 * @param conditionTwo [Bus, Systemadress, Equal, NotEqual, Bigger, Smaller]
+	 * @param actions Arraylist containg the actions as XML_ActionWrapper
 	 */
-	protected void addByteRule(Integer[] conditionOne, Integer[] conditionTwo, ArrayList actions) {
+	protected void addByteRule(Integer[] conditionOne, Integer[] conditionTwo, ArrayList<XML_ActionWrapper> actions) {
 		ActionSequence actionSequence = createActionSequence(actions);
 		Condition conditionOneObj = createCondition(conditionOne);
 		Condition conditionTwoObj = createCondition(conditionTwo);
 
-		System.out.println("ConditionONe in addByteRule: " + Arrays.toString(conditionOne));
-		System.out.println("ConditionONe in addByteRule: " + Arrays.toString(conditionTwo));
-
+		RulePrintUtil.printByteRule(conditionOneObj, conditionTwoObj, actions);
 		byteRules.add(new ByteRule(conditionOneObj, conditionTwoObj, actionSequence));
-	}
-
-	/**
-	 * creates a condition object
-	 * @param conditionArray [Bus, Systemadress, Equals, NotEquals, Bigger, Smaller]
-	 * @return Condition Object
-	 */
-	private Condition createCondition(Integer[] conditionArray) {
-		System.out.println("ConditionArray in createCondition: " + Arrays.toString(conditionArray));
-
-		//only need the bus and Systemadress for the constructor
-		Condition cond = new Condition(Arrays.copyOfRange(conditionArray, 0, 2));
-
-		if(conditionArray[2] != null) {
-			cond.setEqual(conditionArray[2]);
-			System.out.println("EQUAL");
-		}
-
-		if(conditionArray[3] != null) {
-			cond.setNotEqual(conditionArray[3]);
-			System.out.println("NOTEQUAL");
-		}
-
-		if(conditionArray[4] != null) {
-			cond.setBigger(conditionArray[4]);
-			System.out.println("BIGGER");
-		}
-
-		if(conditionArray[5] != null) {
-			cond.setSmaller(conditionArray[5]);
-			System.out.println("SMALLER");
-		}
-
-		return cond;
 	}
 
 	/**
@@ -113,17 +79,9 @@ public class Factory {
 	 * @param conditionsTwo [Bus, SystemAddress, Bit]
 	 * @param actions ArrayList<XML_ActionWrapper>
 	 */
-	protected void addBitRule(Integer[] conditionsOne, Integer[] conditionsTwo, ArrayList actions) {
+	protected void addBitRule(Integer[] conditionsOne, Integer[] conditionsTwo, ArrayList<XML_ActionWrapper> actions) {
+		RulePrintUtil.printBitRule(conditionsOne, conditionsTwo, actions);
 		bitRules.add(new BitRule(conditionsOne, conditionsTwo, actions));
-	}
-
-	/**
-	 * getter for the list containing the rules that have been read in from the rule
-	 * 
-	 * @return ArrayList containing the rules
-	 */
-	protected ArrayList<BitRule> getBitRules() {
-		return bitRules;
 	}
 
 	/**
@@ -144,7 +102,39 @@ public class Factory {
 	}
 
 	/**
-	 * creates an action sequence for a given list of XML_ActionWrapper
+	 * creates a condition object for a byte Objecte
+	 * @param conditionArray [Bus, Systemadress, Equals, NotEquals, Bigger, Smaller]
+	 * @return Condition Object
+	 */
+	private Condition createCondition(Integer[] conditionArray) {
+		//only need the bus and Systemadress for the constructor
+		Condition cond = new Condition(Arrays.copyOfRange(conditionArray, 0, 2));
+
+		for(int i = 2; i <= 5; i++) {
+			if(conditionArray[i] != null) {
+				switch(i) {
+					case 2:
+						cond.setEqual(conditionArray[i]);
+						break;
+					case 3:
+						cond.setNotEqual(conditionArray[i]);
+						break;
+					case 4:
+						cond.setBigger(conditionArray[i]);
+						break;
+					case 5:
+						cond.setSmaller(conditionArray[i]);
+						break;
+				}
+			}
+		}
+
+		return cond;
+	}
+
+	/**
+	 * creates an action sequence for a given list of XML_ActionWrapper to make sure if an action occues multiple times in
+	 * the xml document only one action object is stored in the application to reduce memory
 	 *
 	 * @param actions List of XML_ActionWrappers to be converted into an action sequence
 	 * @return action sequence containing the action elements to be added to the matrix
