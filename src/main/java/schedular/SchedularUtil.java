@@ -21,41 +21,53 @@ public class SchedularUtil {
       - processActionSequenceList
      ----------------------------------------------------------------------------------------------*/
 
+    /**
+     * processes each ActionSequence of the given actionSequenceList
+     *
+     * @param actionSequenceList a actionSequenceList to process
+     */
     public static void processActionSequenceList(List<ActionSequence> actionSequenceList) {
 
-        // check if ActionSequenceList is not empty
         if (!actionSequenceList.isEmpty()) {
             // not empty -> ActionSequence(s) have been triggered and need to be processed
             for (ActionSequence actionSequence : actionSequenceList) {
-                // start processing the actionsequencee at the startIndex 0
+                // start processing the actionSequence at the startIndex 0
                 processActionSequence(actionSequence, 0);
             }
         }
 
     }
 
-
      /*-----------------------------------------------------------------------------------------------
       HELPER METHODS
       - processActionSequence
-      - processAction
+      - processActionMessage
+      - processActionWait
+
+      HELPER METHODS FOR MESSAGES
+      - buildRMXMessage
+      - buildFakeMessage
       - calculateByteValueByActionType
      ----------------------------------------------------------------------------------------------*/
 
     /**
-     * note: this method needs to be public since the ActionMessageWaitRunnables call this method
-     * @param actionSequence
-     * @param startIndex
+     * processes a actionSequence by processing its actions starting from the given startIndex
+     * <p>
+     * note: this method needs to be public since the ActionWaitRunnable also calls this method
+     *
+     * @param actionSequence a actionSequence to process
+     * @param startIndex     the index of the action of the actionSequence to start processing from
      */
     public static void processActionSequence(ActionSequence actionSequence, int startIndex) {
 
-        // for each Action starting from the startIndex
-        loop: for (int i = startIndex; i < actionSequence.getActionCount(); i++) {
+        // for each action starting from the given startIndex
+        loop:
+        for (int i = startIndex; i < actionSequence.getActionCount(); i++) {
 
             // get the action at the given index
             Action action = actionSequence.getAction(i);
 
-            // determine which type of Action is present
+            // determine which type of Action is present and process accordingly
             if (action instanceof ActionMessageBit) {
                 // the action is a ActionMessageBit
                 ActionMessageBit actionMessageBit = (ActionMessageBit) action;
@@ -79,58 +91,95 @@ public class SchedularUtil {
             } else if (action instanceof ActionWait) {
                 // the action is a ActionMessageWait
                 ActionWait actionWait = (ActionWait) action;
-                processActionWait(actionWait.getWaitTime(), actionSequence, i+1);
+                processActionWait(actionWait.getWaitTime(), actionSequence, i + 1);
 
                 break loop; // the new thread continues to process the actionSequence starting from the startIndex
             }
 
-
-        }
+        } // end loop
 
     }
 
+    /**
+     * processes a action specified by the given actionArray according to the given actionType
+     * <p>
+     * resposible for processing all ActionsTypes beside ActionWait:
+     * - ActionMessageBit<br>
+     * - ActionMessageBitToggle<br>
+     * - ActionMessageByte<br>
+     * - ActionMessageByteIncDecRement<br>
+     *
+     * @param actionArray int[] holding the data of the given action
+     * @param actionType  the ActionType of the given action
+     */
     private static void processActionMessage(int[] actionArray, XML_ActionType actionType) {
 
-        if(!BusDepot.getBusDepot().busExists(actionArray[0])) {
+        if (!BusDepot.getBusDepot().busExists(actionArray[0])) {
             // bus with the given id doesnt exist
             System.err.println("Bus with id " + actionArray[0] + " from rule does not exist!");
             return;
         }
         // bus exists
 
+        int[] rmxMessage;
+        int[] fakeMessage;
 
-        // message for updating the server
-        int[] rmxMessage = buildRMXMessage(actionArray, XML_ActionType.BITMESSAGE);
+        try {
+            // message for sending to the RMX-PC-Zentrale
+            rmxMessage = buildRMXMessage(actionArray, actionType);
 
-        // fake message so the changed bits by the action are getting checked in the matrix
-        int[] fakeMessage = buildFakeMessage(actionArray, XML_ActionType.BITMESSAGE);
+            // message for the schedular so the changes are also getting checked in the matrix
+            fakeMessage = buildFakeMessage(actionArray, actionType);
 
-        // update the bus with changes of the fakeMessage
+        } catch (OutOfRangeException e) {
+            // is thrown if the new byteValue in the calculation of an ActionMessageIncDecRement
+            // is Out of Range of a Byte not(0 <= newByteValue <= 255)
+            System.out.println("Increment / Decrement is out of Range of an Byte: Low: " + e.getLo() + " High: " + e.getHi());
+            return;
+        }
+
+        // update the bus with the fakeMessage (to update lastChanges of the given bus and systemadress)
         // format of fakeMessage: format <0x99><BUS><SYSTEMADRESS><VALUE>
         BusDepot.getBusDepot().updateBus(fakeMessage[1], fakeMessage[2], fakeMessage[3]);
 
         // add RMXMessage to the sender for sending to the RMX-PC-Zentrale
         Sender.addMessageQueue(rmxMessage);
 
-        // add fake message to the fakeMessageQueue so the changes are checked
+        // add fake message to the fakeMessageQueue of the schedular
         Schedular.getSchedular().addMessageToFakeQueue(fakeMessage);
     }
 
+    /**
+     * processes a ActionWait specified by the given waitTime and the actionSequence that needs to be continued
+     * to be processed after the given waitTime, starting from the given startIndex.
+     *
+     * @param waitTime       the waitTime of the ActionWait
+     * @param actionSequence the actionSequence to be continued to be processed after the waitTime
+     * @param startIndex     the startIndex to start processing the given actionSequence after the given waitTime
+     */
     private static void processActionWait(long waitTime, ActionSequence actionSequence, int startIndex) {
 
-        if (startIndex == (actionSequence.getActionCount()-1)) {
+        if (startIndex == (actionSequence.getActionCount() - 1)) {
             // the ActionWait is the last Action, no need to start a new Thread
             // -1 since the index starts at 0
+            return;
         }
-        // the ActionWait isn not the last action of the actionSequence
+        // the ActionWait is not the last action of the actionSequence
 
-        // create ActionMessageWaitRunnable that continues to process the actionSequence starting from the startIndex
-        ActionMessageWaitRunnable actionMessageWaitRunnable = new ActionMessageWaitRunnable(actionSequence, startIndex);
+        // create ActionWaitRunnable that continues to process the actionSequence starting from the startIndex
+        ActionWaitRunnable actionMessageWaitRunnable = new ActionWaitRunnable(actionSequence, startIndex);
 
         // start a new thread that starts after the given waitTime
         Schedular.getSchedular().getExecutor().schedule(actionMessageWaitRunnable, waitTime, TimeUnit.MILLISECONDS);
     }
 
+
+    /*-----------------------------------------------------------------------------------------------
+      HELPER METHODS FOR MESSAGES
+      - buildRMXMessage
+      - buildFakeMessage
+      - calculateByteValueByActionType
+     ----------------------------------------------------------------------------------------------*/
 
     /**
      * Builds an RMXMessage to be sent to the RMX-PC-Zentrale specified by the given actionArray, of the given ActionType
@@ -270,7 +319,9 @@ public class SchedularUtil {
                 if (newByteValue > 255 || newByteValue < 0) {
                     throw new OutOfRangeException(newByteValue, 0, 255);
                 }
+
                 break;
+
         } // end switch
 
         // return the new byteValue

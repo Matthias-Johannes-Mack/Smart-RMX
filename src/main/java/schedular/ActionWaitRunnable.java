@@ -2,13 +2,13 @@ package schedular;
 
 import action.ActionSequence;
 
-public class ActionMessageWaitRunnable implements Runnable {
+public class ActionWaitRunnable implements Runnable {
 
         ActionSequence actionSequence;
 
         int startIndex;
 
-        public ActionMessageWaitRunnable(ActionSequence actionSequence, int startIndex) {
+        public ActionWaitRunnable(ActionSequence actionSequence, int startIndex) {
             this.actionSequence = actionSequence;
             this.startIndex = startIndex;
         }
