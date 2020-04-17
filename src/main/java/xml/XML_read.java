@@ -4,9 +4,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.security.sasl.SaslException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -47,14 +45,33 @@ class XML_read {
 
     // Singleton-Pattern END ________________________________________________
 
+    /**
+     * indicates of which tye the current action is
+     */
     private static XML_ActionType actionType;
+
+    /**
+     * indicates of which type the current read in condition is
+     */
+    private XML_ConditionTypes conditionType;
+
+    /**
+     the xsd schema cannot specify if the conditions of the byte conditions are correct
+     it could happen that none of Equal, NotEqual, Bigger, Smaller is selected which cant be checked in
+     Boolean
+     Array containing information if one of the above is set for a byteCondition
+     [ConditionOneByteValueSet, ConditionTwoByteValueSet]
+     */
+    private boolean[] byteConditionValueSet = new boolean[2];
 
     /**
      * xml document that is read in
      */
     private org.w3c.dom.Document xmlDoc;
 
+
     /**
+     * constructor
      * reads and processes the given xml document
      *
      * @param xmlDoc xml Document
@@ -66,18 +83,12 @@ class XML_read {
        readXML();
     }
 
-    //Todo boolean if its a Byte rule
-    private boolean byteRule = false;
-
-
     /**
-     * reads in the rules from the file and saves them to the Factory Class.
-     * A rule consists of
-     * - Integer Array for each of the two Conditions [Bus, SystemAddress, Bit]
-     * - List containing Integer Arrays for each Action [Bus, SystemAddress, Bit, Bitvalue] and Arrays for the Wait operation [time in ms]
+     * reads in the rules from the file and saves them to the Factory Classs
+     * @throws SAXException throws exception if byte Rule does not contain any of these in XML Document: Equal, NotEqual, Bigger, Smaller
      */
     private void readXML() throws SAXException {
-        /**
+        /*
          contains NodeLists containing all of the child elements of a Rule Node. Each index is for a different Rule node
          */
         ArrayList<NodeList> ruleNodeChildrenArrList = new ArrayList<>();
@@ -88,81 +99,53 @@ class XML_read {
 
         xmlDoc.getDocumentElement().normalize();
 
-
         //gets the rule child nodes
         for (Node node : iterable(xmlDoc.getElementsByTagName(XML_Constants.Rule))) {
             NodeList nodeList = node.getChildNodes();
             ruleNodeChildrenArrList.add(nodeList);
         }
 
-
         //iterate over every rule nodes children
         for (NodeList nodeList : ruleNodeChildrenArrList) {
             // contains the first condition
-            Integer[] conditionOne = new Integer[6];
+            Integer[] conditionOne = null;
             // contains the second condition
-            Integer[] conditionTwo = new Integer[6];
+            Integer[] conditionTwo = null;
             // List containing all the actions for one rule als an integer Array
             ArrayList<XML_ActionWrapper> actions = new ArrayList<>();
+            // set to default
+            byteConditionValueSet[0] = false;
+            byteConditionValueSet[1] = false;
 
 
-            // condition counter to know which condition Array to save to
-            int conditionCount = 0;
             //iterate over every child node of the rule
             for (Node ruleNodeChild : iterable(nodeList)) {
                 if (ruleNodeChild.getNodeName().equals("#text")) continue;
 
-
-                //Condition
+                /*
+                Conditions
+                 */
                 if (ruleNodeChild.getNodeName().equals(XML_Constants.BitConditions)) {
+                    //[Bus, Systemadddess,Bit, Bitvalue]
+                    conditionOne = new Integer[XML_ConditionTypes.BITCONDITION.ARRAY_LENGTH];
+                    conditionTwo = new Integer[XML_ConditionTypes.BITCONDITION.ARRAY_LENGTH];
+
                     //check every child node of BitConditions
-                    for (Node bitConditionNodeChild : iterable(ruleNodeChild.getChildNodes())) {
-                        if (bitConditionNodeChild.getNodeName().equals("#text")) continue;
-                        //TODO anpassen für bitcondition
-                        //Condition
-                        if (bitConditionNodeChild.getNodeName().equals(XML_Constants.Condition)) {
-                            conditionCount++;
-                            //check every child node of condition
-                            for (Node conditionNodeChild : iterable(bitConditionNodeChild.getChildNodes())) {
-                                if (conditionNodeChild.getNodeName().equals("#text")) continue;
+                    iterateOverConditionChildNodes(conditionOne, conditionTwo, ruleNodeChild);
+                }
 
-                                if (conditionCount == 1) {
-                                    processConditionChildNodes(conditionOne, conditionNodeChild);
-                                } else if (conditionCount == 2) {
-                                    processConditionChildNodes(conditionTwo, conditionNodeChild);
-                                }
-                            }
-                        } // end of if equals Condition
-
-                    }
-                } // end of if equals BitConditions
-
-                //Condition
                 if (ruleNodeChild.getNodeName().equals(XML_Constants.ByteConditions)) {
-                    //check every child node of BitConditions
-                    for (Node byteConditionNodeChild : iterable(ruleNodeChild.getChildNodes())) {
-                        if (byteConditionNodeChild.getNodeName().equals("#text")) continue;
-                        //TODO anpassen für bitcondition
-                        //Condition
-                        if (byteConditionNodeChild.getNodeName().equals(XML_Constants.Condition)) {
-                            conditionCount++;
-                            //check every child node of condition
-                            for (Node conditionNodeChild : iterable(byteConditionNodeChild.getChildNodes())) {
-                                if (conditionNodeChild.getNodeName().equals("#text")) continue;
+                    //[Bus, Systemaddress, Equals, NotEquals, Bigger, Smaller]
+                    conditionOne = new Integer[XML_ConditionTypes.BYTECONDITION.ARRAY_LENGTH];
+                    conditionTwo = new Integer[XML_ConditionTypes.BYTECONDITION.ARRAY_LENGTH];
 
-                                if (conditionCount == 1) {
-                                    processConditionChildNodes(conditionOne, conditionNodeChild);
-                                } else if (conditionCount == 2) {
-                                    processConditionChildNodes(conditionTwo, conditionNodeChild);
-                                }
-                            }
-                        } // end of if equals Condition
+                    //check every child node of Bytecondition
+                    iterateOverConditionChildNodes(conditionOne, conditionTwo, ruleNodeChild);
+                }
 
-                    }
-                } // end of if equals BitConditions
-
-
-
+                /*
+                Actions
+                 */
                 // the read XML tag is a "Actions"
                 if (ruleNodeChild.getNodeName().equals(XML_Constants.Actions)) {
                     //check every child node of actions
@@ -197,52 +180,69 @@ class XML_read {
 
             }
 
-            System.err.println("byterule in XML_READ: " + byteRule);
             //  Iterating over one rule block done, add conditions and actions to new rule
-            if (!byteRule) {
-                // need to shorten Integer Array to length 4, since this is required for bit Rule
-                //TODO conditionType Array also for the ArrayLength
-                Integer[] conditionOneAdress = Arrays.copyOfRange(conditionOne, 0, 4);
-                Integer[] conditionTwoAdress = Arrays.copyOfRange(conditionTwo, 0, 4);
-                Factory.addBitRule(conditionOneAdress, conditionTwoAdress, actions);
-            } else {
-                // the rule is a byte rule
-
+            if (conditionType == XML_ConditionTypes.BITCONDITION) {
+                Factory.addBitRule(conditionOne, conditionTwo, actions);
+            }
+            if (conditionType == XML_ConditionTypes.BYTECONDITION) {
                 /*
                  the xsd schema cannot specify if the conditions of the byte conditions are correct
                  it could happen that none of Equal, NotEqual, Bigger, Smaller is selected which cant be checked in
                  the xsd and must be checked here
+                 throws an Exception if none of the values is set in the xml file
                  */
-                //TODO refactor
-                boolean conditionsOneValueSet = false;
-                boolean conditionsTwoValueSet = false;
-                for(int i = 2; i <=5; i++) {
-                    if(conditionOne[i] != null) {
-                        conditionsOneValueSet = true;
-                    }
-                    if(conditionTwo[i] != null) {
-                        conditionsTwoValueSet = true;
-                    }
-                }
-                if(!conditionsOneValueSet || !conditionsTwoValueSet) {
+                if(!byteConditionValueSet[0] || !byteConditionValueSet[1]) {
                     throw new SAXException("ByteCondition contains no value");
                 }
 
                 Factory.addByteRule(conditionOne, conditionTwo, actions);
             }
 
-
         }
     }
 
     /**
      * helper method for readXML
-     * processes the Bus, SystemAdress and Bit node of the Action and Condition nodes and puts them in the given array
+     * iterates over the child nodes of a bit or byte condition and processes them using processConditionChildNodes
+     * @param conditionOne Integer Array for saving first condition
+     * @param conditionTwo Integer Array for saving sedond condition
+     * @param bitOrByteConditionNode child node of the rule (byte or bit condition node) whoms children should be processed
+     */
+    private void iterateOverConditionChildNodes(Integer[] conditionOne, Integer[] conditionTwo, Node bitOrByteConditionNode) {
+        // condition counter to know which condition Array to save to
+        int conditionCount = 0;
+
+        //iterate over every child node
+        for (Node bitOrByteConditionNodeChild : iterable(bitOrByteConditionNode.getChildNodes())) {
+            if (bitOrByteConditionNodeChild.getNodeName().equals("#text")) continue;
+            //Condition
+            if (bitOrByteConditionNodeChild.getNodeName().equals(XML_Constants.Condition)) {
+                conditionCount++;
+                //check every child node of condition
+                for (Node conditionNodeChild : iterable(bitOrByteConditionNodeChild.getChildNodes())) {
+                    if (conditionNodeChild.getNodeName().equals("#text")) continue;
+
+                    if (conditionCount == 1) {
+                        processConditionChildNodes(conditionOne, conditionNodeChild, 0);
+                    } else if (conditionCount == 2) {
+                        processConditionChildNodes(conditionTwo, conditionNodeChild, 1);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * helper method for iterateOverConditionChildNodes
+     * processes the Bus, SystemAddress and Bit node of the Action and Condition nodes and puts them in the given array
      *
      * @param targetArray array to which the node values should be written
      * @param node        node whose content should be written to the array
+     * @param conditionIndex   index of the condition in byteConditionValueSet
+     *
      */
-    private void processConditionChildNodes(Integer[] targetArray, Node node) {
+    private void processConditionChildNodes(Integer[] targetArray, Node node, int conditionIndex) {
+
         switch (node.getNodeName()) {
             case XML_Constants.Bus:
                 targetArray[0] = Integer.parseInt(node.getTextContent());
@@ -252,42 +252,46 @@ class XML_read {
                 break;
             case XML_Constants.Bit:
                 targetArray[2] = Integer.parseInt(node.getTextContent());
-                byteRule = false;
+                conditionType = XML_ConditionTypes.BITCONDITION;
                 break;
             case XML_Constants.BitValue:
                 targetArray[3] = Integer.parseInt(node.getTextContent());
                 break;
             case XML_Constants.Equal:
                 targetArray[2] = Integer.parseInt(node.getTextContent());
-                byteRule = true;
+                conditionType = XML_ConditionTypes.BYTECONDITION;
+                // indicates that the byteCondition is containing a correct definition
+                byteConditionValueSet[conditionIndex] = true;
                 break;
             case XML_Constants.NotEqual:
                 targetArray[3] = Integer.parseInt(node.getTextContent());
-                byteRule = true;
+                conditionType = XML_ConditionTypes.BYTECONDITION;
+                byteConditionValueSet[conditionIndex] = true;
                 break;
             case XML_Constants.Bigger:
                 targetArray[4] = Integer.parseInt(node.getTextContent());
-                byteRule = true;
+                conditionType = XML_ConditionTypes.BYTECONDITION;
+                byteConditionValueSet[conditionIndex] = true;
                 break;
             case XML_Constants.Smaller:
                 targetArray[5] = Integer.parseInt(node.getTextContent());
-                byteRule = true;
+                conditionType = XML_ConditionTypes.BYTECONDITION;
+                byteConditionValueSet[conditionIndex] = true;
                 break;
         }
-
-        System.err.println("bytrule in processConditionChildNodes: " + byteRule);
     }
 
     /**
      * helper method for readXML
-     * processes the Bus, SystemAdress and Bit node of the Action and Condition nodes and puts them in the given array
-     * <p>
-     * for a bit action message targetArray: [Bus][Systemadress][Bit][Bitvalue]
-     * for a byte action message targetArray: [Bus][Systemadress][ByteValue]
+     * processes the Bus, SystemAddress and Bit node of the Action and Condition nodes and puts them in the given array
      *
-     * @param node        node whose content should be written to the array
+     * for a bit action message targetArray: [Bus][Systemaddress][Bit][BitValue]
+     * for a byte action message targetArray: [Bus, Systemadress, Equals, NotEquals, Bigger, Smaller]
+     *
+     * @param targetArray target array to whom should be written
+     * @param node  node whose content should be written to the array
      */
-    private int[] processActionChildNodes(int[]targetArray, Node node) {
+    private void processActionChildNodes(int[]targetArray, Node node) {
 
         switch (node.getNodeName()) {
             case XML_Constants.Bus:
@@ -321,24 +325,9 @@ class XML_read {
                 actionType = XML_ActionType.DECREMENT;
                 break;
         }
-
-        return targetArray;
     }
 
 
-    //TODO Delete
-    public void test() {
-        System.out.println("Test:");
-        System.out.println("Number of Rules " + Factory.getBitRules().size());
-        for (BitRule bitRule : Factory.getBitRules()) {
-            System.out.println("----Rule----");
-            System.out.println("Condition1: " + Arrays.toString(bitRule.getConditionOne()));
-            System.out.println("Condition2:" + Arrays.toString(bitRule.getConditionOne()));
-//            for (Integer[] action : bitRule.getActions()) {
-//                System.out.println("Action: " + Arrays.toString(action));
-//            }
-        }
-    }
 
     /**
      * Method to make nodelist iterable
