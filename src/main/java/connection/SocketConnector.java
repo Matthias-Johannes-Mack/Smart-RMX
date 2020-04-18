@@ -1,6 +1,6 @@
 package connection;
 
-import console.QuestionUtil;
+import connection.connectionutilities.QuestionUtil;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

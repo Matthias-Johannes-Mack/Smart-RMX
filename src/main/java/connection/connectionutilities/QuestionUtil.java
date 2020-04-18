@@ -1,4 +1,4 @@
-package console;
+package connection.connectionutilities;
 
 import javax.swing.JOptionPane;
 

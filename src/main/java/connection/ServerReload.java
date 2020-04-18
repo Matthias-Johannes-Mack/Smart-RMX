@@ -1,7 +1,7 @@
 package connection;
 
 import connection.SocketConnector.conState;
-import console.QuestionUtil;
+import connection.connectionutilities.QuestionUtil;
 
 /**
  * Class that reloads the server
