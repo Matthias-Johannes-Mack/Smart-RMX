@@ -4,6 +4,7 @@ import java.io.IOException;
 import Utilities.Constants;
 import connection.SocketConnector;
 import console.Console;
+import console.PopUp_IP_Port;
 import schedular.Schedular;
 import xml.Factory;
 import xml.XML_IO;
@@ -14,6 +15,8 @@ import xml.XML_IO;
  * @author Matthias Mack 3316380
  */
 public class Main {
+	private static boolean dialogShowed;
+
 	/**
 	 * Main method
 	 * 
@@ -38,6 +41,13 @@ public class Main {
 		// create the connection
 		// schedular MUSS vor Receiver Thread gestartet sein
 		Schedular.getSchedular().startScheduling();
+		while (!PopUp_IP_Port.isDialogReady()) {
+			if (!isDialogShowed()) {
+				// show popup before connecting
+				PopUp_IP_Port.showPopup();
+				setDialogShowed(true);
+			}
+		}
 		SocketConnector.Connect();
 	}
 
@@ -56,4 +66,19 @@ public class Main {
 		System.out.println(
 				"^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 	}
+
+	/**
+	 * @return the dialogProcessed
+	 */
+	public static boolean isDialogShowed() {
+		return dialogShowed;
+	}
+
+	/**
+	 * @param dialogProcessed the dialogProcessed to set
+	 */
+	public static void setDialogShowed(boolean dialogProcessed) {
+		Main.dialogShowed = dialogProcessed;
+	}
+
 }

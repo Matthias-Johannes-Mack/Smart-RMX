@@ -13,6 +13,10 @@ public final class Constants {
 
 	// Main
 	public static final String OPERATING_SYSTEM = System.getProperty("os.name");
+	// Popup
+	public static final String POPUP_TITLE = "IP & Port waehlen";
+	public static final String POPUP_SUBMIT = "Weiter";
+
 	// console
 	public static final String RETRY_MESSAGE_RECONNECT = "Erneut verbinden?";
 	public static final String RETRY_HEAD_RECONNECT = "Server nicht erreichbar";
