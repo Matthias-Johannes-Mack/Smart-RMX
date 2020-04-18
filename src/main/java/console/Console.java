@@ -7,7 +7,7 @@ import java.util.List;
 import javax.swing.*;
 
 import utilities.Constants;
-import connection.SocketConnector;
+
 
 /**
  * Class that represents a console for the Output!

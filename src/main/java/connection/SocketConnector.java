@@ -17,15 +17,15 @@ public class SocketConnector {
 	/**
 	 * string for the ip. Here: localhost 127.0.0.1
 	 */
-	private static String ip = "127.0.0.1"; 
+	private static volatile String ip = "127.0.0.1";
 	/**
 	 * standard port for RMX: 950
 	 */
-	private static int port = 950;
+	private static volatile int port = 950;
 	/**
 	 * create new InetSocketAddress to put ip and port together
 	 */
-	private static InetSocketAddress inet;
+	private static volatile InetSocketAddress inet;
 
 	/**
 	 * enum for connection states
@@ -35,11 +35,11 @@ public class SocketConnector {
 	}
 
 	/**
-	 *  connection status variable
+	 * connection status variable
 	 */
 	private static conState conStateStr = conState.DISCONNECTED;
 	/**
-	 *  create the socket
+	 * create the socket
 	 */
 	private static Socket socket;
 
@@ -137,28 +137,31 @@ public class SocketConnector {
 
 	/**
 	 * Getter for the ip
+	 * 
 	 * @return the ip
 	 */
 	public static String getIp() {
 		return ip;
 	}
-	
+
 	/**
 	 * Setter for the ip
+	 * 
 	 * @param ip
 	 */
 	public static void setIp(String ip) {
 		SocketConnector.ip = ip;
 	}
-	
+
 	/**
 	 * Getter for the port
+	 * 
 	 * @return the port
 	 */
 	public static int getPort() {
 		return port;
 	}
-	
+
 	/**
 	 * Setter for the port
 	 */

@@ -89,36 +89,36 @@ public class TestMatrix {
 		matrix.addAction(conditionThree, conditionFour, actionSequence2); // sollte zu wrapper hinzugefügt werden an
 																			// 0-0
 
-		List<ActionSequence> resultCheckAll = matrix.checkAllFields();
-		for (ActionSequence actionSequence : resultCheckAll) {
-			List<Action> actions = actionSequence.getActions();
-
-			for (Action action : actions) {
-				if (action instanceof ActionWait) {
-					ActionWait waitaction = (ActionWait) action;
-					System.err.println(waitaction.getWaitTime()); // 0
-				}
-			}
-		}
-
-		// format <0x06><RMX><ADRRMX><VALUE>
-		byte[] message1 = new byte[] { 6, 1, 111, 1 };
-		Integer[] changes1 = busDepot.getChangesAndUpdate((byte) 1, message1[2], message1[3]); // bit 0
-																												// wurde
-																												// auf 1
-																												// gesetzt
-
-		List<ActionSequence> resultCheck = matrix.check(message1[1], message1[2], changes1);
-		for (ActionSequence actionSequence : resultCheck) {
-			List<Action> actions = actionSequence.getActions();
-
-			for (Action action : actions) {
-				if (action instanceof ActionWait) {
-					ActionWait waitaction = (ActionWait) action;
-					System.err.println(waitaction.getWaitTime()); // 1
-				}
-			}
-		}
+//		List<ActionSequence> resultCheckAll = matrix.checkAllFields();
+//		for (ActionSequence actionSequence : resultCheckAll) {
+//			List<Action> actions = actionSequence.getActions();
+//
+//			for (Action action : actions) {
+//				if (action instanceof ActionWait) {
+//					ActionWait waitaction = (ActionWait) action;
+//					System.err.println(waitaction.getWaitTime()); // 0
+//				}
+//			}
+//		}
+//
+//		// format <0x06><RMX><ADRRMX><VALUE>
+//		byte[] message1 = new byte[] { 6, 1, 111, 1 };
+//		Integer[] changes1 = busDepot.getChangesAndUpdate((byte) 1, message1[2], message1[3]); // bit 0
+//																												// wurde
+//																												// auf 1
+//																												// gesetzt
+//
+//		List<ActionSequence> resultCheck = matrix.check(message1[1], message1[2], changes1);
+//		for (ActionSequence actionSequence : resultCheck) {
+//			List<Action> actions = actionSequence.getActions();
+//
+//			for (Action action : actions) {
+//				if (action instanceof ActionWait) {
+//					ActionWait waitaction = (ActionWait) action;
+//					System.err.println(waitaction.getWaitTime()); // 1
+//				}
+//			}
+//		}
 
 	}
 }

@@ -15,8 +15,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import Utilities.Constants;
 import connection.SocketConnector;
+import utilities.Constants;
 
 /**
  * Class that creates the IP / Port popup
