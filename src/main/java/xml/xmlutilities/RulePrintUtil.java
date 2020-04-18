@@ -17,7 +17,7 @@ public class RulePrintUtil {
      * @param byteConditionTwoObj conditionT&wo Object
      * @param actions ArrayList<XML_ActionWrapper>
      */
-    protected static void printByteRule(ByteCondition byteConditionOneObj, ByteCondition byteConditionTwoObj, ArrayList<XML_ActionWrapper> actions) {
+    public static void printByteRule(ByteCondition byteConditionOneObj, ByteCondition byteConditionTwoObj, ArrayList<XML_ActionWrapper> actions) {
         System.out.println("----RULE----");
         System.out.println("--Byte Condition--");
 
@@ -39,7 +39,7 @@ public class RulePrintUtil {
      * @param conditionsTwo [Bus, SystemAddress, Bit]
      * @param actions ArrayList<XML_ActionWrapper>
      */
-    protected static void printBitRule(Integer[] conditionsOne, Integer[] conditionsTwo, ArrayList<XML_ActionWrapper> actions) {
+    public static void printBitRule(Integer[] conditionsOne, Integer[] conditionsTwo, ArrayList<XML_ActionWrapper> actions) {
         System.out.println("----RULE----");
         System.out.println("--Bit Condition--");
 
