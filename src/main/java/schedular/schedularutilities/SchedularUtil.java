@@ -298,7 +298,7 @@ public class SchedularUtil {
                 // action is a ActionMessageBitToggle - only on bit needs to be toggled
                 // array format: [bus][systemadress][bitIndex]
 
-                // toggle bit at position BitIndex
+                // toggle bit at position bitIndex
                 newByteValue = ByteUtil.toggleBitAtPos(currentByte, actionArray[2]);
                 break;
 
