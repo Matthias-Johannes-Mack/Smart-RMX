@@ -7,7 +7,6 @@ import action.actions.actionMessages.ActionMessageBit;
 import action.actions.actionMessages.ActionMessageBitToggle;
 import action.actions.actionMessages.ActionMessageByte;
 import action.actions.actionMessages.ActionMessageByteIncDecRement;
-import matrix.byteMatrix.ByteCondition;
 import matrix.byteMatrix.ByteMatrix;
 import matrix.bitMatrix.BitMatrix;
 import xml.XML_ActionWrapper;

@@ -1,7 +1,6 @@
 package matrix.factory;
 
 import action.actionSequence.ActionSequence;
-import matrix.byteMatrix.ByteCondition;
 
 /**
  * Class for a byte Rule

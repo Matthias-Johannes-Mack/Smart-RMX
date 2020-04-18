@@ -1,4 +1,4 @@
-package matrix.byteMatrix;
+package matrix.factory;
 
 
 import java.util.Arrays;

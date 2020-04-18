@@ -1,4 +1,4 @@
-package matrix.byteMatrix;
+package matrix.factory;
 
 /**
  * enum that holds the different Types of Byte Conditions

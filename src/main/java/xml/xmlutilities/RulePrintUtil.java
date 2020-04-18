@@ -1,6 +1,6 @@
 package xml.xmlutilities;
 
-import matrix.byteMatrix.ByteCondition;
+import matrix.factory.ByteCondition;
 import xml.XML_ActionWrapper;
 
 import java.util.ArrayList;
