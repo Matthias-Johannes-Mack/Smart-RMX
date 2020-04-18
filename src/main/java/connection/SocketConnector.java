@@ -17,11 +17,11 @@ public class SocketConnector {
 	/**
 	 * string for the ip. Here: localhost 127.0.0.1
 	 */
-	private static final String ip = "127.0.0.1";
+	private static String ip = "127.0.0.1"; 
 	/**
 	 * standard port for RMX: 950
 	 */
-	private static final int port = 950;
+	private static int port = 950;
 	/**
 	 * create new InetSocketAddress to put ip and port together
 	 */
@@ -136,17 +136,33 @@ public class SocketConnector {
 	}
 
 	/**
+	 * Getter for the ip
 	 * @return the ip
 	 */
 	public static String getIp() {
 		return ip;
 	}
-
+	
 	/**
+	 * Setter for the ip
+	 * @param ip
+	 */
+	public static void setIp(String ip) {
+		SocketConnector.ip = ip;
+	}
+	
+	/**
+	 * Getter for the port
 	 * @return the port
 	 */
 	public static int getPort() {
 		return port;
 	}
 	
+	/**
+	 * Setter for the port
+	 */
+	public static void setPort(int port) {
+		SocketConnector.port = port;
+	}
 }
