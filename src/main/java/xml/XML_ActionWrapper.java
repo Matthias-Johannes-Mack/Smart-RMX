@@ -1,11 +1,13 @@
 package xml;
 
+import utilities.ActionType;
+
 import java.util.Arrays;
 
 /**
  * contains the type of an action and its action array read in from the xml file
  */
-class XML_ActionWrapper {
+public class XML_ActionWrapper {
     /**
      * int Array containing the array for a the specific type of the action
      *
@@ -22,14 +24,14 @@ class XML_ActionWrapper {
     /**
      * the XML_ActionType of the action
      */
-    private XML_ActionType type;
+    private ActionType type;
 
     /**
      * Constructor that creates a XML_ActionWrapper with the given actionArray and XML_ActionType
      * @param actionArray int array containing the data of the given XML_Actiontype
      * @param type the XML_ActionType
      */
-    public XML_ActionWrapper(int[] actionArray, XML_ActionType type) {
+    public XML_ActionWrapper(int[] actionArray, ActionType type) {
         //shortens the array to the appropriate length for the type
         this.actionArray = Arrays.copyOfRange(actionArray, 0, type.ARRAY_LENGTH);
         this.type = type;
@@ -53,7 +55,7 @@ class XML_ActionWrapper {
      * getter for action type
      * @return the XML_Actiontyp
      */
-    public XML_ActionType getType() {
+    public ActionType getType() {
         return type;
     }
 }

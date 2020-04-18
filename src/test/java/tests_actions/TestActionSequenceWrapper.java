@@ -4,9 +4,9 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import action.ActionSequence;
-import action.ActionSequenceWrapper;
-import action.ActionWait;
+import action.actionSequence.ActionSequence;
+import action.actionSequence.ActionSequenceWrapper;
+import action.actions.ActionWait;
 
 public class TestActionSequenceWrapper {
 

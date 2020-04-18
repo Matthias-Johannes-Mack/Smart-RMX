@@ -2,7 +2,8 @@ package schedular;
 
 
 import bus.BusDepot;
-import matrix.BitMatrix;
+import matrix.MatrixChecker;
+import schedular.schedularutilities.SchedularUtil;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
@@ -16,7 +17,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  */
 public class Schedular {
-
 
     // Singleton-Pattern START -----------------------------------------
 
@@ -86,6 +86,11 @@ public class Schedular {
     private BlockingQueue<int[]> rmxMessageQueue;
 
     /**
+     * checker responsible for checking changes in the BitMatrix and ByteMatrix
+     */
+    MatrixChecker matrixChecker;
+
+    /**
      * executor responsible for processing ActionWaits after the specified waitTime
      */
     private ScheduledExecutorService executor;
@@ -117,6 +122,9 @@ public class Schedular {
 
             // executor
             executor = Executors.newScheduledThreadPool(NUMBER_OF_THREADS);
+
+            // matrixChecker
+            matrixChecker = MatrixChecker.getMatrixChecker();
         }
     }
 
@@ -188,7 +196,7 @@ public class Schedular {
             }
 
             // initialisation done -> first check all conditions
-            SchedularUtil.processActionSequenceList(BitMatrix.getMatrix().checkAllFields());
+            SchedularUtil.processActionSequenceList(matrixChecker.checkAllFields());
 
             // work until someone indicates i have to stop
             while (WORK) {
@@ -220,7 +228,7 @@ public class Schedular {
                 // check fields of the matrix of the indicated changes in the changes Array
                 // -1 -> no change, 0 -> change to 0, 1 -> change to 1
                 // returns List of ActionSequences that have been triggered by the changes
-                SchedularUtil.processActionSequenceList(BitMatrix.getMatrix().check(message[1], message[2], changes));
+                SchedularUtil.processActionSequenceList(matrixChecker.check(message[1], message[2], changes));
             }
 
         }

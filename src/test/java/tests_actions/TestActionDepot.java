@@ -5,8 +5,8 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import action.ActionDepot;
-import action.ActionMessageBit;
-import action.ActionWait;
+import action.actions.actionMessages.ActionMessageBit;
+import action.actions.ActionWait;
 
 /**
  * Class for testing the Action Depot

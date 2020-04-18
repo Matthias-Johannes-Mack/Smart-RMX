@@ -1,11 +1,7 @@
-import java.io.File;
-import java.io.IOException;
-
-import Utilities.Constants;
 import connection.SocketConnector;
 import console.Console;
 import schedular.Schedular;
-import xml.Factory;
+import matrix.factory.Factory;
 import xml.XML_IO;
 
 /**
@@ -32,7 +28,7 @@ public class Main {
 		head();
 		// open the file
 		XML_IO.getXML_IO().startXmlReadInForUser();
-		// create the factory, actionDepot and the matrix
+		// create the matrix.factory, actionDepot and the matrix
 		Factory.getFactory().createActionsAndMatrix();
 		// create the connection
 		// schedular MUSS vor Receiver Thread gestartet sein

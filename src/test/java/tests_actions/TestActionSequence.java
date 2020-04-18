@@ -4,8 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import action.ActionMessageBit;
-import action.ActionSequence;
+import action.actions.actionMessages.ActionMessageBit;
+import action.actionSequence.ActionSequence;
 
 /**
  * Class for testing the Action Sequence

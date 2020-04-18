@@ -1,7 +1,8 @@
 package connection;
 
-import Utilities.ByteUtil;
-import Utilities.Constants;
+import connection.connectionutilities.OutputUtil;
+import utilities.ByteUtil;
+import utilities.Constants;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
