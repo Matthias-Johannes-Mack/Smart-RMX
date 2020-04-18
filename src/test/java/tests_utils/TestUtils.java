@@ -2,6 +2,7 @@ package tests_utils;
 
 import static org.junit.Assert.*;
 
+import matrix.matrixutilities.MatrixUtil;
 import org.junit.Test;
 
 import utilities.ByteUtil;
@@ -42,9 +43,21 @@ public class TestUtils {
 
 		// --------------Testing convertToBytes()--------------
 		byte[] solution = ByteUtil.convertToBytes(963);
-		for (byte byteSolution : solution) {
-			System.out.println(byteSolution);// 3 & -61 = 195 (-61 in Decimal from signed 2's complement form)
-		}
+		assertEquals(3,solution[0]);
+		assertEquals(-61,solution[1]);
+
+		// --------------Testing toggleBitAtPos()--------------
+		assertEquals(0, ByteUtil.toggleBitAtPos(1,0));
+		assertEquals(8, ByteUtil.toggleBitAtPos(10,1));
+		assertEquals(48, ByteUtil.toggleBitAtPos(176,7));
+		assertEquals(127, ByteUtil.toggleBitAtPos(255,7));
+
+		// --------------Testing toggleBitAtPos()--------------
+		Integer[] byte1 = new Integer[]{1,1,1,1,1,1,1,1};
+		assertEquals(255, ByteUtil.getByteByByteArray(byte1));
+
+		Integer[] byte2 = new Integer[]{0,1,0,1,0,1,1,1};
+		assertEquals(234, ByteUtil.getByteByByteArray(byte2));
 	}
 
 }

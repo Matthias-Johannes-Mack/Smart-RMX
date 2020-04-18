@@ -16,7 +16,8 @@ public final class Constants {
 	// Popup
 	public static final String POPUP_TITLE = "IP & Port waehlen";
 	public static final String POPUP_SUBMIT = "Weiter";
-
+	public static final String POPUP_UNVALID_IP = "Die  eingegebene IP ist leider nicht valide! (255.255.255.255)";
+	public static final String POPUP_UNVALID_PORT = "Der eingebene Port ist leider nicht valide! (Nur Zahlen)";
 	// console
 	public static final String RETRY_MESSAGE_RECONNECT = "Erneut verbinden?";
 	public static final String RETRY_HEAD_RECONNECT = "Server nicht erreichbar";

@@ -2,6 +2,9 @@ package utilities;
 
 import java.util.BitSet;
 
+/**
+ * class that holds utility methods for dealing with byte calculations
+ */
 public class ByteUtil {
     /**
      * Method which converts a int into 2 bytes
@@ -31,7 +34,7 @@ public class ByteUtil {
     }
 
     /**
-     * checks if bit is set in given message
+     * checks if bit is set in a given byte
      *
      * @param value    byte value to check
      * @param bitIndex counting from 0-7
@@ -67,17 +70,13 @@ public class ByteUtil {
         return (currentByte ^= 1 << bitIndex);
     }
 
-    public static Integer[] getByteArrayByByte(byte currentByte) {
-
-        Integer[] result = new Integer[8];
-
-        for (int i = 7; i >= 0; --i) {
-            result[i] = (currentByte >>> i & 1);
-        }
-
-        return result;
-    }
-
+    /**
+     * converts an integer array with 8 indexes (set to 0 or 1) to an byte
+     * the indexes of the integer array correspond to the bitIndexes.
+     *
+     * @param byteArray integer array with 8 indexes that represents the value of an byte written with bits
+     * @return byteValue as an int
+     */
     public static int getByteByByteArray(Integer[] byteArray) {
 
         StringBuilder sb = new StringBuilder();
@@ -90,10 +89,11 @@ public class ByteUtil {
 
     }
 
-    public static int signedByteToUnsignedInt(byte b) {
-        return b & 0xFF;
-    }
-
+    /**
+     * converts an array with integer values to an array with byte values
+     * @param values array to convert
+     * @return the converted byte array
+     */
     public static byte[] convertIntArrayToByteArray(int[] values) {
 
         byte[] arrayByte = new byte[values.length];
