@@ -91,7 +91,7 @@ public class Console extends OutputStream {
 		// create the JTExtArea
 		JTextArea jTextArea = new JTextArea();
 		// create a new Console from the JTExtArea
-		Console console = new Console(jTextArea, 60);
+		Console console = new Console(jTextArea, 1500);
 
 		// the stream for the console -> redirect syserr & sysout
 		PrintStream printStream = new PrintStream(console);
