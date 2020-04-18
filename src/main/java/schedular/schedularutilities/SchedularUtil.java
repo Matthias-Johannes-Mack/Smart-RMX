@@ -11,7 +11,6 @@ import utilities.ByteUtil;
 import utilities.Constants;
 import bus.BusDepot;
 import connection.Sender;
-import org.apache.commons.math3.exception.OutOfRangeException;
 import utilities.ActionType;
 
 import java.util.List;
@@ -137,10 +136,10 @@ public class SchedularUtil {
             // message for the schedular so the changes are also getting checked in the matrix
             fakeMessage = buildFakeMessage(actionArray, actionType);
 
-        } catch (OutOfRangeException e) {
+        } catch (IndexOutOfBoundsException e) {
             // is thrown if the new byteValue in the calculation of an ActionMessageIncDecRement
             // is Out of Range of a Byte not(0 <= newByteValue <= 255)
-            System.out.println("Increment / Decrement is out of Range of an Byte: " + e.getMessage());
+            System.out.println(e.getMessage());
             return;
         }
 
@@ -202,10 +201,10 @@ public class SchedularUtil {
      * @param actionArray int[] holding the data of the given action
      * @param actionType  the ActionType of the given action
      * @return fakeMessage as int[] with the format: <RMX-HEAD><COUNT><OPCODE><BUS><SYSTEMADRESS><VALUE>
-     * @throws OutOfRangeException if the calculated byteValue by an ActionMessageIncrement or ActionMessageDecrement is
+     * @throws IndexOutOfBoundsException if the calculated byteValue by an ActionMessageIncrement or ActionMessageDecrement is
      *                             out of Range of a byte (greater than 255 or less than 0)
      */
-    private static int[] buildRMXMessage(int[] actionArray, ActionType actionType) throws OutOfRangeException {
+    private static int[] buildRMXMessage(int[] actionArray, ActionType actionType) throws IndexOutOfBoundsException {
         int[] message = new int[6];
 
         // RMX-Headbyte
@@ -239,10 +238,10 @@ public class SchedularUtil {
      * @param actionArray int[] holding the data of the given action
      * @param actionType  the ActionType of the given action
      * @return fakeMessage as int[] with the format: <OPCODE><BUS><SYSTEMADRESS><VALUE>
-     * @throws OutOfRangeException if the calculated byteValue by an ActionMessageIncrement or ActionMessageDecrement is
+     * @throws IndexOutOfBoundsException if the calculated byteValue by an ActionMessageIncrement or ActionMessageDecrement is
      *                             out of Range of a byte (greater than 255 or less than 0)
      */
-    private static int[] buildFakeMessage(int[] actionArray, ActionType actionType) throws OutOfRangeException {
+    private static int[] buildFakeMessage(int[] actionArray, ActionType actionType) throws IndexOutOfBoundsException {
         int[] message = new int[4];
 
         // OPCODE
@@ -274,10 +273,10 @@ public class SchedularUtil {
      * @param actionArray int[] holding the data of the given action
      * @param actionType  the ActionType of the given action
      * @return int the new byteValue that result of the action of the given ActionType
-     * @throws OutOfRangeException if the calculated byteValue by an ActionMessageIncrement or ActionMessageDecrement is
+     * @throws IndexOutOfBoundsException if the calculated byteValue by an ActionMessageIncrement or ActionMessageDecrement is
      *                             out of Range of a byte (greater than 255 or less than 0)
      */
-    private static int calculateByteValueByActionType(int[] actionArray, ActionType actionType) throws OutOfRangeException {
+    private static int calculateByteValueByActionType(int[] actionArray, ActionType actionType) throws IndexOutOfBoundsException {
 
         // newByteValue that is the result of the action of the given actionType
         int newByteValue = 0;
@@ -323,7 +322,7 @@ public class SchedularUtil {
 
                 // if the new byteValue is Out of Range of a Byte not(0 <= newByteValue <= 255)
                 if (newByteValue > 255 || newByteValue < 0) {
-                    throw new OutOfRangeException(newByteValue, 0, 255);
+                    throw new IndexOutOfBoundsException("Increment / Decrement is out of Range of an Byte: " +  newByteValue);
                 }
 
                 break;
