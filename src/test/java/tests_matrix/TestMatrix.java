@@ -6,6 +6,10 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.Random;
 
+import matrix.MatrixChecker;
+import matrix.byteMatrix.ByteMatrix;
+import matrix.factory.ByteCondition;
+import matrix.factory.ByteRule;
 import matrix.matrixutilities.MatrixCalcUtil;
 import org.junit.Test;
 
@@ -68,6 +72,10 @@ public class TestMatrix {
 		BusDepot busDepot = BusDepot.getBusDepot();
 		busDepot.updateBus((byte) 1, (byte) 0x6f, (byte) 0);
 
+
+		/*
+		 * BIT-MARIX
+		 */
 		// ActionSequence that contains ActionWait with waitTime 1
 		Action actionWait1 = new ActionWait(1);
 		ActionSequence actionSequence1 = new ActionSequence();
@@ -86,39 +94,68 @@ public class TestMatrix {
 
 		BitMatrix matrix = BitMatrix.getMatrix();
 		matrix.addAction(conditionOne, conditionTwo, actionSequence1); // sollte zu wrapper hinzugefügt werden an 1-1
-		matrix.addAction(conditionThree, conditionFour, actionSequence2); // sollte zu wrapper hinzugefügt werden an
-																			// 0-0
+		matrix.addAction(conditionThree, conditionFour, actionSequence2); // sollte zu wrapper hinzugefügt werden an 0-0
 
-//		List<ActionSequence> resultCheckAll = matrix.checkAllFields();
-//		for (ActionSequence actionSequence : resultCheckAll) {
-//			List<Action> actions = actionSequence.getActions();
-//
-//			for (Action action : actions) {
-//				if (action instanceof ActionWait) {
-//					ActionWait waitaction = (ActionWait) action;
-//					System.err.println(waitaction.getWaitTime()); // 0
-//				}
-//			}
-//		}
-//
-//		// format <0x06><RMX><ADRRMX><VALUE>
-//		byte[] message1 = new byte[] { 6, 1, 111, 1 };
-//		Integer[] changes1 = busDepot.getChangesAndUpdate((byte) 1, message1[2], message1[3]); // bit 0
-//																												// wurde
-//																												// auf 1
-//																												// gesetzt
-//
-//		List<ActionSequence> resultCheck = matrix.check(message1[1], message1[2], changes1);
-//		for (ActionSequence actionSequence : resultCheck) {
-//			List<Action> actions = actionSequence.getActions();
-//
-//			for (Action action : actions) {
-//				if (action instanceof ActionWait) {
-//					ActionWait waitaction = (ActionWait) action;
-//					System.err.println(waitaction.getWaitTime()); // 1
-//				}
-//			}
-//		}
+		/*
+		 * BYTE-MATRIX
+		 */
+		Integer[] byteConditionOneAdress = new Integer[] { 1, 111};
+		ByteCondition byteConditionOne = new ByteCondition(byteConditionOneAdress);
+		byteConditionOne.setBigger(0);
+		byteConditionOne.setSmaller(10);
+		byteConditionOne.setNotEqual(0);
+		byteConditionOne.setEqual(1);
 
+		Integer[] byteConditionTwoAdress = new Integer[] { 1, 111};
+		ByteCondition byteConditionTwo = new ByteCondition(byteConditionTwoAdress);
+		byteConditionTwo.setEqual(1);
+
+		// ActionSequence that contains ActionWait with waitTime 3
+		Action actionWait3 = new ActionWait(3);
+		ActionSequence actionSequence3 = new ActionSequence();
+		actionSequence3.addAction(actionWait3);
+
+		// create the byteRule
+		ByteRule byteRule = new ByteRule(byteConditionOne,byteConditionTwo,actionSequence3);
+
+		// add ByteRule to ByteMatrix
+		ByteMatrix.getMatrix().addByteRule(byteRule);
+
+
+		/**
+		 * CHECK RESULTS
+		 */
+
+		List<ActionSequence> resultCheckAll = MatrixChecker.getMatrixChecker().checkAllFields();
+
+		int actionWaitCounter = 0;
+		for (ActionSequence actionSequence : resultCheckAll) {
+			List<Action> actions = actionSequence.getActions();
+
+			for (Action action : actions) {
+				if (action instanceof ActionWait) {
+					actionWaitCounter++;
+				}
+			}
+		}
+
+		assertEquals(actionWaitCounter, 1); // only one actionWait should be triggered
+
+		// format <0x06><RMX><ADRRMX><VALUE>
+		byte[] message1 = new byte[] { 6, 1, 111, 1 };
+		Integer[] changes1 = busDepot.getChangesAndUpdate((byte) 1, message1[2], message1[3]); // bit 0 wurde auf 1 gesetzt
+
+		List<ActionSequence> resultCheck = MatrixChecker.getMatrixChecker().check(message1[1], message1[2], changes1);
+		for (ActionSequence actionSequence : resultCheck) {
+			List<Action> actions = actionSequence.getActions();
+
+			for (Action action : actions) {
+				if (action instanceof ActionWait) {
+					actionWaitCounter++;
+				}
+			}
+		}
+
+		assertEquals(actionWaitCounter, 3); // the other two actionWaits should also be triggered
 	}
 }
