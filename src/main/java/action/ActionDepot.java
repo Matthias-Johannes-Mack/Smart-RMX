@@ -1,5 +1,7 @@
 package action;
 
+import action.actions.Action;
+
 import java.util.ArrayList;
 
 /**

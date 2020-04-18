@@ -1,7 +1,7 @@
 package bus;
 
-import Utilities.ByteUtil;
-import Utilities.Constants;
+import utilities.ByteUtil;
+import utilities.Constants;
 
 import java.util.ArrayList;
 import java.util.BitSet;

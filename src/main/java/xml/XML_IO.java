@@ -1,16 +1,12 @@
 package xml;
 
-import org.xml.sax.ErrorHandler;
+
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-
-import Utilities.Constants;
-
+import utilities.Constants;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
 import java.io.File;
-import java.util.Scanner;
+
 
 /**
  * Class that returns a xml file selected via a file Dialog as

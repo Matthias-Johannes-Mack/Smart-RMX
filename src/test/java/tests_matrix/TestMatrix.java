@@ -6,14 +6,14 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.Random;
 
-import matrix.MatrixUtil;
+import matrix.matrixutilities.MatrixCalcUtil;
 import org.junit.Test;
 
-import action.Action;
-import action.ActionSequence;
-import action.ActionWait;
+import action.actions.Action;
+import action.actionSequence.ActionSequence;
+import action.actions.ActionWait;
 import bus.BusDepot;
-import matrix.BitMatrix;
+import matrix.bitMatrix.BitMatrix;
 
 /**
  * Class that tests the matrix
@@ -28,16 +28,16 @@ public class TestMatrix {
 	 */
 	public void testCalcGauss() {
 		// test the minus value
-		assertEquals(0, MatrixUtil.calcGauss(0));
+		assertEquals(0, MatrixCalcUtil.calcGauss(0));
 		// formula : (n(n+1))/2)
 		// for the -1
-		assertEquals(0, MatrixUtil.calcGauss(-1));
+		assertEquals(0, MatrixCalcUtil.calcGauss(-1));
 		// upper bounds
-		assertEquals(179864061, MatrixUtil.calcGauss(18966));
+		assertEquals(179864061, MatrixCalcUtil.calcGauss(18966));
 		// with the formula and a random number
 		Random ran = new Random();
 		int n = ran.nextInt(6) + 5;
-		assertEquals(((n * (n + 1)) / 2), MatrixUtil.calcGauss(n));
+		assertEquals(((n * (n + 1)) / 2), MatrixCalcUtil.calcGauss(n));
 	}
 
 	@Test
@@ -47,14 +47,14 @@ public class TestMatrix {
 	 */
 	public void testCalcBerndsFormula() {
 		// test the 0
-		assertEquals(0, MatrixUtil.calcBitIndex(0, 0, 0));
+		assertEquals(0, MatrixCalcUtil.calcBitIndex(0, 0, 0));
 		// formula : (n(n+1))/2)
 		// for the -1
-		assertEquals(-121, MatrixUtil.calcBitIndex(-1, -1, -1));
+		assertEquals(-121, MatrixCalcUtil.calcBitIndex(-1, -1, -1));
 		// upper bounds
-		assertEquals(1007, MatrixUtil.calcBitIndex(1, 111, 7));
+		assertEquals(1007, MatrixCalcUtil.calcBitIndex(1, 111, 7));
 		// the max bus 4, sysaddr 111, bit 7
-		assertEquals(1343, MatrixUtil.calcBitIndex(4, 111, 7));
+		assertEquals(1343, MatrixCalcUtil.calcBitIndex(4, 111, 7));
 	}
 
 	/**
@@ -89,36 +89,36 @@ public class TestMatrix {
 		matrix.addAction(conditionThree, conditionFour, actionSequence2); // sollte zu wrapper hinzugefügt werden an
 																			// 0-0
 
-		List<ActionSequence> resultCheckAll = matrix.checkAllFields();
-		for (ActionSequence actionSequence : resultCheckAll) {
-			List<Action> actions = actionSequence.getActions();
-
-			for (Action action : actions) {
-				if (action instanceof ActionWait) {
-					ActionWait waitaction = (ActionWait) action;
-					System.err.println(waitaction.getWaitTime()); // 0
-				}
-			}
-		}
-
-		// format <0x06><RMX><ADRRMX><VALUE>
-		byte[] message1 = new byte[] { 6, 1, 111, 1 };
-		Integer[] changes1 = busDepot.getChangesAndUpdate((byte) 1, message1[2], message1[3]); // bit 0
-																												// wurde
-																												// auf 1
-																												// gesetzt
-
-		List<ActionSequence> resultCheck = matrix.check(message1[1], message1[2], changes1);
-		for (ActionSequence actionSequence : resultCheck) {
-			List<Action> actions = actionSequence.getActions();
-
-			for (Action action : actions) {
-				if (action instanceof ActionWait) {
-					ActionWait waitaction = (ActionWait) action;
-					System.err.println(waitaction.getWaitTime()); // 1
-				}
-			}
-		}
+//		List<ActionSequence> resultCheckAll = matrix.checkAllFields();
+//		for (ActionSequence actionSequence : resultCheckAll) {
+//			List<Action> actions = actionSequence.getActions();
+//
+//			for (Action action : actions) {
+//				if (action instanceof ActionWait) {
+//					ActionWait waitaction = (ActionWait) action;
+//					System.err.println(waitaction.getWaitTime()); // 0
+//				}
+//			}
+//		}
+//
+//		// format <0x06><RMX><ADRRMX><VALUE>
+//		byte[] message1 = new byte[] { 6, 1, 111, 1 };
+//		Integer[] changes1 = busDepot.getChangesAndUpdate((byte) 1, message1[2], message1[3]); // bit 0
+//																												// wurde
+//																												// auf 1
+//																												// gesetzt
+//
+//		List<ActionSequence> resultCheck = matrix.check(message1[1], message1[2], changes1);
+//		for (ActionSequence actionSequence : resultCheck) {
+//			List<Action> actions = actionSequence.getActions();
+//
+//			for (Action action : actions) {
+//				if (action instanceof ActionWait) {
+//					ActionWait waitaction = (ActionWait) action;
+//					System.err.println(waitaction.getWaitTime()); // 1
+//				}
+//			}
+//		}
 
 	}
 }

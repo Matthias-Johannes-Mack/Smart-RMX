@@ -7,9 +7,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import action.Action;
-import action.ActionMessageBit;
-import action.ActionWait;
+import action.actions.Action;
+import action.actions.actionMessages.ActionMessageBit;
+import action.actions.ActionWait;
 
 /**
  * Class that tests a Action
