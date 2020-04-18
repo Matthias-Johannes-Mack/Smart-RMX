@@ -82,7 +82,7 @@ public class PopUp_IP_Port {
 			// wait for the buttonclick
 			public void actionPerformed(ActionEvent e) {
 				// check if anything changed
-				if (!txtIp.getText().toString().equals(SocketConnector.getIp())) {
+				if (!txtIp.getText().toString().equals(SocketConnector.getIp()) || !txtPort.getText().toString().equals(SocketConnector.getPort())) {
 					// if it is different, test the ip
 					// the adresses from 0-255
 					String addressSpace = "(\\d{1,2}|(0|1)\\" + "d{2}|2[0-4]\\d|25[0-5])";
@@ -105,7 +105,7 @@ public class PopUp_IP_Port {
 					popupframe.setVisible(false);
 					dialogVisible = false;
 				} else { // if the things are normal, set mainBoolean
-					System.out.println("No Changes happend");
+					printOutIP(SocketConnector.getIp(), SocketConnector.getPort());
 					// hide the form
 					popupframe.setVisible(false);
 					dialogVisible = false;
@@ -145,5 +145,11 @@ public class PopUp_IP_Port {
 	 */
 	public static boolean isDisplayed() {
 		return dialogVisible;
+	}
+	
+	public static void printOutIP(String ip, int port) {
+		System.out.println("--------------------------------------");
+		System.out.println("Server: " + ip + " Port: " + port);
+		System.out.println("--------------------------------------");
 	}
 }
