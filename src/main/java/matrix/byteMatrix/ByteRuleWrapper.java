@@ -6,11 +6,11 @@ import matrix.factory.ByteRule;
 import java.util.ArrayList;
 
 /**
- * Class that holds the ByteRule for an field in the matrix
+ * Class that holds the ByteRule for an field in the byte matrix
  */
 public class ByteRuleWrapper {
 	/**
-	 * 
+	 * holds the ByteRules
 	 */
 	private ArrayList<ByteRule> byteRuleList;
 
@@ -22,21 +22,10 @@ public class ByteRuleWrapper {
 	}
 
 	/**
-	 * Setter for the ByteRule
-	 * 
-	 * @param byteRule
-	 */
-	public void setByteRuleList(ByteRule byteRule) {
-		if (byteRule != null) {
-			byteRuleList.add(byteRule);
-		}
-	}
-
-	/**
 	 * Checks if the ByteRuleWrapper has a ActionSequence for the given byteValues
 	 *
-	 * @param byteValueSmall
-	 * @param byteValueBig
+	 * @param byteValueSmall byte Value of the byte with the smaller byteIndex in the matrix
+	 * @param byteValueBig byte Value of the byte with the bigger byteIndex in the matrix
 	 * @return the ActionSequence if a Rule has been defined with the given values, null otherwise
 	 */
 	public ActionSequence getActionSequenceByState(int byteValueSmall, int byteValueBig) {

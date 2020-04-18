@@ -4,6 +4,9 @@ import matrix.factory.ByteRule;
 import utilities.Constants;
 import matrix.matrixutilities.MatrixCalcUtil;
 
+/**
+ * class that contains the byte matrix and setter and getter methods for it
+ */
 public class ByteMatrix {
 
     // Singleton-Pattern START -----------------------------------------
@@ -47,13 +50,21 @@ public class ByteMatrix {
      */
     private ByteRuleWrapper[] byteMatrixArray;
 
-
-
+    /**
+     * getter for a field in the byte matrix
+     * @param fieldIndex index of the field
+     * @return ByteRuleWrapper of the matrix field
+     */
     public ByteRuleWrapper getByteMatrixField(int fieldIndex) {
         return byteMatrixArray[fieldIndex];
     }
 
-
+    /**
+     * adds a byte rule to the byte matrix
+     * uses helper method addByteRuleToMatrix to add the ByteRuleWrapper to the field in the matrix that corresponds with the rules two conditions
+     *
+     * @param rule ByteRule to add
+     */
     public void addByteRule(ByteRule rule) {
         //[Bus][Systemadress] smaller index of the two conditions
         Integer[] conditionOneAdress = rule.getByteConditionOne().getConditionAdress();
@@ -78,23 +89,26 @@ public class ByteMatrix {
         if (byteIndexConditionOne >= byteIndexConditionTwo) {
             // bit index condition one is bigger
             pointIndex = MatrixCalcUtil.calcGauss(byteIndexConditionOne) + byteIndexConditionTwo;
-            addByteRuleToMatrix(rule , pointIndex);
         } else {
             // bit index condition one is bigger
             pointIndex = MatrixCalcUtil.calcGauss(byteIndexConditionTwo) + byteIndexConditionOne;
-            addByteRuleToMatrix(rule , pointIndex);
-
         }
+        addByteRuleToMatrix(rule , pointIndex);
     }
 
+    /**
+     * helper method for  addByteRule
+     * adds new ByteRuleWrapper or appends to existing one to the field in the matrix that corresponds with the rules two conditions
+     * @param rule rule to add to the ByteRuleWrapper
+     * @param pointIndex Index in the byte matrix to add the ByteRuleWrapper to
+     */
     private void addByteRuleToMatrix(ByteRule rule ,int pointIndex){
         // if no action seq wrapper exists at point add new
         if (byteMatrixArray[pointIndex] == null) {
-            System.out.println("ICH FÜGE EINEN WRAPPER HINZU ZUR BYTE MATRIX " + pointIndex);
             byteMatrixArray[pointIndex] = new ByteRuleWrapper();
         }
 
-        // set action sequence in the right Action wrapper aat the pointIndex
+        // set action sequence in the right Action wrapper at the pointIndex
         byteMatrixArray[pointIndex].addByteRule(rule);
     }
 }

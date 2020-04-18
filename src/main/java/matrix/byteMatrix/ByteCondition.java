@@ -4,58 +4,67 @@ package matrix.byteMatrix;
 import java.util.Arrays;
 import java.util.HashMap;
 
+/**
+ * Wrapper Object for a Byte Rule Condition
+ */
 public class ByteCondition implements Comparable<ByteCondition> {
 
+    /**
+     * Holds the different Condition types of the byte condition if they were set in the xml
+     */
     HashMap<ByteConditionType, Integer> conditionTypeValue;
 
     /**
-     * Integer Array for first Conditions [Bus, SystemAddress]
+     * Integer Array for Conditions address [Bus, SystemAddress]
      */
     private Integer[] conditionAdress;
 
+    /**
+     * constructor
+     * @param conditionAdress Address of the condition [Bus, SystemAddress]
+     */
     public ByteCondition(Integer[] conditionAdress) {
         conditionTypeValue = new HashMap<>();
         this.conditionAdress = conditionAdress;
     }
 
-     /*
-        Check
+    /**
+     *checks if all the set conditions in the ByteCondition are met for a given byte value
+     *
+     * @param currentByteValue byte value to chek against the set conditions of the ByteCondition
+     * @return true if the all the set conditions are true for the given byte value, else otherwise
      */
     public boolean checkCondition(int currentByteValue) {
-
+        //indicates whether all the set conditions of the ByteCondition are met with the given byte value
         boolean result = true;
 
         // only iterates through existing condtionTypes in the Map
         loop: for (ByteConditionType conditionType : conditionTypeValue.keySet()) {
 
-            System.out.println("KEYSET IN CHECK OF CONDITION: " + Arrays.toString(conditionTypeValue.keySet().toArray()));
-
-            System.err.println("IN SWITCH " + conditionType.toString() + " " + currentByteValue);
-
             switch (conditionType) {
                 case EQUAL:
-                    if (checkEqual(currentByteValue) == false) {
+                    if (!checkEqual(currentByteValue)) {
                         result = false;
                         // if one condition already is false no need to check further -> break out of whole loop
                         break loop;
                     }
                     break;
                 case NOTEQUAL:
-                    if (checkNotEqual(currentByteValue) == false) {
+                    if (!checkNotEqual(currentByteValue)) {
                         result = false;
                         // if one condition already is false no need to check further -> break out of whole loop
                         break loop;
                     }
                     break;
                 case BIGGER:
-                    if (checkBigger(currentByteValue) == false) {
+                    if (!checkBigger(currentByteValue)) {
                         result = false;
                         // if one condition already is false no need to check further -> break out of whole loop
                         break loop;
                     }
                     break;
                 case SMALLER:
-                    if (checkSmaller(currentByteValue) == false) {
+                    if (!checkSmaller(currentByteValue)) {
                         result = false;
                         // if one condition already is false no need to check further -> break out of whole loop
                         break loop;
@@ -64,60 +73,46 @@ public class ByteCondition implements Comparable<ByteCondition> {
             }
         }
 
-        System.err.println("RESULT " + result);
-
         return result;
-
     }
 
     private boolean checkEqual(int currentByteValue) {
-
-
         int compareResult = Integer.valueOf(currentByteValue).compareTo(conditionTypeValue.get(ByteConditionType.EQUAL));
-
-
-        if (compareResult == 0) {
-            return true;
-        }
-
-        return false;
-
+        return compareResult == 0;
     }
 
     private boolean checkNotEqual(int currentByteValue) {
-
         int compareResult = Integer.valueOf(currentByteValue).compareTo(conditionTypeValue.get(ByteConditionType.NOTEQUAL));
-
-        if (compareResult != 0) {
-            return true;
-        }
-
-        return false;
-
+        return compareResult != 0;
     }
 
     private boolean checkSmaller(int currentByteValue) {
-
         int compareResult = Integer.valueOf(currentByteValue).compareTo(conditionTypeValue.get(ByteConditionType.SMALLER));
-
-        if (compareResult < 0) {
-            return true;
-        }
-
-        return false;
-
+        return compareResult < 0;
     }
 
     private boolean checkBigger(int currentByteValue) {
-
         int compareResult = Integer.valueOf(currentByteValue).compareTo(conditionTypeValue.get(ByteConditionType.BIGGER));
+        return compareResult > 0;
+    }
 
-        if (compareResult > 0) {
-            return true;
-        }
+    /*
+        GETTER
+     */
+    /**
+     * getter for the conditions address
+     * @return Conditions Address [Bus, SystemAddress]
+     */
+    public Integer[] getConditionAdress() {
+        return conditionAdress;
+    }
 
-        return false;
-
+    /**
+     * getter for conditionTypeValue HashMap of the condition
+     * @return conditionTypeValue HashMap of the condition
+     */
+    public HashMap<ByteConditionType, Integer> getConditionTypeValue() {
+        return conditionTypeValue;
     }
 
 
@@ -188,11 +183,5 @@ public class ByteCondition implements Comparable<ByteCondition> {
                 Arrays.equals(conditionAdress, byteCondition.conditionAdress);
     }
 
-    public Integer[] getConditionAdress() {
-        return conditionAdress;
-    }
 
-    public HashMap<ByteConditionType, Integer> getConditionTypeValue() {
-        return conditionTypeValue;
-    }
 }

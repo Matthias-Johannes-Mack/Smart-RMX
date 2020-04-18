@@ -10,8 +10,14 @@ import matrix.byteMatrix.ByteCondition;
  */
 public class ByteRule {
 
+	/**
+	 * first condition of the byte rule
+	 */
 	ByteCondition byteConditionOne;
 
+	/**
+	 * second condition of the byte rule
+	 */
 	ByteCondition byteConditionTwo;
 
 	/**
@@ -26,9 +32,9 @@ public class ByteRule {
 	 * internally saves the condition with the smaller bus and systemadress as conditionOne and the bigger one as
 	 * conditionTwo
 	 *
-	 * @param byteConditionOne
-	 * @param byteConditionTwo
-	 * @param actionSequence
+	 * @param byteConditionOne first condition
+	 * @param byteConditionTwo second condition
+	 * @param actionSequence actionSequence containing the actions
 	 */
 	public ByteRule(ByteCondition byteConditionOne, ByteCondition byteConditionTwo, ActionSequence actionSequence) {
 
@@ -49,22 +55,47 @@ public class ByteRule {
 	}
 
 	/**
-	 * checks if the Rule is true with the given conditions
-	 * @param conditionOneValue
-	 * @param conditionTwoValue
-	 * @return
+	 * checks the first and second condition of the rule to see if all the conditions for the rule are true and the rule fires
+	 *
+	 * @param conditionOneValue value of the first byte of the matrix field, should be the byte with the smaller byteIndex
+	 * @param conditionTwoValue value of the second byte of the matrix field, should be the byte with the bigger byteIndex
+	 * @return true if both conditions are true, false otherwise
 	 */
 	public boolean check(int conditionOneValue, int conditionTwoValue){
-		System.out.println("Value one " + conditionOneValue + "Value two " + conditionTwoValue);
-
 		return (byteConditionOne.checkCondition(conditionOneValue) && byteConditionTwo.checkCondition(conditionTwoValue));
 	}
 
+	/**
+	 * getter for the ActionSequence of the byte rule
+	 * @return ActionSequence Object containing the Actions
+	 */
 	public ActionSequence getActionSequence() {
 		return actionSequence;
 	}
 
-	// to make sure there is only one rule for each byte state and combination
+	/**
+	 * getter for the first condition of the byte rule
+	 * @return ByteCondition Object
+	 */
+	public ByteCondition getByteConditionOne() {
+		return byteConditionOne;
+	}
+
+	/**
+	 * getter for the second condition of the byte rule
+	 * @return ByteCondition Object
+	 */
+	public ByteCondition getByteConditionTwo() {
+		return byteConditionTwo;
+	}
+
+	/**
+	 * to make sure there is only one rule for each byte state and combination
+	 * two ByteRules are equal if both objects are byte rules and have the same conditions
+	 *
+	 * @param o object that should be checked against to see if they are equal
+	 * @return true if the byte rule objects are equal, false otherwise
+	 */
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
@@ -78,11 +109,5 @@ public class ByteRule {
 		return byteConditionOne.equals(byteRule.byteConditionOne) && byteConditionTwo.equals(byteRule.byteConditionTwo);
 	}
 
-	public ByteCondition getByteConditionOne() {
-		return byteConditionOne;
-	}
 
-	public ByteCondition getByteConditionTwo() {
-		return byteConditionTwo;
-	}
 }
