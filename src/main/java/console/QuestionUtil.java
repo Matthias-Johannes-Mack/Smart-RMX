@@ -17,7 +17,7 @@ public class QuestionUtil {
 	 *
 	 * @param questionType - String with the type of question inside
 	 */
-	protected static void retry(String questionType) {
+	public static void retry(String questionType) {
 		// Show the file dialog
 		int userInput = JOptionPane.showConfirmDialog(null, Constants.RETRY_MESSAGE_RECONNECT, Constants.RETRY_HEAD_RECONNECT,
 				JOptionPane.YES_NO_OPTION);
