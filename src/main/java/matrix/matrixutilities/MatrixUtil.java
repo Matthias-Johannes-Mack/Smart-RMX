@@ -4,31 +4,33 @@ import action.actionSequence.ActionSequence;
 import action.actionSequence.ActionSequenceWrapper;
 import bus.Bus;
 import bus.BusDepot;
+import matrix.byteMatrix.ByteRuleWrapper;
 import utilities.Constants;
 
+/**
+ * class that holds utility methods for the matrixChecker
+ */
 public class MatrixUtil {
 
     /*-----------------------------------------------------------------------------------------------
-      HELPER METHODS FOR CHECKING
-      - getActionSequenceByState
-      - updateBus
+      HELPER METHODS BITMATRIX
+      - checkBitMatrixField
+      - getNextHigherBusBitMatrix
      ----------------------------------------------------------------------------------------------*/
 
     /**
-     * Returns (if existend) the ActionSequence of the given field in the matrix specified by the bitIndex of the Row
+     * Returns (if existend) the ActionSequence of the given field in the bitMatrix specified by the bitIndex of the Row
      * and Column and der corresponding bit values
      * <p>
      * possible combinations of states (row, column): (0,0) - (1,0) - (1,0) - (1,1)
      *
-     * @param systemadress_bitIndexRow    systemadress of the bitIndex of the row
-     * @param bitValueRow                 bitValue of the bit specified by the bitindex of the row
-     * @param systemadress_bitIndexColumn systemadress of the bitIndex of the column
-     * @param bitValueColumn              bitValue of the bit specified by the bitindex of the column
-     * @param bitMatrixField              the field to check in the matrix
+     * @param bitValueRow    bitValue of the bit specified by the bitindex of the row
+     * @param bitValueColumn bitValue of the bit specified by the bitindex of the column
+     * @param bitMatrixField the field to check in the matrix
      * @return the actionSequence of the given state, returns null if no rule has been defined for the given state
      */
-    public static ActionSequence getActionSequenceByState(int systemadress_bitIndexRow, boolean bitValueRow, int systemadress_bitIndexColumn,
-                                                   boolean bitValueColumn, ActionSequenceWrapper bitMatrixField) {
+    public static ActionSequence checkBitMatrixField(boolean bitValueRow,
+                                                     boolean bitValueColumn, ActionSequenceWrapper bitMatrixField) {
 
         ActionSequence actionSequence;
 
@@ -76,6 +78,37 @@ public class MatrixUtil {
         }
 
         return bus;
+    }
+
+     /*-----------------------------------------------------------------------------------------------
+      HELPER METHODS BITMATRIX
+      - checkByteMatrixField
+      - getNextHigherBusByteMatrix
+     ----------------------------------------------------------------------------------------------*/
+
+    /**
+     * Returns (if existend) the ActionSequence of the given field in the byteMatrix specified by the byteValue of the smaller index
+     * and byteValue of the bigger index
+     * <p>
+     * - in row traversal the rowIndex is the smaller Index<br>
+     * - in column traversal the columnIndex is the smaller Index
+     *
+     * @param byteValueSmall  byte Value of the smaller index
+     * @param byteValueBig
+     * @param byteMatrixField
+     * @return the actionSequence of the given state, returns null if no rule has been defined for the given state
+     */
+    public static ActionSequence checkByteMatrixField(int byteValueSmall,
+                                               int byteValueBig, ByteRuleWrapper byteMatrixField) {
+
+        ActionSequence result = null;
+
+        if (byteMatrixField != null) {
+            // a rule has been defined -> check if a rule for the given states exists
+            result = byteMatrixField.getActionSequenceByState(byteValueSmall, byteValueBig);
+        }
+
+        return result;
     }
 
     /**
