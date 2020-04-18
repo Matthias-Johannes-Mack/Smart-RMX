@@ -85,9 +85,7 @@ public class Console extends OutputStream {
 		// create the frame
 		JFrame jFrame = new JFrame("Smart-RMX");
 		// add the top description with IP and Port
-		jFrame.add(new JLabel(
-				"Smart-RMX Console | Server: " + SocketConnector.getIp() + " | Port: " + SocketConnector.getPort()),
-				BorderLayout.NORTH);
+		jFrame.add(new JLabel("Smart-RMX Console"), BorderLayout.NORTH);
 		// create the JTExtArea
 		JTextArea jTextArea = new JTextArea();
 		// create a new Console from the JTExtArea

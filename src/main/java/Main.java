@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.IOException;
+import java.net.Socket;
 
 import Utilities.Constants;
 import connection.SocketConnector;
@@ -15,7 +16,7 @@ import xml.XML_IO;
  * @author Matthias Mack 3316380
  */
 public class Main {
-	private static boolean dialogShowed;
+	private static boolean dialogProcessed;
 
 	/**
 	 * Main method
@@ -41,12 +42,11 @@ public class Main {
 		// create the connection
 		// schedular MUSS vor Receiver Thread gestartet sein
 		Schedular.getSchedular().startScheduling();
-		while (!PopUp_IP_Port.isDialogReady()) {
-			if (!isDialogShowed()) {
-				// show popup before connecting
-				PopUp_IP_Port.showPopup();
-				setDialogShowed(true);
-			}
+		// show popup before connecting
+		PopUp_IP_Port.showPopup();
+		// wait & notify
+		while (PopUp_IP_Port.isDisplayed()) {
+		
 		}
 		SocketConnector.Connect();
 	}
@@ -70,15 +70,15 @@ public class Main {
 	/**
 	 * @return the dialogProcessed
 	 */
-	public static boolean isDialogShowed() {
-		return dialogShowed;
+	public static boolean isDialogProcessed() {
+		return dialogProcessed;
 	}
 
 	/**
 	 * @param dialogProcessed the dialogProcessed to set
 	 */
-	public static void setDialogShowed(boolean dialogProcessed) {
-		Main.dialogShowed = dialogProcessed;
+	public static void setDialogProcessed(boolean dialogProcessed) {
+		Main.dialogProcessed = dialogProcessed;
 	}
 
 }

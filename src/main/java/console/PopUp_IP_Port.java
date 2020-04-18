@@ -12,9 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSeparator;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import Utilities.Constants;
@@ -29,14 +27,18 @@ public class PopUp_IP_Port {
 	/**
 	 * flag for the dialog
 	 */
-	private static boolean dialogReady = false;
+	private static volatile boolean dialogVisible = true;
+	/**
+	 * the main frame
+	 */
+	private static JFrame popupframe;
 
 	/**
 	 * Shows the dialog for the ip and the port
 	 */
 	public static void showPopup() {
 		// create the jframe
-		JFrame popupframe = new JFrame(Constants.POPUP_TITLE);
+		popupframe = new JFrame(Constants.POPUP_TITLE);
 		popupframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// add the border
 		JPanel p = new JPanel();
@@ -98,13 +100,15 @@ public class PopUp_IP_Port {
 					if (txtPort.getText().matches("^[1-9]+[0-9]*$")) {
 						SocketConnector.setPort(Integer.parseInt(txtPort.getText().toString()));
 					}
+					System.out.println("Changes happend");
 					// hide the form
 					popupframe.setVisible(false);
-					// set the flag for the dialog field
-					setDialogReady(true);
+					dialogVisible = false;
 				} else { // if the things are normal, set mainBoolean
-					// set the flag for the dialog field
-					setDialogReady(true);
+					System.out.println("No Changes happend");
+					// hide the form
+					popupframe.setVisible(false);
+					dialogVisible = false;
 				}
 			}
 		});
@@ -124,14 +128,22 @@ public class PopUp_IP_Port {
 	 * @return the dialogReady
 	 */
 	public static boolean isDialogReady() {
-		return dialogReady;
+		return dialogVisible;
 	}
 
 	/**
 	 * @param dialogReady the dialogReady to set
 	 */
 	public static void setDialogReady(boolean dialogReady) {
-		PopUp_IP_Port.dialogReady = dialogReady;
+		PopUp_IP_Port.dialogVisible = dialogReady;
 	}
 
+	/**
+	 * Method that checks if the popupframe is displayed
+	 * 
+	 * @return
+	 */
+	public static boolean isDisplayed() {
+		return dialogVisible;
+	}
 }
