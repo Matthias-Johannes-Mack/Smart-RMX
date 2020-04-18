@@ -14,7 +14,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
-
 import connection.SocketConnector;
 import utilities.Constants;
 
@@ -82,33 +81,55 @@ public class PopUp_IP_Port {
 			// wait for the buttonclick
 			public void actionPerformed(ActionEvent e) {
 				// check if anything changed
-				if (!txtIp.getText().toString().equals(SocketConnector.getIp())) {
-					// if it is different, test the ip
-					// the adresses from 0-255
-					String addressSpace = "(\\d{1,2}|(0|1)\\" + "d{2}|2[0-4]\\d|25[0-5])";
+				try {
+					if (!txtIp.getText().toString().equals(SocketConnector.getIp())
+							|| !(Integer.parseInt(txtPort.getText()) == SocketConnector.getPort())) {
+						// if it is different, test the ip
+						// the adresses from 0-255
+						String addressSpace = "(\\d{1,2}|(0|1)\\" + "d{2}|2[0-4]\\d|25[0-5])";
 
-					// Regex for a digit from 0 to 255 and
-					// followed by a dot, repeat 4 times.
-					// this is the regex to validate an IP address.
-					String checkIp = addressSpace + "\\." + addressSpace + "\\." + addressSpace + "\\." + addressSpace;
-					// if IP_V4 is valid put it in
-					if (txtIp.getText().matches(checkIp)) {
-						// adds the values to the socket Connector
-						SocketConnector.setIp(txtIp.getText().toString());
+						// Regex for a digit from 0 to 255 and
+						// followed by a dot, repeat 4 times.
+						// this is the regex to validate an IP address.
+						String checkIp = addressSpace + "\\." + addressSpace + "\\." + addressSpace + "\\."
+								+ addressSpace;
+						// if IP_V4 is valid put it in
+						if (txtIp.getText().matches(checkIp)) {
+							// adds the values to the socket Connector
+							SocketConnector.setIp(txtIp.getText().toString());
+						} else { // else print out the error message
+							throw new Exception();
+						}
+						// if the port is valid put it in as well
+						if (txtPort.getText().matches("^[1-9]+[0-9]*$")) {
+							SocketConnector.setPort(Integer.parseInt(txtPort.getText().toString()));
+						} else { // else print out the error message
+							throw new NumberFormatException();
+						}
+						// hide the form
+						popupframe.setVisible(false);
+						dialogVisible = false;
+						// print out the choosen ip and port combination
+						printOutIP(SocketConnector.getIp(), SocketConnector.getPort());
+					} else { // if the things are normal, set mainBoolean
+						// print out the choosen ip and port combination
+						printOutIP(SocketConnector.getIp(), SocketConnector.getPort());
+						// hide the form
+						popupframe.setVisible(false);
+						dialogVisible = false;
 					}
-					// if the port is valid put it in as well
-					if (txtPort.getText().matches("^[1-9]+[0-9]*$")) {
-						SocketConnector.setPort(Integer.parseInt(txtPort.getText().toString()));
-					}
-					System.out.println("Changes happend");
-					// hide the form
+				} catch (NumberFormatException e1) {
+					System.err.println(Constants.POPUP_UNVALID_PORT);
+					// hide form
 					popupframe.setVisible(false);
-					dialogVisible = false;
-				} else { // if the things are normal, set mainBoolean
-					System.out.println("No Changes happend");
-					// hide the form
+					// restart
+					PopUp_IP_Port.showPopup();
+				} catch (Exception e2) {
+					System.err.println(Constants.POPUP_UNVALID_IP);
+					// hide form
 					popupframe.setVisible(false);
-					dialogVisible = false;
+					// restart
+					PopUp_IP_Port.showPopup();
 				}
 			}
 		});
@@ -121,7 +142,6 @@ public class PopUp_IP_Port {
 		popupframe.setVisible(true);
 		// size of the frame
 		popupframe.setSize(200, 180);
-
 	}
 
 	/**
@@ -145,5 +165,11 @@ public class PopUp_IP_Port {
 	 */
 	public static boolean isDisplayed() {
 		return dialogVisible;
+	}
+
+	public static void printOutIP(String ip, int port) {
+		System.out.println("--------------------------------------");
+		System.out.println("Server: " + ip + " Port: " + port);
+		System.out.println("--------------------------------------");
 	}
 }
