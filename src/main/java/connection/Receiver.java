@@ -151,8 +151,19 @@ class Receiver {
 					SocketConnector.nextRequestAllowed.set(true);
 					break;
 				case 3: // 0x03 - initialisation response
-					// TODO Wenn nicht gleiche RMX Version terminieren
 
+					if (message[2] != Constants.RMX_VERSION) {
+						System.out.println("Incompatible RMX-version! Please make sure "
+										+ "that server and client use the same "
+										+ "version of RMXnet!");
+						try {
+							Thread.sleep(5000); // wait 5 seconds so the message can be read
+						} catch (InterruptedException e) {
+						}
+
+						System.exit(0); // kill everything
+
+					}
 					SocketConnector.nextRequestAllowed.set(true);
 					break;
 				case 4: // 0x04 - state info
