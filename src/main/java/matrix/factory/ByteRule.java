@@ -1,6 +1,7 @@
-package matrix.byteMatrix;
+package matrix.factory;
 
 import action.actionSequence.ActionSequence;
+import matrix.byteMatrix.ByteCondition;
 
 /**
  * Class for a byte Rule
@@ -25,7 +26,7 @@ public class ByteRule {
 	 * internally saves the condition with the smaller bus and systemadress as conditionOne and the bigger one as
 	 * conditionTwo
 	 *
-	 * @param conditinOne
+	 * @param byteConditionOne
 	 * @param byteConditionTwo
 	 * @param actionSequence
 	 */

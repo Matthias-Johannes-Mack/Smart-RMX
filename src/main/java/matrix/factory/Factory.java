@@ -1,4 +1,4 @@
-package xml;
+package matrix.factory;
 
 import action.*;
 import action.actions.*;
@@ -9,8 +9,8 @@ import action.actions.actionMessages.ActionMessageByte;
 import action.actions.actionMessages.ActionMessageByteIncDecRement;
 import matrix.byteMatrix.ByteCondition;
 import matrix.byteMatrix.ByteMatrix;
-import matrix.byteMatrix.ByteRule;
 import matrix.bitMatrix.BitMatrix;
+import xml.XML_ActionWrapper;
 import xml.xmlutilities.RulePrintUtil;
 
 import java.util.ArrayList;
@@ -67,12 +67,12 @@ public class Factory {
 	private ArrayList<ByteRule> byteRules;
 
 	/**
-	 * adds a byte rule to the factory
+	 * adds a byte rule to the matrix.factory
 	 * @param conditionOne [Bus, Systemadress, Equal, NotEqual, Bigger, Smaller]
 	 * @param conditionTwo [Bus, Systemadress, Equal, NotEqual, Bigger, Smaller]
 	 * @param actions Arraylist containg the actions as XML_ActionWrapper
 	 */
-	protected void addByteRule(Integer[] conditionOne, Integer[] conditionTwo, ArrayList<XML_ActionWrapper> actions) {
+	public void addByteRule(Integer[] conditionOne, Integer[] conditionTwo, ArrayList<XML_ActionWrapper> actions) {
 		ActionSequence actionSequence = createActionSequence(actions);
 		ByteCondition byteConditionOneObj = createCondition(conditionOne);
 		ByteCondition byteConditionTwoObj = createCondition(conditionTwo);
@@ -87,7 +87,7 @@ public class Factory {
 	 * @param conditionsTwo [Bus, SystemAddress, Bit]
 	 * @param actions ArrayList<XML_ActionWrapper>
 	 */
-	protected void addBitRule(Integer[] conditionsOne, Integer[] conditionsTwo, ArrayList<XML_ActionWrapper> actions) {
+	public void addBitRule(Integer[] conditionsOne, Integer[] conditionsTwo, ArrayList<XML_ActionWrapper> actions) {
 		RulePrintUtil.printBitRule(conditionsOne, conditionsTwo, actions);
 		bitRules.add(new BitRule(conditionsOne, conditionsTwo, actions));
 	}

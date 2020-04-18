@@ -1,8 +1,8 @@
 package matrix.byteMatrix;
 
-import action.actionSequence.ActionSequenceWrapper;
+import matrix.factory.ByteRule;
 import utilities.Constants;
-import matrix.MatrixCalcUtil;
+import matrix.matrixutilities.MatrixCalcUtil;
 
 public class ByteMatrix {
 

@@ -3,8 +3,7 @@ package schedular;
 
 import bus.BusDepot;
 import matrix.MatrixChecker;
-import matrix.bitMatrix.BitMatrix;
-import schedular.utilities.SchedularUtil;
+import schedular.schedularutilities.SchedularUtil;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;

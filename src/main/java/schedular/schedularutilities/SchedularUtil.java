@@ -1,4 +1,4 @@
-package schedular.utilities;
+package schedular.schedularutilities;
 
 import action.actions.*;
 import action.actionSequence.ActionSequence;
@@ -12,7 +12,7 @@ import utilities.Constants;
 import bus.BusDepot;
 import connection.Sender;
 import org.apache.commons.math3.exception.OutOfRangeException;
-import xml.xmlutilities.XML_ActionType;
+import utilities.ActionType;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -77,22 +77,22 @@ public class SchedularUtil {
             if (action instanceof ActionMessageBit) {
                 // the action is a ActionMessageBit
                 ActionMessageBit actionMessageBit = (ActionMessageBit) action;
-                processActionMessage(actionMessageBit.getActionMessageBit(), XML_ActionType.BITMESSAGE);
+                processActionMessage(actionMessageBit.getActionMessageBit(), ActionType.BITMESSAGE);
 
             } else if (action instanceof ActionMessageBitToggle) {
                 // the action is a ActionMessageBitToggle
                 ActionMessageBitToggle actionMessageBitToggle = (ActionMessageBitToggle) action;
-                processActionMessage(actionMessageBitToggle.getActionMessageBitToggle(), XML_ActionType.BITTOGGLE);
+                processActionMessage(actionMessageBitToggle.getActionMessageBitToggle(), ActionType.BITTOGGLE);
 
             } else if (action instanceof ActionMessageByte) {
                 // the action is a ActionMessageByte
                 ActionMessageByte actionMessageByte = (ActionMessageByte) action;
-                processActionMessage(actionMessageByte.getActionMessageByte(), XML_ActionType.BYTEMESSAGE);
+                processActionMessage(actionMessageByte.getActionMessageByte(), ActionType.BYTEMESSAGE);
 
             } else if (action instanceof ActionMessageByteIncDecRement) {
                 // the action is a ActionMessageByteIncDecRement
                 ActionMessageByteIncDecRement actionMessageByteIncDecRement = (ActionMessageByteIncDecRement) action;
-                processActionMessage(actionMessageByteIncDecRement.getActionMessageByteIncDecRement(), XML_ActionType.INCREMENT);
+                processActionMessage(actionMessageByteIncDecRement.getActionMessageByteIncDecRement(), ActionType.INCREMENT);
 
             } else if (action instanceof ActionWait) {
                 // the action is a ActionMessageWait
@@ -118,7 +118,7 @@ public class SchedularUtil {
      * @param actionArray int[] holding the data of the given action
      * @param actionType  the ActionType of the given action
      */
-    private static void processActionMessage(int[] actionArray, XML_ActionType actionType) {
+    private static void processActionMessage(int[] actionArray, ActionType actionType) {
 
         if (!BusDepot.getBusDepot().busExists(actionArray[0])) {
             // bus with the given id doesnt exist
@@ -205,7 +205,7 @@ public class SchedularUtil {
      * @throws OutOfRangeException if the calculated byteValue by an ActionMessageIncrement or ActionMessageDecrement is
      *                             out of Range of a byte (greater than 255 or less than 0)
      */
-    private static int[] buildRMXMessage(int[] actionArray, XML_ActionType actionType) throws OutOfRangeException {
+    private static int[] buildRMXMessage(int[] actionArray, ActionType actionType) throws OutOfRangeException {
         int[] message = new int[6];
 
         // RMX-Headbyte
@@ -242,7 +242,7 @@ public class SchedularUtil {
      * @throws OutOfRangeException if the calculated byteValue by an ActionMessageIncrement or ActionMessageDecrement is
      *                             out of Range of a byte (greater than 255 or less than 0)
      */
-    private static int[] buildFakeMessage(int[] actionArray, XML_ActionType actionType) throws OutOfRangeException {
+    private static int[] buildFakeMessage(int[] actionArray, ActionType actionType) throws OutOfRangeException {
         int[] message = new int[4];
 
         // OPCODE
@@ -277,7 +277,7 @@ public class SchedularUtil {
      * @throws OutOfRangeException if the calculated byteValue by an ActionMessageIncrement or ActionMessageDecrement is
      *                             out of Range of a byte (greater than 255 or less than 0)
      */
-    private static int calculateByteValueByActionType(int[] actionArray, XML_ActionType actionType) throws OutOfRangeException {
+    private static int calculateByteValueByActionType(int[] actionArray, ActionType actionType) throws OutOfRangeException {
 
         // newByteValue that is the result of the action of the given actionType
         int newByteValue = 0;

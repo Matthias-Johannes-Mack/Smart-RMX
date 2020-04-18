@@ -1,6 +1,7 @@
 package connection;
 
 import connection.SocketConnector.conState;
+import console.QuestionUtil;
 
 /**
  * Class that reloads the server
@@ -44,7 +45,7 @@ public class ServerReload implements Runnable {
 	/**
 	 * Method, that reloads the Thread
 	 */
-	protected static void Reload() {
+	public static void Reload() {
 		// kill the threads
 		Sender.setNull();
 		Receiver.setNull();
@@ -66,7 +67,7 @@ public class ServerReload implements Runnable {
 	 *
 	 * @param lastServerResponse - sets the stimestamp in millis
 	 */
-	protected static void setLastServerResponse(long lastServerResponse) {
+	public static void setLastServerResponse(long lastServerResponse) {
 		ServerReload.lastServerResponse = lastServerResponse;
 	}
 }

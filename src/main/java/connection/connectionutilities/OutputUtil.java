@@ -1,4 +1,4 @@
-package connection;
+package connection.connectionutilities;
 
 /**
  * Class containing Utility functions for Connections

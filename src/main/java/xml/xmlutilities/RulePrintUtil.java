@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * Utility class for printing the read in rules from the xml document, methods mainly used by factory
+ * Utility class for printing the read in rules from the xml document, methods mainly used by matrix.factory
  */
 public class RulePrintUtil {
 

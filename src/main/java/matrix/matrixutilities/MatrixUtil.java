@@ -1,4 +1,4 @@
-package matrix;
+package matrix.matrixutilities;
 
 import action.actionSequence.ActionSequence;
 import action.actionSequence.ActionSequenceWrapper;

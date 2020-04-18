@@ -1,9 +1,9 @@
-package xml.xmlutilities;
+package utilities;
 
 /**
  * contains the Condition Types that can be found in the XML
  */
-public enum XML_ConditionTypes {
+public enum ConditionTypes {
     /**
      *[Bus, Systemadddess,Bit, Bitvalue]
      */
@@ -18,7 +18,7 @@ public enum XML_ConditionTypes {
      * private constructor for the arraylengths
      * @param arrayLength
      */
-    XML_ConditionTypes(int arrayLength) {
+    ConditionTypes(int arrayLength) {
         this.ARRAY_LENGTH = arrayLength;
     }
 

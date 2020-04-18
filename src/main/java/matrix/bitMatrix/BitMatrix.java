@@ -4,7 +4,7 @@ import utilities.Constants;
 import action.actionSequence.ActionSequence;
 import action.actionSequence.ActionSequenceWrapper;
 
-import matrix.MatrixCalcUtil;
+import matrix.matrixutilities.MatrixCalcUtil;
 
 /**
  * Class that represents the matrix for checking the rules

@@ -1,4 +1,4 @@
-package schedular.utilities;
+package schedular.schedularutilities;
 
 import action.actionSequence.ActionSequence;
 

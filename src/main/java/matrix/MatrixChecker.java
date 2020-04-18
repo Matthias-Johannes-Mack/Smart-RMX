@@ -5,6 +5,8 @@ import bus.Bus;
 import bus.BusDepot;
 import matrix.bitMatrix.BitMatrix;
 import matrix.byteMatrix.ByteMatrix;
+import matrix.matrixutilities.MatrixCalcUtil;
+import matrix.matrixutilities.MatrixUtil;
 import utilities.ByteUtil;
 import utilities.Constants;
 

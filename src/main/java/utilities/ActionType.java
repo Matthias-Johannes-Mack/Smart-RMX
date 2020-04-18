@@ -1,9 +1,9 @@
-package xml.xmlutilities;
+package utilities;
 
 /**
  * Enum to distinguish the different Types of Actions that are supported and their action array (int[]) length
  */
-public enum XML_ActionType {
+public enum ActionType {
     /**
      * [bus][systemadress][ - value]
      */
@@ -45,7 +45,7 @@ public enum XML_ActionType {
      *
      * @param arrayLength
      */
-    XML_ActionType(int arrayLength) {
+    ActionType(int arrayLength) {
         this.ARRAY_LENGTH = arrayLength;
     }
 

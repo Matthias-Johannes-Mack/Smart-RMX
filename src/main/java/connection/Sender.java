@@ -1,5 +1,6 @@
 package connection;
 
+import connection.connectionutilities.OutputUtil;
 import utilities.ByteUtil;
 import utilities.Constants;
 

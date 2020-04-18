@@ -1,10 +1,11 @@
 package xml;
 
+import matrix.factory.Factory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import xml.xmlutilities.XML_ActionType;
-import xml.xmlutilities.XML_ConditionTypes;
+import utilities.ActionType;
+import utilities.ConditionTypes;
 import xml.xmlutilities.XML_Constants;
 
 import java.util.ArrayList;
@@ -51,7 +52,7 @@ class XML_read {
     /**
      * indicates of which tye the current action is
      */
-    private static XML_ActionType actionType;
+    private static ActionType actionType;
 
     /**
      * the xsd schema cannot specify if the conditions of the byte conditions are correct
@@ -123,7 +124,7 @@ class XML_read {
             byteConditionValueSet[0] = false;
             byteConditionValueSet[1] = false;
             // indicates of which type the current read in conditions are
-            XML_ConditionTypes conditionType = null;
+            ConditionTypes conditionType = null;
 
 
             //iterate over every child node of the rule
@@ -134,23 +135,23 @@ class XML_read {
                 Conditions
                  */
                 if (ruleNodeChild.getNodeName().equals(XML_Constants.BitConditions)) {
-                    conditionType = XML_ConditionTypes.BIT_CONDITION;
+                    conditionType = ConditionTypes.BIT_CONDITION;
 
                     //[Bus, Systemadddess,Bit, Bitvalue]
-                    conditionOne = new Integer[XML_ConditionTypes.BIT_CONDITION.ARRAY_LENGTH];
-                    conditionTwo = new Integer[XML_ConditionTypes.BIT_CONDITION.ARRAY_LENGTH];
+                    conditionOne = new Integer[ConditionTypes.BIT_CONDITION.ARRAY_LENGTH];
+                    conditionTwo = new Integer[ConditionTypes.BIT_CONDITION.ARRAY_LENGTH];
 
                     //check every child node of BitConditions
                     iterateOverConditionChildNodes(conditionOne, conditionTwo, ruleNodeChild);
                 }
 
                 if (ruleNodeChild.getNodeName().equals(XML_Constants.ByteConditions)) {
-                    conditionType = XML_ConditionTypes.BYTE_CONDITION;
+                    conditionType = ConditionTypes.BYTE_CONDITION;
 
 
                     //[Bus, Systemaddress, Equals, NotEquals, Bigger, Smaller]
-                    conditionOne = new Integer[XML_ConditionTypes.BYTE_CONDITION.ARRAY_LENGTH];
-                    conditionTwo = new Integer[XML_ConditionTypes.BYTE_CONDITION.ARRAY_LENGTH];
+                    conditionOne = new Integer[ConditionTypes.BYTE_CONDITION.ARRAY_LENGTH];
+                    conditionTwo = new Integer[ConditionTypes.BYTE_CONDITION.ARRAY_LENGTH];
 
                     //check every child node of Bytecondition
                     iterateOverConditionChildNodes(conditionOne, conditionTwo, ruleNodeChild);
@@ -168,7 +169,7 @@ class XML_read {
                         //Message Action
                         if (actionsNodeChild.getNodeName().equals(XML_Constants.BitAction) || actionsNodeChild.getNodeName().equals(XML_Constants.ByteAction)) {
                             // Array of the max length of the action arrays that holds all the information regardless of action type which will be processed later
-                            int[] actionArray = new int[XML_ActionType.MAX_LENGTH_OF_ACTION_ARRAY];
+                            int[] actionArray = new int[ActionType.MAX_LENGTH_OF_ACTION_ARRAY];
 
                             //check every child node of message action
                             for (Node actionNodeChild : iterable(actionsNodeChild.getChildNodes())) {
@@ -187,7 +188,7 @@ class XML_read {
                             //add a IntegerArray containing only the wait time
                             int[] wait = new int[1];
                             wait[0] = Integer.parseInt(actionsNodeChild.getTextContent());
-                            actions.add(new XML_ActionWrapper(wait, XML_ActionType.WAIT));
+                            actions.add(new XML_ActionWrapper(wait, ActionType.WAIT));
                         }
                     }
                 }
@@ -195,10 +196,10 @@ class XML_read {
             }
 
             //  Iterating over one rule block done, add conditions and actions to new rule
-            if (conditionType == XML_ConditionTypes.BIT_CONDITION) {
+            if (conditionType == ConditionTypes.BIT_CONDITION) {
                 factory.addBitRule(conditionOne, conditionTwo, actions);
             }
-            if (conditionType == XML_ConditionTypes.BYTE_CONDITION) {
+            if (conditionType == ConditionTypes.BYTE_CONDITION) {
                 /*
                  the xsd schema cannot specify if the conditions of the byte conditions are correct
                  it could happen that none of Equal, NotEqual, Bigger, Smaller is selected which cant be checked in
@@ -321,24 +322,24 @@ class XML_read {
                 break;
             case XML_Constants.BitValue:
                 if (node.getTextContent().equals(XML_Constants.Toggle)) {
-                    actionType = XML_ActionType.BITTOGGLE;
+                    actionType = ActionType.BITTOGGLE;
                 } else {
                     targetArray[3] = Integer.parseInt(node.getTextContent());
-                    actionType = XML_ActionType.BITMESSAGE;
+                    actionType = ActionType.BITMESSAGE;
                 }
                 break;
             case XML_Constants.ByteValue:
                 targetArray[2] = Integer.parseInt(node.getTextContent());
-                actionType = XML_ActionType.BYTEMESSAGE;
+                actionType = ActionType.BYTEMESSAGE;
                 break;
             case XML_Constants.Increment:
                 targetArray[2] = Integer.parseInt(node.getTextContent());
-                actionType = XML_ActionType.INCREMENT;
+                actionType = ActionType.INCREMENT;
                 break;
             case XML_Constants.Decrement:
                 // decrement holds negative values
                 targetArray[2] = Integer.parseInt(node.getTextContent()) * -1;
-                actionType = XML_ActionType.DECREMENT;
+                actionType = ActionType.DECREMENT;
                 break;
         }
     }

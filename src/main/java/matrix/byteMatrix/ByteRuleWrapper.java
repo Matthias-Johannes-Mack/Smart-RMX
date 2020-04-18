@@ -1,6 +1,7 @@
 package matrix.byteMatrix;
 
 import action.actionSequence.ActionSequence;
+import matrix.factory.ByteRule;
 
 import java.util.ArrayList;
 

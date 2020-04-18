@@ -1,4 +1,4 @@
-package matrix;
+package matrix.matrixutilities;
 
 import utilities.Constants;
 

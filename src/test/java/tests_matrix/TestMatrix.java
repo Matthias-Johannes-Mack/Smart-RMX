@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
 import java.util.List;
 import java.util.Random;
 
-import matrix.MatrixCalcUtil;
+import matrix.matrixutilities.MatrixCalcUtil;
 import org.junit.Test;
 
 import action.actions.Action;
