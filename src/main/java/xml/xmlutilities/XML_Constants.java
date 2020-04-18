@@ -1,4 +1,4 @@
-package xml;
+package xml.xmlutilities;
 
 /**
  * Constants that define the used tags in the XML

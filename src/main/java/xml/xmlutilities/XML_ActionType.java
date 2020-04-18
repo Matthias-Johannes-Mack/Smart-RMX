@@ -1,4 +1,4 @@
-package xml;
+package xml.xmlutilities;
 
 /**
  * Enum to distinguish the different Types of Actions that are supported and their action array (int[]) length

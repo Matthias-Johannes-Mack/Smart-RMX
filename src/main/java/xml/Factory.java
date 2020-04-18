@@ -11,6 +11,8 @@ import matrix.byteMatrix.ByteCondition;
 import matrix.byteMatrix.ByteMatrix;
 import matrix.byteMatrix.ByteRule;
 import matrix.bitMatrix.BitMatrix;
+import xml.xmlutilities.RulePrintUtil;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 

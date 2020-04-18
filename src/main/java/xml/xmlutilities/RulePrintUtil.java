@@ -1,6 +1,7 @@
-package xml;
+package xml.xmlutilities;
 
 import matrix.byteMatrix.ByteCondition;
+import xml.XML_ActionWrapper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,7 +9,7 @@ import java.util.Arrays;
 /**
  * Utility class for printing the read in rules from the xml document, methods mainly used by factory
  */
-class RulePrintUtil {
+public class RulePrintUtil {
 
     /**
      * prints out a byte rule

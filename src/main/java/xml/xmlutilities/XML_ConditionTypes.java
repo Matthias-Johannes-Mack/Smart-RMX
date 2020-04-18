@@ -1,4 +1,4 @@
-package xml;
+package xml.xmlutilities;
 
 /**
  * contains the Condition Types that can be found in the XML

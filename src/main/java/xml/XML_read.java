@@ -3,6 +3,9 @@ package xml;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import xml.xmlutilities.XML_ActionType;
+import xml.xmlutilities.XML_ConditionTypes;
+import xml.xmlutilities.XML_Constants;
 
 import java.util.ArrayList;
 import java.util.Iterator;

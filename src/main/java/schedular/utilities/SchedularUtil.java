@@ -12,7 +12,7 @@ import utilities.Constants;
 import bus.BusDepot;
 import connection.Sender;
 import org.apache.commons.math3.exception.OutOfRangeException;
-import xml.XML_ActionType;
+import xml.xmlutilities.XML_ActionType;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;

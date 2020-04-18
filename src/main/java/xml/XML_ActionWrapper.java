@@ -1,11 +1,13 @@
 package xml;
 
+import xml.xmlutilities.XML_ActionType;
+
 import java.util.Arrays;
 
 /**
  * contains the type of an action and its action array read in from the xml file
  */
-class XML_ActionWrapper {
+public class XML_ActionWrapper {
     /**
      * int Array containing the array for a the specific type of the action
      *
