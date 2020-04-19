@@ -5,9 +5,7 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
-
 import utilities.Constants;
-
 
 /**
  * Class that represents a console for the Output!
@@ -69,8 +67,9 @@ public class Console extends OutputStream {
 	 * @param maxLines - maximum lines
 	 */
 	public Console(JTextArea jtxtarea, int maxLines) {
+		// if the maxlines are negative put out an error
 		if (maxLines < 1) {
-			throw new IllegalArgumentException("Maximale Zeilen m�ssen positiv sein! " + maxLines);
+			throw new IllegalArgumentException("Die maximale Zeilen muessen positiv sein! " + maxLines);
 		}
 		// set the array to length 1
 		byteArr = new byte[1];
