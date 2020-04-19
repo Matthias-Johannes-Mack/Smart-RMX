@@ -14,7 +14,6 @@ import utilities.Constants;
  */
 public class Console extends OutputStream {
 	// Singleton-Pattern START -----------------------------------------
-
 	/**
 	 * Singleton instance of Console
 	 */
