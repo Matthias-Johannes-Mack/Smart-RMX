@@ -10,6 +10,7 @@ import matrix.matrixutilities.MatrixUtil;
 import utilities.ByteUtil;
 import utilities.Constants;
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -143,6 +144,7 @@ public class MatrixChecker {
 
                     if (actionSequence != null) {
                         // ActionSequence for point exists = a rule has been defined
+
                         result.add(actionSequence);
                     }
 
@@ -422,11 +424,7 @@ public class MatrixChecker {
          */
 
         // byteIndexRow starts at the byteIndex of the given byte
-        int byteIndexRow = byteIndexChangedBit + 1; // start column traversal one row below
-
-        // need to save the second last field of the traversal of the byteMatrix for the last check (outside the loop)
-        // since the byteMatrix check is done when we enter the first bit of the next byte
-        int secondLastFieldByteMatrix = fieldIndexByteMatrix;
+        int byteIndexRow = byteIndexChangedBit; // start column traversal in the same row since recorded byte is onebyte behind
 
         // loop until field is outside of the triangular matrix
         while (fieldIndexBitMatrix < BitMatrix.bitMatrixArraySize) {
@@ -465,16 +463,17 @@ public class MatrixChecker {
             // we enterted the next byte, we are at the first index of the next byte
             if(counterBitMatrix % 8 == 0) {
 
-                ActionSequence actionSequenceByteMatrix = MatrixUtil.checkByteMatrixField(currentByte, ByteUtil.getByteByByteArray(recordByte), byteMatrix.getByteMatrixField(fieldIndexByteMatrix));
+                ActionSequence actionSequenceByteMatrix = MatrixUtil.checkByteMatrixField(currentByte,
+                        ByteUtil.getByteByByteArray(recordByte), byteMatrix.getByteMatrixField(fieldIndexByteMatrix));
 
                 if (actionSequenceByteMatrix != null) {
                     // ActionSequence for point exists = a rule has been defined
+
                     result.add(actionSequenceByteMatrix);
                 }
 
                 // move in the byteMatrix one field down
                 byteIndexRow++;
-                secondLastFieldByteMatrix = fieldIndexByteMatrix;
                 fieldIndexByteMatrix = MatrixCalcUtil.calcGauss(byteIndexRow) + byteIndexChangedBit;
             }
 
@@ -488,7 +487,7 @@ public class MatrixChecker {
 
         // check last field of the byteMatrix
         ActionSequence actionSequenceByteMatrix = MatrixUtil.checkByteMatrixField(currentByte,
-                ByteUtil.getByteByByteArray(recordByte), byteMatrix.getByteMatrixField(secondLastFieldByteMatrix));
+                ByteUtil.getByteByByteArray(recordByte), byteMatrix.getByteMatrixField(fieldIndexByteMatrix));
 
         if (actionSequenceByteMatrix != null) {
             // ActionSequence for point exists = a rule has been defined

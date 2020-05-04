@@ -164,7 +164,9 @@ public class SchedularUtil {
      */
     private static void processActionWait(long waitTime, ActionSequence actionSequence, int startIndex) {
 
-        if (startIndex == (actionSequence.getActionCount() - 1)) {
+        // index of the initial ActionMessageWait = startIndex - 1
+        // index of last action in the ActionSequence = actionCount - 1
+        if ((startIndex - 1) == (actionSequence.getActionCount() - 1)) {
             // the ActionWait is the last Action, no need to start a new Thread
             // -1 since the index starts at 0
             return;
