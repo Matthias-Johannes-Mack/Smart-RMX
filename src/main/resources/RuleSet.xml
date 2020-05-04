@@ -1,56 +1,60 @@
 <?xml version = "1.0"?>
 
-<Ruleset>
+<Ruleset>    <!-- Rulset Tag is the Wrapper of the XML Document-->
 
-    <Rule>
-        <ByteConditions>
+    <Rule>  <!-- The Ruleset consists of multiple rules-->
+        <ByteConditions>  <!-- A Rule can contain either a ByteConditions or a BitConditions. Each of these consists of two Conditions -->
             <Condition>
                 <Bus>1</Bus>
                 <SystemAddress>0</SystemAddress>
-                <Equal>10</Equal>
-                <NotEqual>255</NotEqual>
-                <Bigger>7</Bigger>
-                <Smaller>15</Smaller>
+                <!-- at least one of the following, must be in the correct order -->
+                <Equal>10</Equal>  <!-- value range: 0 - 255 -->
+                <NotEqual>255</NotEqual> <!-- value range: 0 - 255 -->
+                <Bigger>7</Bigger> <!-- value range: 0 - 255 -->
+                <Smaller>15</Smaller> <!-- value range: 0 - 255 -->
             </Condition>
 
             <Condition>
                 <Bus>1</Bus>
-                <SystemAddress>0</SystemAddress>
-                <Equal>10</Equal>
-                <NotEqual>255</NotEqual>
-                <Bigger>7</Bigger>
-                <Smaller>15</Smaller>
+                <SystemAddress>2</SystemAddress>
+                <!-- at least one of the following, must be in the correct order -->
+                <Equal>12</Equal>  <!-- value range: 0 - 255 -->
+                <NotEqual>100</NotEqual> <!-- value range: 0 - 255 -->
+                <Bigger>7</Bigger> <!-- value range: 0 - 255 -->
+                <Smaller>15</Smaller> <!-- value range: 0 - 255 -->
             </Condition>
         </ByteConditions>
 
-        <Actions>
-            <Wait>12</Wait>
+        <Actions>  <!-- each rule must contain a Actions Block after the ByteConditions ore BitConditions Block, the actions are executed when triggered in the same order as listed here -->
+            <Wait>12</Wait> <!-- Wait action with wait time in ms, all actions after wait action will be executed after wait time -->
+            <!-- all BitActions-->
             <BitAction>
                 <Bus>1</Bus>
-                <SystemAddress>1</SystemAddress>
-                <Bit>0</Bit>
-                <BitValue>1</BitValue>
+                <SystemAddress>1</SystemAddress> <!-- value range: 0 - 111 -->
+                <Bit>0</Bit>  <!-- value range: 0 - 7 -->
+                <BitValue>1</BitValue> <!-- sets the bit to the given value, value range: 0 - 1 -->
             </BitAction>
             <BitAction>
                 <Bus>1</Bus>
                 <SystemAddress>1</SystemAddress>
                 <Bit>0</Bit>
-                <BitValue>toggle</BitValue>
+                <BitValue>toggle</BitValue> <!-- toggles the bit value -->
             </BitAction>
+            <!-- all ByteActions-->
             <ByteAction>
                 <Bus>1</Bus>
                 <SystemAddress>1</SystemAddress>
-                <ByteValue>255</ByteValue>
+                <ByteValue>255</ByteValue> <!-- sets the byte to the given value, value range: 0 - 255 -->
             </ByteAction>
             <ByteAction>
                 <Bus>1</Bus>
                 <SystemAddress>1</SystemAddress>
-                <Decrement>1</Decrement>
+                <Decrement>1</Decrement> <!-- decrements the byte value by the given value, value range: 0 - 255 -->
             </ByteAction>
             <ByteAction>
                 <Bus>1</Bus>
                 <SystemAddress>1</SystemAddress>
-                <Increment>1</Increment>
+                <Increment>1</Increment> <!-- increments the byte value by the given value, value range: 0 - 255 -->
             </ByteAction>
         </Actions>
 
@@ -58,44 +62,51 @@
 
     <Rule>
         <BitConditions>
-            <Condition>
-                <Bus>1</Bus> <!-- theoretisch beliebig aber wir beschränken uns auf maximal 4 also 1-4? -->
-                <SystemAddress>0</SystemAddress> <!-- 0 - 111 -->
-                <Bit>0</Bit> <!-- 0 -7 -->
-                <BitValue>1</BitValue>
+            <Condition> <!-- A Rule can contain either a ByteConditions or a BitConditions. Each of these consists of two Conditions -->
+                <Bus>1</Bus>
+                <SystemAddress>43</SystemAddress> <!-- value range: 0 - 111 -->
+                <Bit>0</Bit> <!-- value range: 0 -7 -->
+                <BitValue>1</BitValue> <!-- value range: 0 - 1-->
             </Condition>
             <Condition>
-                <Bus>1</Bus> <!-- theoretisch beliebig aber wir beschränken uns auf maximal 4 also 1-4? -->
-                <SystemAddress>0</SystemAddress> <!-- 0 - 111 -->
-                <Bit>0</Bit> <!-- 0 -7 -->
-                <BitValue>1</BitValue>
+                <Bus>1</Bus>
+                <SystemAddress>0</SystemAddress> <!-- value range: 0 - 111 -->
+                <Bit>0</Bit> <!-- value range: 0 -7 -->
+                <BitValue>1</BitValue> <!-- value range: 0 - 1-->
             </Condition>
         </BitConditions>
 
 
-        <Actions>
-            <Wait>4</Wait>
+        <Actions>  <!-- each rule must contain a Actions Block after the ByteConditions ore BitConditions Block, the actions are executed when triggered in the same order as listed here -->
+            <Wait>12</Wait> <!-- Wait action with wait time in ms, all actions after wait action will be executed after wait time -->
+            <!-- all BitActions-->
             <BitAction>
                 <Bus>1</Bus>
-                <SystemAddress>1</SystemAddress>
-                <Bit>0</Bit>
-                <BitValue>1</BitValue>
+                <SystemAddress>1</SystemAddress> <!-- value range: 0 - 111 -->
+                <Bit>0</Bit>  <!-- value range: 0 - 7 -->
+                <BitValue>1</BitValue> <!-- sets the bit to the given value, value range: 0 - 1 -->
             </BitAction>
             <BitAction>
                 <Bus>1</Bus>
                 <SystemAddress>1</SystemAddress>
                 <Bit>0</Bit>
-                <BitValue>toggle</BitValue>
+                <BitValue>toggle</BitValue> <!-- toggles the bit value -->
             </BitAction>
+            <!-- all ByteActions-->
             <ByteAction>
                 <Bus>1</Bus>
                 <SystemAddress>1</SystemAddress>
-                <ByteValue>255</ByteValue>
+                <ByteValue>255</ByteValue> <!-- sets the byte to the given value, value range: 0 - 255 -->
             </ByteAction>
             <ByteAction>
                 <Bus>1</Bus>
                 <SystemAddress>1</SystemAddress>
-                <Decrement>1</Decrement>
+                <Decrement>1</Decrement> <!-- decrements the byte value by the given value, value range: 0 - 255 -->
+            </ByteAction>
+            <ByteAction>
+                <Bus>1</Bus>
+                <SystemAddress>1</SystemAddress>
+                <Increment>1</Increment> <!-- increments the byte value by the given value, value range: 0 - 255 -->
             </ByteAction>
         </Actions>
 
