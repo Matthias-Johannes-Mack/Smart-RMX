@@ -219,9 +219,8 @@ public class MatrixChecker {
       METHODS FOR CHECKING SPECIFIC CHANGES
       - check()
 
-      HELPER METHODS
-      - traverseBitAndByteMatrixAndCheck()
-      - traverseBitMatrixAndCheck()
+      HELPER METHOD
+      - traverse()
      ----------------------------------------------------------------------------------------------*/
 
     /**
@@ -274,9 +273,8 @@ public class MatrixChecker {
     }
 
     /*-----------------------------------------------------------------------------------------------
-      HELPER METHODS
-      - traverseBitAndByteMatrixAndCheck()
-      - traverseBitMatrixAndCheck()
+      HELPER METHOD
+      - traverse()
      ----------------------------------------------------------------------------------------------*/
 
     /**
@@ -307,7 +305,6 @@ public class MatrixChecker {
 
         // calculate the bitIndex of the given bit in the given systemadress and bus
         int bitIndexChangedBit = MatrixCalcUtil.calcBitIndex(busId, systemadress, systemadress_bitIndex);
-
 
         // calculate the first field in the BitMatrix to start traversal
         int fieldIndexBitMatrix = MatrixCalcUtil.calcGauss(bitIndexChangedBit);
