@@ -7,10 +7,8 @@ import matrix.bitMatrix.BitMatrix;
 import matrix.byteMatrix.ByteMatrix;
 import matrix.matrixutilities.MatrixCalcUtil;
 import matrix.matrixutilities.MatrixUtil;
-import utilities.ByteUtil;
 import utilities.Constants;
 
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
