@@ -1,3 +1,3 @@
 # Smart-RMX
 
-Entwicklung eines Prototyps zur automatisierten bedingungsabhängigen Steuerung von Smart Home-Objekten in Zusammenspiel mit der RMX-PC-Zentrale 2.0 von rautenhaus digital®. 
+Development of a prototype for automated condition-based control of smart home objects in interaction with the RMX PC Central 2.0 from rautenhaus digital®.
