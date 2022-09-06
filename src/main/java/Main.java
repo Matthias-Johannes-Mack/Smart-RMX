@@ -1,5 +1,4 @@
 
-
 import connection.SocketConnector;
 import console.Console;
 import console.PopUp_IP_Port;
@@ -13,6 +12,9 @@ import xml.XML_IO;
  * @author Matthias Mack 3316380
  */
 public class Main {
+	/**
+	 * Flag for dialog
+	 */
 	private static boolean dialogProcessed;
 
 	/**
@@ -42,7 +44,7 @@ public class Main {
 		PopUp_IP_Port.showPopup();
 		// wait & notify
 		while (PopUp_IP_Port.isDisplayed()) {
-		
+
 		}
 		SocketConnector.Connect();
 	}

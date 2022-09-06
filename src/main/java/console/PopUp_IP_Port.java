@@ -1,8 +1,5 @@
 package console;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,11 +21,11 @@ import utilities.Constants;
  */
 public class PopUp_IP_Port {
 	/**
-	 * flag for the dialog
+	 * flag for the dialog, has to be voltaile 
 	 */
 	private static volatile boolean dialogVisible = true;
 	/**
-	 * the main frame
+	 * the main frame for the popup
 	 */
 	private static JFrame popupframe;
 
@@ -38,11 +35,13 @@ public class PopUp_IP_Port {
 	public static void showPopup() {
 		// create the jframe
 		popupframe = new JFrame(Constants.POPUP_TITLE);
+		// set the default close operation to exit
 		popupframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// add the border
 		JPanel p = new JPanel();
-		// orientation of the layout
+		// new layout for the Jpanel
 		FlowLayout flay = new FlowLayout();
+		// align the things on the left
 		flay.setAlignment(FlowLayout.LEFT);
 		p.setLayout(flay);
 		// boxlayout for the form
@@ -69,8 +68,9 @@ public class PopUp_IP_Port {
 		txtPort.setText(String.valueOf((SocketConnector.getPort())));
 		p.add(txtPort);
 		// ------------------------------------------------------------
-		// placeholder
+		// placeholder for the  button, to move it downwards
 		JLabel lblPlaceholder = new JLabel();
+		// set the padding
 		lblPlaceholder.setBorder(new EmptyBorder(6, 0, 6, 0));
 		p.add(lblPlaceholder);
 		// ---------button for the submit
@@ -82,6 +82,7 @@ public class PopUp_IP_Port {
 			public void actionPerformed(ActionEvent e) {
 				// check if anything changed
 				try {
+					// check if the ip  or the port has changed
 					if (!txtIp.getText().toString().equals(SocketConnector.getIp())
 							|| !(Integer.parseInt(txtPort.getText()) == SocketConnector.getPort())) {
 						// if it is different, test the ip
@@ -133,7 +134,6 @@ public class PopUp_IP_Port {
 				}
 			}
 		});
-
 		// set resizeable
 		popupframe.setResizable(false);
 		// pack the frame
@@ -145,13 +145,17 @@ public class PopUp_IP_Port {
 	}
 
 	/**
-	 * @return the dialogReady
+	 * Getter for the dialog ready
+	 *
+	 * @return the dialogReady boolean
 	 */
 	public static boolean isDialogReady() {
 		return dialogVisible;
 	}
 
 	/**
+	 * Setter for the dialogReady
+	 * 
 	 * @param dialogReady the dialogReady to set
 	 */
 	public static void setDialogReady(boolean dialogReady) {
@@ -167,6 +171,12 @@ public class PopUp_IP_Port {
 		return dialogVisible;
 	}
 
+	/**
+	 * Method that prints out the choosen ip and the port
+	 * 
+	 * @param ip   - as string 255.255.255
+	 * @param port - as int 1-99999
+	 */
 	public static void printOutIP(String ip, int port) {
 		System.out.println("--------------------------------------");
 		System.out.println("Server: " + ip + " Port: " + port);
